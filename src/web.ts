@@ -6,8 +6,10 @@ export class PhoneCallNotificationWeb
   extends WebPlugin
   implements PhoneCallNotificationPlugin
 {
-  async echo(options: { value: string }): Promise<{ value: string }> {
-    console.log('ECHO', options);
-    return options;
+  async show(): Promise<{ response: 'tap' | 'answer' | 'decline' | 'terminate' }> {
+    throw this.unimplemented('Not implemented on web.');
+  }  
+  async hide(): Promise<void> {
+    throw this.unimplemented('Not implemented on web.');
   }
 }

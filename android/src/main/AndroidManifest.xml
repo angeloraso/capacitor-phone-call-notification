@@ -1,3 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="ar.com.anura.plugins.phonecallnotification">
+
+    <uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENT" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+
+    <application>
+        <activity
+            android:name=".IncomingCallFullNotificationActivity"
+            android:enabled="true"
+            android:launchMode="singleTask"
+            android:exported="false" >
+        </activity>
+
+        <activity
+          android:name=".IncomingCallNotificationActivity"
+          android:enabled="true"
+          android:launchMode="singleTask"
+          android:taskAffinity=""
+          android:excludeFromRecents="true"
+          android:exported="false" >
+        </activity>
+
+      <service
+            android:name=".IncomingCallNotificationService"
+            android:enabled="true"
+            android:exported="false"
+            android:foregroundServiceType="microphone|phoneCall" />
+    </application>
+
 </manifest>

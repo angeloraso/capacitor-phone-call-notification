@@ -1,3 +1,26 @@
+export type NotificationType = 'incoming' | 'inProgress' | 'missed';
+export interface NotificationSettings {
+  type: NotificationType;
+  callerName: string;
+  callerNumber: string;
+  icon: string;
+  picture: string;
+  thereIsACallInProgress: boolean;
+  declineButtonText: string;
+  declineButtonColor: string;
+  answerButtonText: string;
+  answerButtonColor: string;
+  terminateAndAnswerButtonText: string;
+  terminateAndAnswerButtonColor: string;
+  declineSecondCallButtonText: string;
+  declineSecondCallButtonColor: string;
+  holdAndAnswerButtonText: string;
+  holdAndAnswerButtonColor: string;
+  color: string;
+  channelName: string;
+  channelDescription: string;
+}
 export interface PhoneCallNotificationPlugin {
-  echo(options: { value: string }): Promise<{ value: string }>;
+  show(data?: Partial<NotificationSettings>): Promise<{ response: 'tap' | 'answer' | 'decline' | 'terminate' }>;
+  hide(): Promise<void>;
 }
