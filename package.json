@@ -1,5 +1,5 @@
 {
-  "name": "@anura/capacitor-phone-call-notification",
+  "name": "@anuradevelopers/capacitor-phone-call-notification",
   "version": "1.0.0",
   "description": "Capacitor plugin to create phone call notifications",
   "main": "dist/plugin.cjs.js",
@@ -74,5 +74,7 @@
     "android": {
       "src": "android"
     }
-  }
+  },
+  "homepage": "https://github.com/angeloraso/capacitor-phone-call-notification.git#readme",
+  "dependencies": {}
 }
