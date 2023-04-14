@@ -27,7 +27,7 @@ public class PhoneCallNotificationPlugin extends Plugin {
         }
 
         NotificationSettings settings = getSettings(call);
-        if (settings.getType() == "incoming") {
+        if (settings.getType().equals("incoming")) {
             phoneCallNotification.showIncomingCallNotification(
                 settings,
                 new IncomingCallNotificationListener() {
