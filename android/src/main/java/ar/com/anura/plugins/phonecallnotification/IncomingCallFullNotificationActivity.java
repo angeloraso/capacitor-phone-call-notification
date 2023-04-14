@@ -1,4 +1,4 @@
-package ar.com.anura.plugins.phonecallnotifications;
+package ar.com.anura.plugins.phonecallnotification;
 
 import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;

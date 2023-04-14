@@ -1,9 +1,9 @@
-package ar.com.anura.plugins.phonecallnotifications;
+package ar.com.anura.plugins.phonecallnotification;
 
-import static ar.com.anura.plugins.phonecallnotifications.IncomingCallNotificationService.ANSWER_ACTION;
-import static ar.com.anura.plugins.phonecallnotifications.IncomingCallNotificationService.DECLINE_ACTION;
-import static ar.com.anura.plugins.phonecallnotifications.IncomingCallNotificationService.TAP_ACTION;
-import static ar.com.anura.plugins.phonecallnotifications.IncomingCallNotificationService.TERMINATE_ACTION;
+import static ar.com.anura.plugins.phonecallnotification.IncomingCallNotificationService.ANSWER_ACTION;
+import static ar.com.anura.plugins.phonecallnotification.IncomingCallNotificationService.DECLINE_ACTION;
+import static ar.com.anura.plugins.phonecallnotification.IncomingCallNotificationService.TAP_ACTION;
+import static ar.com.anura.plugins.phonecallnotification.IncomingCallNotificationService.TERMINATE_ACTION;
 
 import android.content.Intent;
 import android.os.Bundle;

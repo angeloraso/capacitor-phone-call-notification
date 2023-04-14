@@ -1,4 +1,4 @@
-package ar.com.anura.plugins.phonecallnotifications;
+package ar.com.anura.plugins.phonecallnotification;
 
 import android.content.Context;
 import androidx.appcompat.app.AppCompatActivity;
@@ -27,7 +27,7 @@ public class PhoneCallNotificationPlugin extends Plugin {
         }
 
         NotificationSettings settings = getSettings(call);
-        if (settings.type == 'incoming') {
+        if (settings.getType() == "incoming") {
             phoneCallNotification.showIncomingCallNotification(
                 settings,
                 new IncomingCallNotificationListener() {
@@ -63,7 +63,6 @@ public class PhoneCallNotificationPlugin extends Plugin {
         } else {
             call.reject("Phone call notification plugin error: Notification type is required");
         }
-        
     }
 
     @PluginMethod

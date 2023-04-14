@@ -1,4 +1,4 @@
-package ar.com.anura.plugins.phonecallnotifications;
+package ar.com.anura.plugins.phonecallnotification;
 
 import android.content.ComponentName;
 import android.content.Context;
@@ -25,7 +25,7 @@ public class PhoneCallNotification implements IncomingCallNotificationService.Ca
     private ServiceConnection mConnection = new ServiceConnection() {
         public void onServiceConnected(ComponentName className, IBinder iBinder) {
             incomingCallNotificationService = ((IncomingCallNotificationService.LocalBinder) iBinder).getService();
-            incomingCallNotificationService.setCallBack(IncomingCallNotification.this);
+            incomingCallNotificationService.setCallBack(PhoneCallNotification.this);
             incomingCallNotificationService.setSettings(mSettings);
             incomingCallNotificationService.createNotification();
             mIsBound = true;
