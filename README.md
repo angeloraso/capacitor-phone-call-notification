@@ -1,11 +1,11 @@
-# @anura/capacitor-phone-call-notification
+# @anuradev/capacitor-phone-call-notification
 
 Capacitor plugin to create phone call notifications
 
 ## Install
 
 ```bash
-npm install @anura/capacitor-phone-call-notification
+npm install @anuradev/capacitor-phone-call-notification
 npx cap sync
 ```
 
