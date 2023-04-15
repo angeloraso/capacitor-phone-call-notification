@@ -22,11 +22,26 @@
           android:exported="false" >
         </activity>
 
+        <activity
+          android:name=".CallInProgressNotificationActivity"
+          android:enabled="true"
+          android:launchMode="singleTask"
+          android:taskAffinity=""
+          android:excludeFromRecents="true"
+          android:exported="false" >
+        </activity>
+
       <service
             android:name=".IncomingCallNotificationService"
             android:enabled="true"
             android:exported="false"
             android:foregroundServiceType="microphone|phoneCall" />
+
+      <service
+        android:name=".CallInProgressNotificationService"
+        android:enabled="true"
+        android:exported="false"
+        android:foregroundServiceType="microphone|phoneCall" />
     </application>
 
 </manifest>

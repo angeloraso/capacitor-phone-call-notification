@@ -14,13 +14,18 @@ public class NotificationSettings {
     private String answerButtonColor = "#65bf6c";
     private String terminateAndAnswerButtonText = "Terminate & answer";
     private String terminateAndAnswerButtonColor = "#fac281";
+    private String terminateButtonText = "Terminate";
+    private String terminateButtonColor = "#fac281";
     private String color = "#55335A";
     private String declineSecondCallButtonText = "Decline";
     private String declineSecondCallButtonColor = "#e76565";
+    private String holdButtonColor = "#65bf6c";
+    private String holdButtonText = "Hold";
+
     private String holdAndAnswerButtonText = "Hold & answer";
     private String holdAndAnswerButtonColor = "#65bf6c";
-    private String channelName = "incoming-call-notification";
-    private String channelDescription = "Incoming call notification";
+    private String channelName = "call-notification";
+    private String channelDescription = "Phone call notification";
 
     public String getType() {
         return type;
@@ -109,6 +114,38 @@ public class NotificationSettings {
     public void setTerminateAndAnswerButtonColor(String terminateAndAnswerButtonColor) {
         this.terminateAndAnswerButtonColor = terminateAndAnswerButtonColor;
     }
+
+  public String getTerminateButtonText() {
+    return terminateButtonText;
+  }
+
+  public void setTerminateButtonText(String terminateButtonText) {
+    this.terminateButtonText = terminateButtonText;
+  }
+
+  public String getTerminateButtonColor() {
+    return terminateButtonColor;
+  }
+
+  public void setTerminateButtonColor(String terminateButtonColor) {
+    this.terminateButtonColor = terminateButtonColor;
+  }
+
+  public String getHoldButtonText() {
+    return holdButtonText;
+  }
+
+  public void setHoldButtonText(String holdButtonText) {
+    this.holdButtonText = holdButtonText;
+  }
+
+  public String getHoldButtonColor() {
+    return holdButtonColor;
+  }
+
+  public void setHoldButtonColor(String holdButtonColor) {
+    this.holdButtonColor = holdButtonColor;
+  }
 
     public String getDeclineSecondCallButtonText() {
         return declineSecondCallButtonText;

@@ -10,6 +10,10 @@ export interface NotificationSettings {
   declineButtonColor: string;
   answerButtonText: string;
   answerButtonColor: string;
+  terminateButtonText: string;
+  terminateButtonColor: string;
+  holdButtonText: string;
+  holdButtonColor: string;
   terminateAndAnswerButtonText: string;
   terminateAndAnswerButtonColor: string;
   declineSecondCallButtonText: string;

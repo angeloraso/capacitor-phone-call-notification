@@ -64,6 +64,10 @@ hide() => Promise<void>
 | **`declineButtonColor`**            | <code>string</code>                                           |
 | **`answerButtonText`**              | <code>string</code>                                           |
 | **`answerButtonColor`**             | <code>string</code>                                           |
+| **`terminateButtonText`**           | <code>string</code>                                           |
+| **`terminateButtonColor`**          | <code>string</code>                                           |
+| **`holdButtonText`**                | <code>string</code>                                           |
+| **`holdButtonColor`**               | <code>string</code>                                           |
 | **`terminateAndAnswerButtonText`**  | <code>string</code>                                           |
 | **`terminateAndAnswerButtonColor`** | <code>string</code>                                           |
 | **`declineSecondCallButtonText`**   | <code>string</code>                                           |
