@@ -15,12 +15,12 @@ public class NotificationSettings {
     private String terminateAndAnswerButtonText = "Terminate & answer";
     private String terminateAndAnswerButtonColor = "#fac281";
     private String terminateButtonText = "Terminate";
-    private String terminateButtonColor = "#fac281";
+    private String terminateButtonColor = "#e76565";
     private String color = "#55335A";
     private int duration = 0;
     private String declineSecondCallButtonText = "Decline";
     private String declineSecondCallButtonColor = "#e76565";
-    private String holdButtonColor = "#65bf6c";
+    private String holdButtonColor = "#2b94f4";
     private String holdButtonText = "Hold";
     private String holdAndAnswerButtonText = "Hold & answer";
     private String holdAndAnswerButtonColor = "#65bf6c";

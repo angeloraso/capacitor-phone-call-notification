@@ -95,7 +95,7 @@ public class CallInProgressNotificationService extends Service {
         }
 
         final String CHANNEL_ID = "call-in-progress-notification-channel-id";
-        final int CHANNEL_IMPORTANCE = NotificationManager.IMPORTANCE_HIGH;
+        final int CHANNEL_IMPORTANCE = NotificationManager.IMPORTANCE_MIN;
 
         final NotificationChannel notificationChannel = new NotificationChannel(CHANNEL_ID, mSettings.getChannelName(), CHANNEL_IMPORTANCE);
         notificationChannel.setDescription(mSettings.getChannelDescription());
@@ -109,7 +109,7 @@ public class CallInProgressNotificationService extends Service {
         Notification.Builder notificationBuilder = new Notification.Builder(this, CHANNEL_ID)
             .setContentTitle(mSettings.getChannelName())
             // Ongoing notifications cannot be dismissed by the user
-            .setOngoing(true)
+            .setOngoing(false)
             // Set the "ticker" text which is sent to accessibility services.
             .setTicker(mSettings.getChannelName())
             // To know if it is necessary to disturb the user with a notification despite having activated the "Do not interrupt" mode
@@ -148,7 +148,7 @@ public class CallInProgressNotificationService extends Service {
                     "<font color=\"" + Color.parseColor(mSettings.getHoldButtonColor()) + "\">" + mSettings.getHoldButtonText() + "</font>",
                     Html.FROM_HTML_MODE_LEGACY
                 ),
-                getPendingIntent(TERMINATE_ACTION)
+                getPendingIntent(HOLD_ACTION)
             )
                 .build();
 
