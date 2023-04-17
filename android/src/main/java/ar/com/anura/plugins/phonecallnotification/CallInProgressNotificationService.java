@@ -14,6 +14,7 @@ import android.graphics.drawable.Icon;
 import android.os.Binder;
 import android.os.Build;
 import android.os.IBinder;
+import android.os.SystemClock;
 import android.text.Html;
 
 public class CallInProgressNotificationService extends Service {
@@ -102,6 +103,9 @@ public class CallInProgressNotificationService extends Service {
         // Register the channel with the system; you can't change the importance or other notification behaviors after this
         getNotificationManager().createNotificationChannel(notificationChannel);
 
+        long milliseconds = mSettings.getDuration() * 1000;
+        long startTimeMillis = System.currentTimeMillis() - milliseconds;
+
         Notification.Builder notificationBuilder = new Notification.Builder(this, CHANNEL_ID)
             .setContentTitle(mSettings.getChannelName())
             // Ongoing notifications cannot be dismissed by the user
@@ -111,13 +115,12 @@ public class CallInProgressNotificationService extends Service {
             // To know if it is necessary to disturb the user with a notification despite having activated the "Do not interrupt" mode
             .setCategory(Notification.CATEGORY_CALL)
             // Add a timestamp pertaining to the notification
-            .setWhen(System.currentTimeMillis())
+            .setWhen(startTimeMillis)
             .setShowWhen(true)
             .setUsesChronometer(true)
             // VISIBILITY_PUBLIC displays the full content of the notification
             .setVisibility(Notification.VISIBILITY_PUBLIC)
-            // Make this notification automatically dismissed when the user touches it.
-            .setAutoCancel(false)
+            .setAutoCancel(true)
             .setContentIntent(getPendingIntent(TAP_ACTION))
             .setColor(Color.parseColor(mSettings.getColor()))
             // Set whether or not this notification should not bridge to other devices.
