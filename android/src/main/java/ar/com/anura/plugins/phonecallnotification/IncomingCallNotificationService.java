@@ -46,10 +46,10 @@ public class IncomingCallNotificationService extends Service {
     }
 
     public interface CallBack {
-        void onTap();
+        void onIncomingCallNotificationTap();
         void onDecline();
         void onAnswer();
-        void onTerminate();
+        void onIncomingCallNotificationTerminate();
     }
 
     public void setCallBack(CallBack callBack) {

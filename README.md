@@ -14,7 +14,7 @@ npx cap sync
 <docgen-index>
 
 * [`show(...)`](#show)
-* [`hide()`](#hide)
+* [`hide(...)`](#hide)
 * [Interfaces](#interfaces)
 * [Type Aliases](#type-aliases)
 
@@ -38,11 +38,15 @@ show(data?: Partial<NotificationSettings> | undefined) => Promise<{ response: 't
 --------------------
 
 
-### hide()
+### hide(...)
 
 ```typescript
-hide() => Promise<void>
+hide(data: { type: NotificationType; }) => Promise<void>
 ```
+
+| Param      | Type                                                                     |
+| ---------- | ------------------------------------------------------------------------ |
+| **`data`** | <code>{ type: <a href="#notificationtype">NotificationType</a>; }</code> |
 
 --------------------
 
@@ -55,6 +59,7 @@ hide() => Promise<void>
 | Prop                                | Type                                                          |
 | ----------------------------------- | ------------------------------------------------------------- |
 | **`type`**                          | <code><a href="#notificationtype">NotificationType</a></code> |
+| **`duration`**                      | <code>number</code>                                           |
 | **`callerName`**                    | <code>string</code>                                           |
 | **`callerNumber`**                  | <code>string</code>                                           |
 | **`icon`**                          | <code>string</code>                                           |

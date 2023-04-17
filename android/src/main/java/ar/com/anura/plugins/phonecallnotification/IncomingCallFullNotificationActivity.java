@@ -16,7 +16,7 @@ public class IncomingCallFullNotificationActivity extends AppCompatActivity {
             return;
         }
 
-        IncomingCallNotificationService.callBack.onTap();
+        IncomingCallNotificationService.callBack.onIncomingCallNotificationTap();
         finish();
     }
 }

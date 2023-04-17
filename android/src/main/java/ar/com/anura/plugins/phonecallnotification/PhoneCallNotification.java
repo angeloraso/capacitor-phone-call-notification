@@ -28,20 +28,17 @@ public class PhoneCallNotification implements IncomingCallNotificationService.Ca
     }
 
     @Override
-    public void onTap() {
+    public void onIncomingCallNotificationTap() {
         if (incomingCallNotificationListener != null) {
             incomingCallNotificationListener.onTap();
             openApp();
-        } else if (callInProgressNotificationListener != null) {
-          callInProgressNotificationListener.onTap();
-          openApp();
         }
     }
 
     @Override
     public void onDecline() {
         if (incomingCallNotificationListener != null) {
-          incomingCallNotificationListener.onDecline();
+            incomingCallNotificationListener.onDecline();
         }
     }
 
@@ -54,21 +51,34 @@ public class PhoneCallNotification implements IncomingCallNotificationService.Ca
     }
 
     @Override
+    public void onIncomingCallNotificationTerminate() {
+        if (incomingCallNotificationListener != null) {
+            incomingCallNotificationListener.onTerminate();
+            openApp();
+        }
+    }
+
+    @Override
+    public void onTap() {
+        if (callInProgressNotificationListener != null) {
+            callInProgressNotificationListener.onTap();
+            openApp();
+        }
+    }
+
+    @Override
     public void onHold() {
-      if (callInProgressNotificationListener != null) {
-        callInProgressNotificationListener.onHold();
-        openApp();
-      }
+        if (callInProgressNotificationListener != null) {
+            callInProgressNotificationListener.onHold();
+            openApp();
+        }
     }
 
     @Override
     public void onTerminate() {
-        if (incomingCallNotificationListener != null) {
-            incomingCallNotificationListener.onTerminate();
+        if (callInProgressNotificationListener != null) {
+            callInProgressNotificationListener.onTerminate();
             openApp();
-        } else if (callInProgressNotificationListener != null) {
-          callInProgressNotificationListener.onTerminate();
-          openApp();
         }
     }
 
@@ -81,84 +91,99 @@ public class PhoneCallNotification implements IncomingCallNotificationService.Ca
     public void showIncomingCallNotification(final NotificationSettings settings, final IncomingCallNotificationListener listener) {
         this.mSettings = settings;
         this.incomingCallNotificationListener = listener;
-        mIncomingCallServiceConnection = new ServiceConnection() {
-          public void onServiceConnected(ComponentName className, IBinder iBinder) {
-            incomingCallNotificationService = ((IncomingCallNotificationService.LocalBinder) iBinder).getService();
-            incomingCallNotificationService.setCallBack(PhoneCallNotification.this);
-            incomingCallNotificationService.setSettings(mSettings);
-            incomingCallNotificationService.createNotification();
-            mIncomingCallServiceIsBound = true;
-          }
+        mIncomingCallServiceConnection =
+            new ServiceConnection() {
+                public void onServiceConnected(ComponentName className, IBinder iBinder) {
+                    incomingCallNotificationService = ((IncomingCallNotificationService.LocalBinder) iBinder).getService();
+                    incomingCallNotificationService.setCallBack(PhoneCallNotification.this);
+                    incomingCallNotificationService.setSettings(mSettings);
+                    incomingCallNotificationService.createNotification();
+                    mIncomingCallServiceIsBound = true;
+                }
 
-          public void onServiceDisconnected(ComponentName className) {
-            incomingCallNotificationService = null;
-            mIncomingCallServiceIsBound = false;
-          }
-        };
+                public void onServiceDisconnected(ComponentName className) {
+                    incomingCallNotificationService = null;
+                    mIncomingCallServiceIsBound = false;
+                }
+            };
 
         Intent intent = new Intent(context, IncomingCallNotificationService.class);
 
         try {
-          context.bindService(intent, mIncomingCallServiceConnection, Context.BIND_AUTO_CREATE);
-          context.startForegroundService(intent);
+            context.bindService(intent, mIncomingCallServiceConnection, Context.BIND_AUTO_CREATE);
+            context.startForegroundService(intent);
         } catch (Exception e) {}
     }
 
-  /**
-   * Show the call in progress notification
-   *
-   * @param settings Settings used to show the incoming call notification
-   * @param listener A listener to handle user actions
-   */
-  public void showCallInProgressNotification(final NotificationSettings settings, final CallInProgressNotificationListener listener) {
-    this.mSettings = settings;
-    this.callInProgressNotificationListener = listener;
-    mCallInProgressServiceConnection = new ServiceConnection() {
-      public void onServiceConnected(ComponentName className, IBinder iBinder) {
-        incomingCallNotificationService = ((IncomingCallNotificationService.LocalBinder) iBinder).getService();
-        incomingCallNotificationService.setCallBack(PhoneCallNotification.this);
-        incomingCallNotificationService.setSettings(mSettings);
-        incomingCallNotificationService.createNotification();
-        mCallInProgressServiceIsBound = true;
-      }
+    /**
+     * Show the call in progress notification
+     *
+     * @param settings Settings used to show the incoming call notification
+     * @param listener A listener to handle user actions
+     */
+    public void showCallInProgressNotification(final NotificationSettings settings, final CallInProgressNotificationListener listener) {
+        this.mSettings = settings;
+        this.callInProgressNotificationListener = listener;
+        mCallInProgressServiceConnection =
+            new ServiceConnection() {
+                public void onServiceConnected(ComponentName className, IBinder iBinder) {
+                    incomingCallNotificationService = ((IncomingCallNotificationService.LocalBinder) iBinder).getService();
+                    incomingCallNotificationService.setCallBack(PhoneCallNotification.this);
+                    incomingCallNotificationService.setSettings(mSettings);
+                    incomingCallNotificationService.createNotification();
+                    mCallInProgressServiceIsBound = true;
+                }
 
-      public void onServiceDisconnected(ComponentName className) {
-        incomingCallNotificationService = null;
-        mCallInProgressServiceIsBound = false;
-      }
-    };
+                public void onServiceDisconnected(ComponentName className) {
+                    incomingCallNotificationService = null;
+                    mCallInProgressServiceIsBound = false;
+                }
+            };
 
-    Intent intent = new Intent(context, CallInProgressNotificationService.class);
+        Intent intent = new Intent(context, CallInProgressNotificationService.class);
 
-    try {
-      context.bindService(intent, mCallInProgressServiceConnection, Context.BIND_AUTO_CREATE);
-      context.startForegroundService(intent);
-    } catch (Exception e) {}
-  }
+        try {
+            context.bindService(intent, mCallInProgressServiceConnection, Context.BIND_AUTO_CREATE);
+            context.startForegroundService(intent);
+        } catch (Exception e) {}
+    }
 
-    public void hide() {
-        stopService();
+    public void hideIncomingCall() {
+        stopIncomingCallService();
+    }
+
+    public void hideCallInProgress() {
+        stopCallInProgressService();
     }
 
     public void onResume() {
-        hide();
+        stopService();
     }
 
     public void onDestroy() {
-        hide();
+        stopService();
     }
 
     private void stopService() {
+        stopIncomingCallService();
+        stopCallInProgressService();
+    }
+
+    private void stopIncomingCallService() {
         if (mIncomingCallServiceIsBound && mIncomingCallServiceConnection != null) {
-          Intent intent = new Intent(context, IncomingCallNotificationService.class);
-          context.unbindService(mIncomingCallServiceConnection);
-          context.stopService(intent);
-          mIncomingCallServiceIsBound = false;
-        } else if (mCallInProgressServiceIsBound && mCallInProgressServiceConnection != null) {
-          Intent intent = new Intent(context, CallInProgressNotificationService.class);
-          context.unbindService(mCallInProgressServiceConnection);
-          context.stopService(intent);
-          mCallInProgressServiceIsBound = false;
+            Intent intent = new Intent(context, IncomingCallNotificationService.class);
+            context.unbindService(mIncomingCallServiceConnection);
+            context.stopService(intent);
+            mIncomingCallServiceIsBound = false;
+        }
+    }
+
+    private void stopCallInProgressService() {
+        if (mCallInProgressServiceIsBound && mCallInProgressServiceConnection != null) {
+            Intent intent = new Intent(context, CallInProgressNotificationService.class);
+            context.unbindService(mCallInProgressServiceConnection);
+            context.stopService(intent);
+            mCallInProgressServiceIsBound = false;
         }
     }
 

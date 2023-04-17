@@ -1,6 +1,7 @@
 export type NotificationType = 'incoming' | 'inProgress' | 'missed';
 export interface NotificationSettings {
   type: NotificationType;
+  duration: number;
   callerName: string;
   callerNumber: string;
   icon: string;
@@ -26,5 +27,5 @@ export interface NotificationSettings {
 }
 export interface PhoneCallNotificationPlugin {
   show(data?: Partial<NotificationSettings>): Promise<{ response: 'tap' | 'answer' | 'decline' | 'terminate' }>;
-  hide(): Promise<void>;
+  hide(data: {type: NotificationType}): Promise<void>;
 }

@@ -17,11 +17,11 @@ public class NotificationSettings {
     private String terminateButtonText = "Terminate";
     private String terminateButtonColor = "#fac281";
     private String color = "#55335A";
+    private int duration = 0;
     private String declineSecondCallButtonText = "Decline";
     private String declineSecondCallButtonColor = "#e76565";
     private String holdButtonColor = "#65bf6c";
     private String holdButtonText = "Hold";
-
     private String holdAndAnswerButtonText = "Hold & answer";
     private String holdAndAnswerButtonColor = "#65bf6c";
     private String channelName = "call-notification";
@@ -115,37 +115,37 @@ public class NotificationSettings {
         this.terminateAndAnswerButtonColor = terminateAndAnswerButtonColor;
     }
 
-  public String getTerminateButtonText() {
-    return terminateButtonText;
-  }
+    public String getTerminateButtonText() {
+        return terminateButtonText;
+    }
 
-  public void setTerminateButtonText(String terminateButtonText) {
-    this.terminateButtonText = terminateButtonText;
-  }
+    public void setTerminateButtonText(String terminateButtonText) {
+        this.terminateButtonText = terminateButtonText;
+    }
 
-  public String getTerminateButtonColor() {
-    return terminateButtonColor;
-  }
+    public String getTerminateButtonColor() {
+        return terminateButtonColor;
+    }
 
-  public void setTerminateButtonColor(String terminateButtonColor) {
-    this.terminateButtonColor = terminateButtonColor;
-  }
+    public void setTerminateButtonColor(String terminateButtonColor) {
+        this.terminateButtonColor = terminateButtonColor;
+    }
 
-  public String getHoldButtonText() {
-    return holdButtonText;
-  }
+    public String getHoldButtonText() {
+        return holdButtonText;
+    }
 
-  public void setHoldButtonText(String holdButtonText) {
-    this.holdButtonText = holdButtonText;
-  }
+    public void setHoldButtonText(String holdButtonText) {
+        this.holdButtonText = holdButtonText;
+    }
 
-  public String getHoldButtonColor() {
-    return holdButtonColor;
-  }
+    public String getHoldButtonColor() {
+        return holdButtonColor;
+    }
 
-  public void setHoldButtonColor(String holdButtonColor) {
-    this.holdButtonColor = holdButtonColor;
-  }
+    public void setHoldButtonColor(String holdButtonColor) {
+        this.holdButtonColor = holdButtonColor;
+    }
 
     public String getDeclineSecondCallButtonText() {
         return declineSecondCallButtonText;
@@ -185,6 +185,14 @@ public class NotificationSettings {
 
     public void setColor(String color) {
         this.color = color;
+    }
+
+    public int getDuration() {
+        return duration;
+    }
+
+    public void setDuration(int duration) {
+        this.duration = duration;
     }
 
     public String getPicture() {

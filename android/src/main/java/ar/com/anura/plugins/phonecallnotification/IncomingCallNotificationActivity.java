@@ -21,13 +21,13 @@ public class IncomingCallNotificationActivity extends AppCompatActivity {
         }
 
         if (TAP_ACTION.equals(intent.getAction())) {
-            IncomingCallNotificationService.callBack.onTap();
+            IncomingCallNotificationService.callBack.onIncomingCallNotificationTap();
         } else if (DECLINE_ACTION.equals(intent.getAction())) {
             IncomingCallNotificationService.callBack.onDecline();
         } else if (ANSWER_ACTION.equals(intent.getAction())) {
             IncomingCallNotificationService.callBack.onAnswer();
         } else if (TERMINATE_ACTION.equals(intent.getAction())) {
-            IncomingCallNotificationService.callBack.onTerminate();
+            IncomingCallNotificationService.callBack.onIncomingCallNotificationTerminate();
         }
 
         finish();
