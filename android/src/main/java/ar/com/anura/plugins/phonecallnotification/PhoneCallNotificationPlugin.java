@@ -60,8 +60,7 @@ public class PhoneCallNotificationPlugin extends Plugin {
                     }
                 }
             );
-        }
-        if (settings.getType().equals("inProgress")) {
+        } else if (settings.getType().equals("inProgress")) {
             phoneCallNotification.showCallInProgressNotification(
                 settings,
                 new CallInProgressNotificationListener() {
