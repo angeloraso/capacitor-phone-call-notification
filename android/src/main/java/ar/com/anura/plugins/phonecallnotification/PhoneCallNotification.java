@@ -16,6 +16,7 @@ public class PhoneCallNotification implements IncomingCallNotificationService.Ca
 
     private CallInProgressNotificationListener callInProgressNotificationListener;
     private IncomingCallNotificationService incomingCallNotificationService;
+    private CallInProgressNotificationService callInProgressNotificationService;
     private Boolean mIncomingCallServiceIsBound = false;
     private Boolean mCallInProgressServiceIsBound = false;
     private ServiceConnection mIncomingCallServiceConnection;
@@ -127,15 +128,15 @@ public class PhoneCallNotification implements IncomingCallNotificationService.Ca
         mCallInProgressServiceConnection =
             new ServiceConnection() {
                 public void onServiceConnected(ComponentName className, IBinder iBinder) {
-                    incomingCallNotificationService = ((IncomingCallNotificationService.LocalBinder) iBinder).getService();
-                    incomingCallNotificationService.setCallBack(PhoneCallNotification.this);
-                    incomingCallNotificationService.setSettings(mSettings);
-                    incomingCallNotificationService.createNotification();
+                    callInProgressNotificationService = ((CallInProgressNotificationService.LocalBinder) iBinder).getService();
+                    callInProgressNotificationService.setCallBack(PhoneCallNotification.this);
+                    callInProgressNotificationService.setSettings(mSettings);
+                    callInProgressNotificationService.createNotification();
                     mCallInProgressServiceIsBound = true;
                 }
 
                 public void onServiceDisconnected(ComponentName className) {
-                    incomingCallNotificationService = null;
+                    callInProgressNotificationService = null;
                     mCallInProgressServiceIsBound = false;
                 }
             };
