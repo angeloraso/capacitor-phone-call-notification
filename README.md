@@ -26,14 +26,14 @@ npx cap sync
 ### show(...)
 
 ```typescript
-show(data?: Partial<NotificationSettings> | undefined) => Promise<{ response: 'tap' | 'answer' | 'decline' | 'terminate'; }>
+show(data?: Partial<NotificationSettings> | undefined) => Promise<{ response: 'tap' | 'answer' | 'decline' | 'terminate' | 'hold'; }>
 ```
 
 | Param      | Type                                                                                                        |
 | ---------- | ----------------------------------------------------------------------------------------------------------- |
 | **`data`** | <code><a href="#partial">Partial</a>&lt;<a href="#notificationsettings">NotificationSettings</a>&gt;</code> |
 
-**Returns:** <code>Promise&lt;{ response: 'tap' | 'answer' | 'decline' | 'terminate'; }&gt;</code>
+**Returns:** <code>Promise&lt;{ response: 'tap' | 'answer' | 'decline' | 'terminate' | 'hold'; }&gt;</code>
 
 --------------------
 

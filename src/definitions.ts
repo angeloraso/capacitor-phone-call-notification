@@ -26,6 +26,6 @@ export interface NotificationSettings {
   channelDescription: string;
 }
 export interface PhoneCallNotificationPlugin {
-  show(data?: Partial<NotificationSettings>): Promise<{ response: 'tap' | 'answer' | 'decline' | 'terminate' }>;
+  show(data?: Partial<NotificationSettings>): Promise<{ response: 'tap' | 'answer' | 'decline' | 'terminate' | 'hold' }>;
   hide(data: {type: NotificationType}): Promise<void>;
 }
