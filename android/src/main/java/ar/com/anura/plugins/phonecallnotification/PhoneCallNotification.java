@@ -71,7 +71,6 @@ public class PhoneCallNotification implements IncomingCallNotificationService.Ca
     public void onHold() {
         if (callInProgressNotificationListener != null) {
             callInProgressNotificationListener.onHold();
-            openApp();
         }
     }
 
@@ -79,7 +78,6 @@ public class PhoneCallNotification implements IncomingCallNotificationService.Ca
     public void onTerminate() {
         if (callInProgressNotificationListener != null) {
             callInProgressNotificationListener.onTerminate();
-            openApp();
         }
     }
 
