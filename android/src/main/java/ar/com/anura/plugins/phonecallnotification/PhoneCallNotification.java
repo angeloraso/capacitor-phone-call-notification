@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.IBinder;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.NotificationManagerCompat;
 
 public class PhoneCallNotification implements IncomingCallNotificationService.CallBack, CallInProgressNotificationService.CallBack {
 
@@ -161,6 +162,11 @@ public class PhoneCallNotification implements IncomingCallNotificationService.Ca
 
     public void onDestroy() {
         stopService();
+    }
+
+    public boolean areNotificationsEnabled() {
+        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(context);
+        return notificationManager.areNotificationsEnabled();
     }
 
     private void stopService() {

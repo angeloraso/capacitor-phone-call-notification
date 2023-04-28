@@ -1,4 +1,10 @@
+import type { PermissionState } from '@capacitor/core';
+
 export type NotificationType = 'incoming' | 'inProgress' | 'missed';
+
+export interface PermissionStatus {
+  display: PermissionState;
+}
 export interface NotificationSettings {
   type: NotificationType;
   duration: number;
@@ -28,4 +34,6 @@ export interface NotificationSettings {
 export interface PhoneCallNotificationPlugin {
   show(data?: Partial<NotificationSettings>): Promise<{ response: 'tap' | 'answer' | 'decline' | 'terminate' | 'hold' }>;
   hide(data: {type: NotificationType}): Promise<void>;
+  checkPermissions(): Promise<PermissionStatus>;
+  requestPermissions(): Promise<PermissionStatus>;
 }

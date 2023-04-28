@@ -1,17 +1,30 @@
 package ar.com.anura.plugins.phonecallnotification;
 
+import android.Manifest;
 import android.content.Context;
+import android.os.Build;
 import androidx.appcompat.app.AppCompatActivity;
 import com.getcapacitor.JSObject;
+import com.getcapacitor.PermissionState;
 import com.getcapacitor.Plugin;
 import com.getcapacitor.PluginCall;
 import com.getcapacitor.PluginMethod;
 import com.getcapacitor.annotation.CapacitorPlugin;
+import com.getcapacitor.annotation.Permission;
+import com.getcapacitor.annotation.PermissionCallback;
 
-@CapacitorPlugin(name = "PhoneCallNotification")
+@CapacitorPlugin(
+    name = "PhoneCallNotification",
+    permissions = @Permission(
+        strings = { Manifest.permission.POST_NOTIFICATIONS },
+        alias = PhoneCallNotificationPlugin.PHONE_CALL_NOTIFICATIONS
+    )
+)
 public class PhoneCallNotificationPlugin extends Plugin {
 
     private PhoneCallNotification phoneCallNotification;
+
+    static final String PHONE_CALL_NOTIFICATIONS = "display";
 
     public void load() {
         AppCompatActivity activity = getActivity();
@@ -108,6 +121,45 @@ public class PhoneCallNotificationPlugin extends Plugin {
         }
 
         call.resolve();
+    }
+
+    @PluginMethod
+    public void checkPermissions(PluginCall call) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
+            JSObject permissionsResultJSON = new JSObject();
+            permissionsResultJSON.put(PHONE_CALL_NOTIFICATIONS, getNotificationPermissionText());
+            call.resolve(permissionsResultJSON);
+        } else {
+            super.checkPermissions(call);
+        }
+    }
+
+    @PluginMethod
+    public void requestPermissions(PluginCall call) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
+            JSObject permissionsResultJSON = new JSObject();
+            permissionsResultJSON.put(PHONE_CALL_NOTIFICATIONS, getNotificationPermissionText());
+            call.resolve(permissionsResultJSON);
+        } else {
+            if (getPermissionState(PHONE_CALL_NOTIFICATIONS) != PermissionState.GRANTED) {
+                requestPermissionForAlias(PHONE_CALL_NOTIFICATIONS, call, "permissionsCallback");
+            }
+        }
+    }
+
+    @PermissionCallback
+    private void permissionsCallback(PluginCall call) {
+        JSObject permissionsResultJSON = new JSObject();
+        permissionsResultJSON.put(PHONE_CALL_NOTIFICATIONS, getNotificationPermissionText());
+        call.resolve(permissionsResultJSON);
+    }
+
+    private String getNotificationPermissionText() {
+        if (phoneCallNotification.areNotificationsEnabled()) {
+            return "granted";
+        } else {
+            return "denied";
+        }
     }
 
     private NotificationSettings getSettings(PluginCall call) {

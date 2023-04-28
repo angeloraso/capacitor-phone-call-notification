@@ -15,6 +15,8 @@ npx cap sync
 
 * [`show(...)`](#show)
 * [`hide(...)`](#hide)
+* [`checkPermissions()`](#checkpermissions)
+* [`requestPermissions()`](#requestpermissions)
 * [Interfaces](#interfaces)
 * [Type Aliases](#type-aliases)
 
@@ -47,6 +49,28 @@ hide(data: { type: NotificationType; }) => Promise<void>
 | Param      | Type                                                                     |
 | ---------- | ------------------------------------------------------------------------ |
 | **`data`** | <code>{ type: <a href="#notificationtype">NotificationType</a>; }</code> |
+
+--------------------
+
+
+### checkPermissions()
+
+```typescript
+checkPermissions() => Promise<PermissionStatus>
+```
+
+**Returns:** <code>Promise&lt;<a href="#permissionstatus">PermissionStatus</a>&gt;</code>
+
+--------------------
+
+
+### requestPermissions()
+
+```typescript
+requestPermissions() => Promise<PermissionStatus>
+```
+
+**Returns:** <code>Promise&lt;<a href="#permissionstatus">PermissionStatus</a>&gt;</code>
 
 --------------------
 
@@ -84,6 +108,13 @@ hide(data: { type: NotificationType; }) => Promise<void>
 | **`channelDescription`**            | <code>string</code>                                           |
 
 
+#### PermissionStatus
+
+| Prop          | Type                                                        |
+| ------------- | ----------------------------------------------------------- |
+| **`display`** | <code><a href="#permissionstate">PermissionState</a></code> |
+
+
 ### Type Aliases
 
 
@@ -97,5 +128,10 @@ Make all properties in T optional
 #### NotificationType
 
 <code>'incoming' | 'inProgress' | 'missed'</code>
+
+
+#### PermissionState
+
+<code>'prompt' | 'prompt-with-rationale' | 'granted' | 'denied'</code>
 
 </docgen-api>
