@@ -111,13 +111,16 @@ public class PhoneCallNotificationPlugin extends Plugin {
             return;
         }
 
-        if (call.hasOption("type")) {
-            String type = call.getString("type");
-            if (type.equals("incoming")) {
-                phoneCallNotification.hideIncomingCall();
-            } else if (type.equals("inProgress")) {
-                phoneCallNotification.hideCallInProgress();
-            }
+        String type = call.getString("type");
+        if (type == null) {
+            call.reject("The notification type is required");
+            return;
+        }
+
+        if (type.equals("incoming")) {
+            phoneCallNotification.hideIncomingCall();
+        } else if (type.equals("inProgress")) {
+            phoneCallNotification.hideCallInProgress();
         }
 
         call.resolve();
@@ -164,77 +167,125 @@ public class PhoneCallNotificationPlugin extends Plugin {
 
     private NotificationSettings getSettings(PluginCall call) {
         NotificationSettings settings = new NotificationSettings();
-        if (call.hasOption("type")) {
-            settings.setType((call.getString("type")));
+
+        String type = call.getString("type");
+        if (type != null) {
+            settings.setType(type);
         }
-        if (call.hasOption("callerName")) {
-            settings.setCallerName((call.getString("callerName")));
+
+        String callerName = call.getString("callerName");
+        if (callerName != null) {
+            settings.setCallerName(callerName);
         }
-        if (call.hasOption("callerNumber")) {
-            settings.setCallerNumber((call.getString("callerNumber")));
+
+        String callerNumber = call.getString("callerNumber");
+        if (callerNumber != null) {
+            settings.setCallerNumber(callerNumber);
         }
-        if (call.hasOption("icon")) {
-            settings.setIcon((call.getString("icon")));
+
+        String icon = call.getString("icon");
+        if (icon != null) {
+            settings.setIcon(icon);
         }
-        if (call.hasOption("thereIsACallInProgress")) {
-            settings.setThereIsACallInProgress((call.getBoolean("thereIsACallInProgress")));
+
+        boolean thereIsACallInProgress = call.getBoolean("thereIsACallInProgress");
+        if (thereIsACallInProgress) {
+            settings.setThereIsACallInProgress(thereIsACallInProgress);
         }
-        if (call.hasOption("declineButtonText")) {
-            settings.setDeclineButtonText((call.getString("declineButtonText")));
+
+        String declineButtonText = call.getString("declineButtonText");
+        if (declineButtonText != null) {
+            settings.setDeclineButtonText(declineButtonText);
         }
-        if (call.hasOption("answerButtonText")) {
-            settings.setAnswerButtonText((call.getString("answerButtonText")));
+
+        String answerButtonText = call.getString("answerButtonText");
+        if (answerButtonText != null) {
+            settings.setAnswerButtonText(answerButtonText);
         }
-        if (call.hasOption("terminateAndAnswerButtonText")) {
-            settings.setTerminateAndAnswerButtonText((call.getString("terminateAndAnswerButtonText")));
+
+        String terminateAndAnswerButtonText = call.getString("terminateAndAnswerButtonText");
+        if (terminateAndAnswerButtonText != null) {
+            settings.setTerminateAndAnswerButtonText(terminateAndAnswerButtonText);
         }
-        if (call.hasOption("terminateButtonText")) {
-            settings.setTerminateButtonText((call.getString("terminateButtonText")));
+
+        String terminateButtonText = call.getString("terminateButtonText");
+        if (terminateButtonText != null) {
+            settings.setTerminateButtonText(terminateButtonText);
         }
-        if (call.hasOption("holdButtonText")) {
-            settings.setHoldButtonText((call.getString("holdButtonText")));
+
+        String holdButtonText = call.getString("holdButtonText");
+        if (holdButtonText != null) {
+            settings.setHoldButtonText(holdButtonText);
         }
-        if (call.hasOption("declineSecondCallButtonText")) {
-            settings.setDeclineSecondCallButtonText((call.getString("declineSecondCallButtonText")));
+
+        String declineSecondCallButtonText = call.getString("declineSecondCallButtonText");
+        if (declineSecondCallButtonText != null) {
+            settings.setDeclineSecondCallButtonText(declineSecondCallButtonText);
         }
-        if (call.hasOption("holdAndAnswerButtonText")) {
-            settings.setHoldAndAnswerButtonText((call.getString("holdAndAnswerButtonText")));
+
+        String holdAndAnswerButtonText = call.getString("holdAndAnswerButtonText");
+        if (holdAndAnswerButtonText != null) {
+            settings.setHoldAndAnswerButtonText(holdAndAnswerButtonText);
         }
-        if (call.hasOption("declineButtonColor")) {
-            settings.setDeclineButtonColor((call.getString("declineButtonColor")));
+
+        String declineButtonColor = call.getString("declineButtonColor");
+        if (declineButtonColor != null) {
+            settings.setDeclineButtonColor(declineButtonColor);
         }
-        if (call.hasOption("answerButtonColor")) {
-            settings.setAnswerButtonColor((call.getString("answerButtonColor")));
+
+        String answerButtonColor = call.getString("answerButtonColor");
+        if (answerButtonColor != null) {
+            settings.setAnswerButtonColor(answerButtonColor);
         }
-        if (call.hasOption("terminateAndAnswerButtonColor")) {
-            settings.setTerminateAndAnswerButtonColor((call.getString("terminateAndAnswerButtonColor")));
+
+        String terminateAndAnswerButtonColor = call.getString("terminateAndAnswerButtonColor");
+        if (terminateAndAnswerButtonColor != null) {
+            settings.setTerminateAndAnswerButtonColor(terminateAndAnswerButtonColor);
         }
-        if (call.hasOption("terminateButtonColor")) {
-            settings.setTerminateButtonColor((call.getString("terminateButtonColor")));
+
+        String terminateButtonColor = call.getString("terminateButtonColor");
+        if (terminateButtonColor != null) {
+            settings.setTerminateButtonColor(terminateButtonColor);
         }
-        if (call.hasOption("holdButtonColor")) {
-            settings.setHoldButtonColor((call.getString("holdButtonColor")));
+
+        String holdButtonColor = call.getString("holdButtonColor");
+        if (holdButtonColor != null) {
+            settings.setHoldButtonColor(holdButtonColor);
         }
-        if (call.hasOption("declineSecondCallButtonColor")) {
-            settings.setDeclineSecondCallButtonColor((call.getString("declineSecondCallButtonColor")));
+
+        String declineSecondCallButtonColor = call.getString("declineSecondCallButtonColor");
+        if (declineSecondCallButtonColor != null) {
+            settings.setDeclineSecondCallButtonColor(declineSecondCallButtonColor);
         }
-        if (call.hasOption("holdAndAnswerButtonColor")) {
-            settings.setHoldAndAnswerButtonColor((call.getString("holdAndAnswerButtonColor")));
+
+        String holdAndAnswerButtonColor = call.getString("holdAndAnswerButtonColor");
+        if (holdAndAnswerButtonColor != null) {
+            settings.setHoldAndAnswerButtonColor(holdAndAnswerButtonColor);
         }
-        if (call.hasOption("color")) {
-            settings.setColor((call.getString("color")));
+
+        String color = call.getString("color");
+        if (color != null) {
+            settings.setColor(color);
         }
-        if (call.hasOption("duration")) {
-            settings.setDuration((call.getInt("duration")));
+
+        int duration = call.getInt("duration");
+        if (duration >= 0) {
+            settings.setDuration(duration);
         }
-        if (call.hasOption("picture")) {
-            settings.setPicture((call.getString("picture")));
+
+        String picture = call.getString("picture");
+        if (picture != null) {
+            settings.setPicture(picture);
         }
-        if (call.hasOption("channelName")) {
-            settings.setChannelName((call.getString("channelName")));
+
+        String channelName = call.getString("channelName");
+        if (channelName != null) {
+            settings.setChannelName(channelName);
         }
-        if (call.hasOption("channelDescription")) {
-            settings.setChannelDescription((call.getString("channelDescription")));
+
+        String channelDescription = call.getString("channelDescription");
+        if (channelDescription != null) {
+            settings.setChannelDescription(channelDescription);
         }
 
         return settings;

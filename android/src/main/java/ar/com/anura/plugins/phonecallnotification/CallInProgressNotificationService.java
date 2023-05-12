@@ -14,7 +14,6 @@ import android.graphics.drawable.Icon;
 import android.os.Binder;
 import android.os.Build;
 import android.os.IBinder;
-import android.os.SystemClock;
 import android.text.Html;
 
 public class CallInProgressNotificationService extends Service {
