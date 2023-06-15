@@ -10,16 +10,16 @@ import androidx.core.app.NotificationManagerCompat;
 
 public class PhoneCallNotification implements IncomingCallNotificationService.CallBack, CallInProgressNotificationService.CallBack {
 
-    private Context context;
-    private AppCompatActivity activity;
+    private final Context context;
+    private final AppCompatActivity activity;
     private NotificationSettings mSettings;
     private IncomingCallNotificationListener incomingCallNotificationListener;
 
     private CallInProgressNotificationListener callInProgressNotificationListener;
     private IncomingCallNotificationService incomingCallNotificationService;
     private CallInProgressNotificationService callInProgressNotificationService;
-    private Boolean mIncomingCallServiceIsBound = false;
-    private Boolean mCallInProgressServiceIsBound = false;
+    private Boolean mShouldUnbindIncomingCallService = false;
+    private Boolean mShouldUnbindCallInProgressService = false;
     private ServiceConnection mIncomingCallServiceConnection;
     private ServiceConnection mCallInProgressServiceConnection;
 
@@ -98,21 +98,20 @@ public class PhoneCallNotification implements IncomingCallNotificationService.Ca
                     incomingCallNotificationService.setCallBack(PhoneCallNotification.this);
                     incomingCallNotificationService.setSettings(mSettings);
                     incomingCallNotificationService.createNotification();
-                    mIncomingCallServiceIsBound = true;
                 }
 
                 public void onServiceDisconnected(ComponentName className) {
                     incomingCallNotificationService = null;
-                    mIncomingCallServiceIsBound = false;
                 }
             };
 
-        Intent intent = new Intent(context, IncomingCallNotificationService.class);
 
-        try {
-            context.bindService(intent, mIncomingCallServiceConnection, Context.BIND_AUTO_CREATE);
+          Intent intent = new Intent(context, IncomingCallNotificationService.class);
+
+          if (context.bindService(intent, mIncomingCallServiceConnection, Context.BIND_AUTO_CREATE)) {
             context.startForegroundService(intent);
-        } catch (Exception e) {}
+            mShouldUnbindIncomingCallService = true;
+          }
     }
 
     /**
@@ -131,21 +130,19 @@ public class PhoneCallNotification implements IncomingCallNotificationService.Ca
                     callInProgressNotificationService.setCallBack(PhoneCallNotification.this);
                     callInProgressNotificationService.setSettings(mSettings);
                     callInProgressNotificationService.createNotification();
-                    mCallInProgressServiceIsBound = true;
                 }
 
                 public void onServiceDisconnected(ComponentName className) {
                     callInProgressNotificationService = null;
-                    mCallInProgressServiceIsBound = false;
                 }
             };
 
         Intent intent = new Intent(context, CallInProgressNotificationService.class);
 
-        try {
-            context.bindService(intent, mCallInProgressServiceConnection, Context.BIND_AUTO_CREATE);
-            context.startForegroundService(intent);
-        } catch (Exception e) {}
+        if (context.bindService(intent, mCallInProgressServiceConnection, Context.BIND_AUTO_CREATE)) {
+          context.startForegroundService(intent);
+          mShouldUnbindCallInProgressService = true;
+        }
     }
 
     public void hideIncomingCall() {
@@ -175,20 +172,20 @@ public class PhoneCallNotification implements IncomingCallNotificationService.Ca
     }
 
     private void stopIncomingCallService() {
-        if (mIncomingCallServiceIsBound && mIncomingCallServiceConnection != null) {
+        if (mShouldUnbindIncomingCallService && mIncomingCallServiceConnection != null) {
             Intent intent = new Intent(context, IncomingCallNotificationService.class);
             context.unbindService(mIncomingCallServiceConnection);
             context.stopService(intent);
-            mIncomingCallServiceIsBound = false;
+            mShouldUnbindIncomingCallService = false;
         }
     }
 
     private void stopCallInProgressService() {
-        if (mCallInProgressServiceIsBound && mCallInProgressServiceConnection != null) {
+        if (mShouldUnbindCallInProgressService && mCallInProgressServiceConnection != null) {
             Intent intent = new Intent(context, CallInProgressNotificationService.class);
             context.unbindService(mCallInProgressServiceConnection);
             context.stopService(intent);
-            mCallInProgressServiceIsBound = false;
+            mShouldUnbindCallInProgressService = false;
         }
     }
 
