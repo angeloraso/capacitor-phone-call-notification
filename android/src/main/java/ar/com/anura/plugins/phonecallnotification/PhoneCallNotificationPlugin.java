@@ -188,8 +188,8 @@ public class PhoneCallNotificationPlugin extends Plugin {
             settings.setIcon(icon);
         }
 
-        boolean thereIsACallInProgress = call.getBoolean("thereIsACallInProgress");
-        if (thereIsACallInProgress) {
+        Boolean thereIsACallInProgress = call.getBoolean("thereIsACallInProgress");
+        if (thereIsACallInProgress != null) {
             settings.setThereIsACallInProgress(thereIsACallInProgress);
         }
 
@@ -268,8 +268,8 @@ public class PhoneCallNotificationPlugin extends Plugin {
             settings.setColor(color);
         }
 
-        int duration = call.getInt("duration");
-        if (duration >= 0) {
+        Integer duration = call.getInt("duration");
+        if (duration != null && duration >= 0) {
             settings.setDuration(duration);
         }
 
