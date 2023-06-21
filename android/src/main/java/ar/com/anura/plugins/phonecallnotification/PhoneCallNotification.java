@@ -4,7 +4,11 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.os.Build;
+import android.os.Handler;
 import android.os.IBinder;
+import android.os.Looper;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.NotificationManagerCompat;
 
@@ -108,8 +112,14 @@ public class PhoneCallNotification implements IncomingCallNotificationService.Ca
 
           Intent intent = new Intent(context, IncomingCallNotificationService.class);
 
-          if (context.bindService(intent, mIncomingCallServiceConnection, Context.BIND_AUTO_CREATE)) {
-            context.startForegroundService(intent);
+          context.bindService(intent, mIncomingCallServiceConnection, Context.BIND_AUTO_CREATE);
+          if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            new Handler(Looper.getMainLooper()).post(() -> {
+              context.startForegroundService(intent);
+              mShouldUnbindIncomingCallService = true;
+            });
+          } else {
+            context.startService(intent);
             mShouldUnbindIncomingCallService = true;
           }
     }
@@ -139,8 +149,14 @@ public class PhoneCallNotification implements IncomingCallNotificationService.Ca
 
         Intent intent = new Intent(context, CallInProgressNotificationService.class);
 
-        if (context.bindService(intent, mCallInProgressServiceConnection, Context.BIND_AUTO_CREATE)) {
-          context.startForegroundService(intent);
+        context.bindService(intent, mCallInProgressServiceConnection, Context.BIND_AUTO_CREATE);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+          new Handler(Looper.getMainLooper()).post(() -> {
+            context.startForegroundService(intent);
+            mShouldUnbindCallInProgressService = true;
+          });
+        } else {
+          context.startService(intent);
           mShouldUnbindCallInProgressService = true;
         }
     }
