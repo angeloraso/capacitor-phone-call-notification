@@ -136,13 +136,13 @@ public class CallInProgressNotificationService extends Service {
 
             Notification.CallStyle notificationStyle = Notification.CallStyle.forOngoingCall(caller, getPendingIntent(TERMINATE_ACTION));
             notificationBuilder.setStyle((notificationStyle));
-            notificationBuilder.setSmallIcon(R.drawable.decline_24);
+            notificationBuilder.setSmallIcon(getIconResId("decline", "drawable"));
             notificationBuilder.setForegroundServiceBehavior(Notification.FOREGROUND_SERVICE_IMMEDIATE);
         } else {
             notificationBuilder.setSmallIcon(iconResource);
             notificationBuilder.setContentText(mSettings.getCallerName() + " - " + mSettings.getCallerNumber());
             Notification.Action answerAction = new Notification.Action.Builder(
-                Icon.createWithResource(this, R.drawable.hold_24),
+                Icon.createWithResource(this, getIconResId("hold", "drawable")),
                 Html.fromHtml(
                     "<font color=\"" + Color.parseColor(mSettings.getHoldButtonColor()) + "\">" + mSettings.getHoldButtonText() + "</font>",
                     Html.FROM_HTML_MODE_LEGACY
@@ -152,7 +152,7 @@ public class CallInProgressNotificationService extends Service {
                 .build();
 
             Notification.Action declineAction = new Notification.Action.Builder(
-                Icon.createWithResource(this, R.drawable.decline_24),
+                Icon.createWithResource(this, getIconResId("decline", "drawable")),
                 Html.fromHtml(
                     "<font color=\"" +
                     Color.parseColor(mSettings.getTerminateButtonColor()) +

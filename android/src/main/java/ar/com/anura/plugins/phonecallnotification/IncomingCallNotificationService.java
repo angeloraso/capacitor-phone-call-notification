@@ -157,7 +157,7 @@ public class IncomingCallNotificationService extends Service {
             notificationStyle.setAnswerButtonColorHint(Color.parseColor(mSettings.getAnswerButtonColor()));
             notificationStyle.setDeclineButtonColorHint(Color.parseColor(mSettings.getDeclineButtonColor()));
             notificationBuilder.setStyle((notificationStyle));
-            notificationBuilder.setSmallIcon(R.drawable.answer_24);
+            notificationBuilder.setSmallIcon(getIconResId("answer", "drawable"));
             notificationBuilder.setForegroundServiceBehavior(Notification.FOREGROUND_SERVICE_IMMEDIATE);
         } else {
             notificationBuilder.setSmallIcon(iconResource);
@@ -165,7 +165,7 @@ public class IncomingCallNotificationService extends Service {
 
             if (thereIsACallInProgress) {
                 Notification.Action answerAction = new Notification.Action.Builder(
-                    Icon.createWithResource(this, R.drawable.hold_and_answer_24),
+                    Icon.createWithResource(this, getIconResId("hold_answer", "drawable")),
                     Html.fromHtml(
                         "<font color=\"" +
                         Color.parseColor(mSettings.getHoldAndAnswerButtonColor()) +
@@ -179,7 +179,7 @@ public class IncomingCallNotificationService extends Service {
                     .build();
 
                 Notification.Action declineAction = new Notification.Action.Builder(
-                    Icon.createWithResource(this, R.drawable.decline_24),
+                    Icon.createWithResource(this, getIconResId("decline", "drawable")),
                     Html.fromHtml(
                         "<font color=\"" +
                         Color.parseColor(mSettings.getDeclineSecondCallButtonColor()) +
@@ -193,7 +193,7 @@ public class IncomingCallNotificationService extends Service {
                     .build();
 
                 Notification.Action terminateAction = new Notification.Action.Builder(
-                    Icon.createWithResource(this, R.drawable.terminate_and_answer_24),
+                    Icon.createWithResource(this, getIconResId("terminate_answer", "drawable")),
                     Html.fromHtml(
                         "<font color=\"" +
                         Color.parseColor(mSettings.getTerminateAndAnswerButtonColor()) +
@@ -208,7 +208,7 @@ public class IncomingCallNotificationService extends Service {
                 notificationBuilder.setActions(terminateAction, declineAction, answerAction);
             } else {
                 Notification.Action answerAction = new Notification.Action.Builder(
-                    Icon.createWithResource(this, R.drawable.answer_24),
+                    Icon.createWithResource(this, getIconResId("answer", "drawable")),
                     Html.fromHtml(
                         "<font color=\"" +
                         Color.parseColor(mSettings.getAnswerButtonColor()) +
@@ -222,7 +222,7 @@ public class IncomingCallNotificationService extends Service {
                     .build();
 
                 Notification.Action declineAction = new Notification.Action.Builder(
-                    Icon.createWithResource(this, R.drawable.decline_24),
+                    Icon.createWithResource(this, getIconResId("decline", "drawable")),
                     Html.fromHtml(
                         "<font color=\"" +
                         Color.parseColor(mSettings.getDeclineButtonColor()) +
