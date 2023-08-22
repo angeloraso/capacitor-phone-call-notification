@@ -17,6 +17,7 @@ public class IncomingCallNotificationActivity extends AppCompatActivity {
         Intent intent = getIntent();
 
         if (IncomingCallNotificationService.callBack == null) {
+            finish();
             return;
         }
 

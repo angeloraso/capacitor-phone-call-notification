@@ -17,6 +17,7 @@ public class CallInProgressNotificationActivity extends AppCompatActivity {
         Intent intent = getIntent();
 
         if (CallInProgressNotificationService.callBack == null) {
+            finish();
             return;
         }
 
