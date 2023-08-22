@@ -136,7 +136,7 @@ public class CallInProgressNotificationService extends Service {
 
             Notification.CallStyle notificationStyle = Notification.CallStyle.forOngoingCall(caller, getPendingIntent(TERMINATE_ACTION));
             notificationBuilder.setStyle((notificationStyle));
-            notificationBuilder.setSmallIcon(getIconResId("decline", "drawable"));
+            notificationBuilder.setSmallIcon(getIconResId("answer", "drawable"));
             notificationBuilder.setForegroundServiceBehavior(Notification.FOREGROUND_SERVICE_IMMEDIATE);
         } else {
             notificationBuilder.setSmallIcon(iconResource);
