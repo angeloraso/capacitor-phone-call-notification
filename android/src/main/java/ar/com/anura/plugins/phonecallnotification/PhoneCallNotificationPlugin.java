@@ -32,6 +32,13 @@ public class PhoneCallNotificationPlugin extends Plugin {
         phoneCallNotification = new PhoneCallNotification(activity, context);
     }
 
+    private void onPhoneCallNotificationEvent(String response) {
+        JSObject res = new JSObject();
+        res.put("response", response);
+        bridge.triggerWindowJSEvent("response");
+        notifyListeners("response", res);
+    }
+
     @PluginMethod
     public void show(PluginCall call) {
         if (getActivity().isFinishing()) {
@@ -46,30 +53,22 @@ public class PhoneCallNotificationPlugin extends Plugin {
                 new IncomingCallNotificationListener() {
                     @Override
                     public void onTap() {
-                        JSObject res = new JSObject();
-                        res.put("response", "tap");
-                        call.resolve(res);
+                        onPhoneCallNotificationEvent("tap");
                     }
 
                     @Override
                     public void onDecline() {
-                        JSObject res = new JSObject();
-                        res.put("response", "decline");
-                        call.resolve(res);
+                        onPhoneCallNotificationEvent("decline");
                     }
 
                     @Override
                     public void onAnswer() {
-                        JSObject res = new JSObject();
-                        res.put("response", "answer");
-                        call.resolve(res);
+                        onPhoneCallNotificationEvent("answer");
                     }
 
                     @Override
                     public void onTerminate() {
-                        JSObject res = new JSObject();
-                        res.put("response", "terminate");
-                        call.resolve(res);
+                        onPhoneCallNotificationEvent("terminate");
                     }
                 }
             );
@@ -79,29 +78,26 @@ public class PhoneCallNotificationPlugin extends Plugin {
                 new CallInProgressNotificationListener() {
                     @Override
                     public void onTap() {
-                        JSObject res = new JSObject();
-                        res.put("response", "tap");
-                        call.resolve(res);
+                        onPhoneCallNotificationEvent("tap");
                     }
 
                     @Override
                     public void onHold() {
-                        JSObject res = new JSObject();
-                        res.put("response", "hold");
-                        call.resolve(res);
+                        onPhoneCallNotificationEvent("hold");
                     }
 
                     @Override
                     public void onTerminate() {
-                        JSObject res = new JSObject();
-                        res.put("response", "terminate");
-                        call.resolve(res);
+                        onPhoneCallNotificationEvent("terminate");
                     }
                 }
             );
         } else {
             call.reject("Phone call notification plugin error: Notification type is required");
+            return;
         }
+
+        call.resolve();
     }
 
     @PluginMethod

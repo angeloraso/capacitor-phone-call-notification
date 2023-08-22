@@ -17,6 +17,8 @@ npx cap sync
 * [`hide(...)`](#hide)
 * [`checkPermissions()`](#checkpermissions)
 * [`requestPermissions()`](#requestpermissions)
+* [`addListener('response', ...)`](#addlistenerresponse)
+* [`removeAllListeners()`](#removealllisteners)
 * [Interfaces](#interfaces)
 * [Type Aliases](#type-aliases)
 
@@ -28,14 +30,12 @@ npx cap sync
 ### show(...)
 
 ```typescript
-show(data?: Partial<NotificationSettings> | undefined) => Promise<{ response: 'tap' | 'answer' | 'decline' | 'terminate' | 'hold'; }>
+show(data?: Partial<NotificationSettings> | undefined) => Promise<void>
 ```
 
 | Param      | Type                                                                                                        |
 | ---------- | ----------------------------------------------------------------------------------------------------------- |
 | **`data`** | <code><a href="#partial">Partial</a>&lt;<a href="#notificationsettings">NotificationSettings</a>&gt;</code> |
-
-**Returns:** <code>Promise&lt;{ response: 'tap' | 'answer' | 'decline' | 'terminate' | 'hold'; }&gt;</code>
 
 --------------------
 
@@ -71,6 +71,31 @@ requestPermissions() => Promise<PermissionStatus>
 ```
 
 **Returns:** <code>Promise&lt;<a href="#permissionstatus">PermissionStatus</a>&gt;</code>
+
+--------------------
+
+
+### addListener('response', ...)
+
+```typescript
+addListener(eventName: 'response', listenerFunc: (data: { response: NotificationResponse; }) => void) => Promise<PluginListenerHandle> & PluginListenerHandle
+```
+
+| Param              | Type                                                                                                    |
+| ------------------ | ------------------------------------------------------------------------------------------------------- |
+| **`eventName`**    | <code>'response'</code>                                                                                 |
+| **`listenerFunc`** | <code>(data: { response: <a href="#notificationresponse">NotificationResponse</a>; }) =&gt; void</code> |
+
+**Returns:** <code>Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt; & <a href="#pluginlistenerhandle">PluginListenerHandle</a></code>
+
+--------------------
+
+
+### removeAllListeners()
+
+```typescript
+removeAllListeners() => Promise<void>
+```
 
 --------------------
 
@@ -115,6 +140,13 @@ requestPermissions() => Promise<PermissionStatus>
 | **`display`** | <code><a href="#permissionstate">PermissionState</a></code> |
 
 
+#### PluginListenerHandle
+
+| Prop         | Type                                      |
+| ------------ | ----------------------------------------- |
+| **`remove`** | <code>() =&gt; Promise&lt;void&gt;</code> |
+
+
 ### Type Aliases
 
 
@@ -133,5 +165,10 @@ Make all properties in T optional
 #### PermissionState
 
 <code>'prompt' | 'prompt-with-rationale' | 'granted' | 'denied'</code>
+
+
+#### NotificationResponse
+
+<code>'tap' | 'answer' | 'decline' | 'terminate' | 'hold'</code>
 
 </docgen-api>
