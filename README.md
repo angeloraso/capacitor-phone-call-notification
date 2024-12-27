@@ -78,7 +78,7 @@ requestPermissions() => Promise<PermissionStatus>
 ### addListener('response', ...)
 
 ```typescript
-addListener(eventName: 'response', listenerFunc: (data: { response: NotificationResponse; }) => void) => Promise<PluginListenerHandle> & PluginListenerHandle
+addListener(eventName: 'response', listenerFunc: (data: { response: NotificationResponse; }) => void) => Promise<PluginListenerHandle>
 ```
 
 | Param              | Type                                                                                                    |
@@ -86,7 +86,7 @@ addListener(eventName: 'response', listenerFunc: (data: { response: Notification
 | **`eventName`**    | <code>'response'</code>                                                                                 |
 | **`listenerFunc`** | <code>(data: { response: <a href="#notificationresponse">NotificationResponse</a>; }) =&gt; void</code> |
 
-**Returns:** <code>Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt; & <a href="#pluginlistenerhandle">PluginListenerHandle</a></code>
+**Returns:** <code>Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt;</code>
 
 --------------------
 

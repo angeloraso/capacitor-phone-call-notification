@@ -40,6 +40,6 @@ export interface PhoneCallNotificationPlugin {
   addListener(
     eventName: 'response',
     listenerFunc: (data: {response: NotificationResponse }) => void,
-  ): Promise<PluginListenerHandle> & PluginListenerHandle;
+  ): Promise<PluginListenerHandle>;
   removeAllListeners(): Promise<void>;
 }
