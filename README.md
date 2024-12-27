@@ -17,7 +17,7 @@ npx cap sync
 * [`hide(...)`](#hide)
 * [`checkPermissions()`](#checkpermissions)
 * [`requestPermissions()`](#requestpermissions)
-* [`addListener('response', ...)`](#addlistenerresponse)
+* [`addListener('response', ...)`](#addlistenerresponse-)
 * [`removeAllListeners()`](#removealllisteners)
 * [Interfaces](#interfaces)
 * [Type Aliases](#type-aliases)
