@@ -20,4 +20,12 @@ export class PhoneCallNotificationWeb
   async checkPermissions(): Promise<PermissionStatus> {
     throw this.unimplemented('Not implemented on web.');
   }
+
+  async register(): Promise<void> {
+    throw this.unimplemented('Not implemented on web.');
+  }
+
+  async unregister(): Promise<void> {
+    throw this.unimplemented('Not implemented on web.');
+  }
 }

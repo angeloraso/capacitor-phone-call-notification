@@ -37,9 +37,19 @@ export interface PhoneCallNotificationPlugin {
   hide(data: {type: NotificationType}): Promise<void>;
   checkPermissions(): Promise<PermissionStatus>;
   requestPermissions(): Promise<PermissionStatus>;
+  register(): Promise<void>;
+  unregister(): Promise<void>;
   addListener(
     eventName: 'response',
     listenerFunc: (data: {response: NotificationResponse }) => void,
+  ): Promise<PluginListenerHandle>;
+  addListener(
+    eventName: 'pushNotificationToken',
+    listenerFunc: (data: {value: string }) => void,
+  ): Promise<PluginListenerHandle>;
+  addListener(
+    eventName: 'pushNotificationData',
+    listenerFunc: (data: {data: Record<string, string> }) => void,
   ): Promise<PluginListenerHandle>;
   removeAllListeners(): Promise<void>;
 }

@@ -4,14 +4,22 @@ import android.Manifest;
 import android.content.Context;
 import android.os.Build;
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.getcapacitor.Bridge;
 import com.getcapacitor.JSObject;
 import com.getcapacitor.PermissionState;
 import com.getcapacitor.Plugin;
 import com.getcapacitor.PluginCall;
+import com.getcapacitor.PluginHandle;
 import com.getcapacitor.PluginMethod;
 import com.getcapacitor.annotation.CapacitorPlugin;
 import com.getcapacitor.annotation.Permission;
 import com.getcapacitor.annotation.PermissionCallback;
+import com.google.firebase.messaging.FirebaseMessaging;
+import com.google.firebase.messaging.RemoteMessage;
+
+import java.util.Map;
+import java.util.Objects;
 
 @CapacitorPlugin(
     name = "PhoneCallNotification",
@@ -21,6 +29,8 @@ import com.getcapacitor.annotation.PermissionCallback;
     )
 )
 public class PhoneCallNotificationPlugin extends Plugin {
+
+    public static Bridge staticBridge = null;
 
     private PhoneCallNotification phoneCallNotification;
 
@@ -37,6 +47,89 @@ public class PhoneCallNotificationPlugin extends Plugin {
         res.put("response", response);
         bridge.triggerWindowJSEvent("response");
         notifyListeners("response", res);
+    }
+
+    private void onPushNotificationTokenEvent(String token) {
+        JSObject res = new JSObject();
+        res.put("value", token);
+        bridge.triggerWindowJSEvent("pushNotificationToken");
+        notifyListeners("pushNotificationToken", res);
+    }
+
+    private void onPushNotificationDataEvent(Map<String, String> data) {
+        JSObject res = new JSObject();
+        res.put("data", data);
+        bridge.triggerWindowJSEvent("pushNotificationData");
+        notifyListeners("pushNotificationData", res);
+    }
+
+    public static void onNewToken(String token) {
+        PhoneCallNotificationPlugin pushPlugin = PhoneCallNotificationPlugin.getPhoneCallNotificationInstance();
+        if (pushPlugin != null) {
+            pushPlugin.onPushNotificationTokenEvent(token);
+        }
+    }
+
+    public static void onRemoteMessage(RemoteMessage remoteMessage) {
+        PhoneCallNotificationPlugin pushPlugin = PhoneCallNotificationPlugin.getPhoneCallNotificationInstance();
+        if (pushPlugin != null ) {
+            pushPlugin.onPushNotificationDataEvent(remoteMessage.getData());
+        }
+    }
+
+    public static PhoneCallNotificationPlugin getPhoneCallNotificationInstance() {
+        if (staticBridge != null && staticBridge.getWebView() != null) {
+            PluginHandle handle = staticBridge.getPlugin("PhoneCallNotification");
+            if (handle == null) {
+                return null;
+            }
+            return (PhoneCallNotificationPlugin) handle.getInstance();
+        }
+        return null;
+    }
+
+    @PluginMethod
+    public void register(PluginCall call) {
+        try {
+            if (getActivity().isFinishing()) {
+                call.reject("Phone call notification plugin error: App is finishing");
+                return;
+            }
+
+            FirebaseMessaging.getInstance().setAutoInitEnabled(true);
+            FirebaseMessaging
+                    .getInstance()
+                    .getToken()
+                    .addOnCompleteListener(
+                            task -> {
+                                if (!task.isSuccessful()) {
+                                    call.reject(Objects.requireNonNull(task.getException()).getLocalizedMessage());
+                                    return;
+                                }
+
+                                PhoneCallNotificationPlugin.onNewToken(task.getResult());
+                            }
+                    );
+            call.resolve();
+        } catch (Exception exception) {
+            call.reject(exception.getMessage());
+        }
+    }
+
+    @PluginMethod
+    public void unregister(PluginCall call) {
+        try {
+            if (getActivity().isFinishing()) {
+                call.reject("Phone call notification plugin error: App is finishing");
+                return;
+            }
+
+            FirebaseMessaging.getInstance().setAutoInitEnabled(false);
+            FirebaseMessaging.getInstance().deleteToken();
+            call.resolve();
+        } catch (Exception exception) {
+            call.reject(exception.getMessage());
+        }
     }
 
     @PluginMethod
