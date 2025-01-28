@@ -17,8 +17,8 @@ npx cap sync
 * [`hide(...)`](#hide)
 * [`checkPermissions()`](#checkpermissions)
 * [`requestPermissions()`](#requestpermissions)
-* [`register()`](#register)
-* [`unregister()`](#unregister)
+* [`registerToPushNotifications()`](#registertopushnotifications)
+* [`unregisterFromPushNotifications()`](#unregisterfrompushnotifications)
 * [`addListener('response', ...)`](#addlistenerresponse-)
 * [`addListener('pushNotificationToken', ...)`](#addlistenerpushnotificationtoken-)
 * [`addListener('pushNotificationData', ...)`](#addlistenerpushnotificationdata-)
@@ -79,19 +79,19 @@ requestPermissions() => Promise<PermissionStatus>
 --------------------
 
 
-### register()
+### registerToPushNotifications()
 
 ```typescript
-register() => Promise<void>
+registerToPushNotifications() => Promise<void>
 ```
 
 --------------------
 
 
-### unregister()
+### unregisterFromPushNotifications()
 
 ```typescript
-unregister() => Promise<void>
+unregisterFromPushNotifications() => Promise<void>
 ```
 
 --------------------

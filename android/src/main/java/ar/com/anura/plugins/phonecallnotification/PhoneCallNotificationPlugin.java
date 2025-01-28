@@ -3,6 +3,7 @@ package ar.com.anura.plugins.phonecallnotification;
 import android.Manifest;
 import android.content.Context;
 import android.os.Build;
+
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.getcapacitor.Bridge;
@@ -15,11 +16,9 @@ import com.getcapacitor.PluginMethod;
 import com.getcapacitor.annotation.CapacitorPlugin;
 import com.getcapacitor.annotation.Permission;
 import com.getcapacitor.annotation.PermissionCallback;
-import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.RemoteMessage;
 
 import java.util.Map;
-import java.util.Objects;
 
 @CapacitorPlugin(
     name = "PhoneCallNotification",
@@ -89,27 +88,20 @@ public class PhoneCallNotificationPlugin extends Plugin {
     }
 
     @PluginMethod
-    public void register(PluginCall call) {
+    public void registerToPushNotifications(PluginCall call) {
         try {
             if (getActivity().isFinishing()) {
                 call.reject("Phone call notification plugin error: App is finishing");
                 return;
             }
 
-            FirebaseMessaging.getInstance().setAutoInitEnabled(true);
-            FirebaseMessaging
-                    .getInstance()
-                    .getToken()
-                    .addOnCompleteListener(
-                            task -> {
-                                if (!task.isSuccessful()) {
-                                    call.reject(Objects.requireNonNull(task.getException()).getLocalizedMessage());
-                                    return;
-                                }
+            String serverURL = call.getString("serverURL");
+            if (serverURL == null) {
+                call.reject("Phone call notification plugin error: server URL is required");
+                return;
+            }
 
-                                PhoneCallNotificationPlugin.onNewToken(task.getResult());
-                            }
-                    );
+            phoneCallNotification.registerToPushNotifications(serverURL, this::onPushNotificationTokenEvent);
             call.resolve();
         } catch (Exception exception) {
             call.reject(exception.getMessage());
@@ -117,15 +109,14 @@ public class PhoneCallNotificationPlugin extends Plugin {
     }
 
     @PluginMethod
-    public void unregister(PluginCall call) {
+    public void unregisterFromPushNotifications(PluginCall call) {
         try {
             if (getActivity().isFinishing()) {
                 call.reject("Phone call notification plugin error: App is finishing");
                 return;
             }
 
-            FirebaseMessaging.getInstance().setAutoInitEnabled(false);
-            FirebaseMessaging.getInstance().deleteToken();
+            phoneCallNotification.unregisterFromPushNotifications();
             call.resolve();
         } catch (Exception exception) {
             call.reject(exception.getMessage());
@@ -141,7 +132,19 @@ public class PhoneCallNotificationPlugin extends Plugin {
 
         NotificationSettings settings = getSettings(call);
         if (settings.getType().equals("incoming")) {
-            phoneCallNotification.showIncomingCallNotification(
+            showIncomingCallNotification(settings);
+        } else if (settings.getType().equals("inProgress")) {
+            showCallInProgressNotification(settings);
+        } else {
+            call.reject("Phone call notification plugin error: Notification type is required");
+            return;
+        }
+
+        call.resolve();
+    }
+
+    public void showIncomingCallNotification(NotificationSettings settings) {
+        phoneCallNotification.showIncomingCallNotification(
                 settings,
                 new IncomingCallNotificationListener() {
                     @Override
@@ -164,9 +167,11 @@ public class PhoneCallNotificationPlugin extends Plugin {
                         onPhoneCallNotificationEvent("terminate");
                     }
                 }
-            );
-        } else if (settings.getType().equals("inProgress")) {
-            phoneCallNotification.showCallInProgressNotification(
+        );
+    }
+
+    public void showCallInProgressNotification(NotificationSettings settings) {
+        phoneCallNotification.showCallInProgressNotification(
                 settings,
                 new CallInProgressNotificationListener() {
                     @Override
@@ -184,13 +189,7 @@ public class PhoneCallNotificationPlugin extends Plugin {
                         onPhoneCallNotificationEvent("terminate");
                     }
                 }
-            );
-        } else {
-            call.reject("Phone call notification plugin error: Notification type is required");
-            return;
-        }
-
-        call.resolve();
+        );
     }
 
     @PluginMethod

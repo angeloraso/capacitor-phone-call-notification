@@ -2,13 +2,10 @@ import { WebPlugin } from '@capacitor/core';
 
 import type { PhoneCallNotificationPlugin, PermissionStatus } from './definitions';
 
-export class PhoneCallNotificationWeb
-  extends WebPlugin
-  implements PhoneCallNotificationPlugin
-{
+export class PhoneCallNotificationWeb extends WebPlugin implements PhoneCallNotificationPlugin {
   async show(): Promise<void> {
     throw this.unimplemented('Not implemented on web.');
-  }  
+  }
   async hide(): Promise<void> {
     throw this.unimplemented('Not implemented on web.');
   }
@@ -21,11 +18,11 @@ export class PhoneCallNotificationWeb
     throw this.unimplemented('Not implemented on web.');
   }
 
-  async register(): Promise<void> {
+  async registerToPushNotifications(): Promise<void> {
     throw this.unimplemented('Not implemented on web.');
   }
 
-  async unregister(): Promise<void> {
+  async unregisterFromPushNotifications(): Promise<void> {
     throw this.unimplemented('Not implemented on web.');
   }
 }

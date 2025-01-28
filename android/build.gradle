@@ -55,6 +55,7 @@ dependencies {
     implementation "androidx.appcompat:appcompat:$androidxAppCompatVersion"
     implementation("com.google.firebase:firebase-messaging")
     implementation "com.google.firebase:firebase-messaging:$firebaseMessagingVersion"
+    implementation 'org.java-websocket:Java-WebSocket:1.5.1'
     testImplementation "junit:junit:$junitVersion"
     androidTestImplementation "androidx.test.ext:junit:$androidxJunitVersion"
     androidTestImplementation "androidx.test.espresso:espresso-core:$androidxEspressoCoreVersion"

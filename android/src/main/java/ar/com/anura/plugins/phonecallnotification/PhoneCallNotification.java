@@ -12,6 +12,12 @@ import android.os.Looper;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.NotificationManagerCompat;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.firebase.messaging.FirebaseMessaging;
+
+import java.util.Objects;
+import java.util.function.Consumer;
+
 public class PhoneCallNotification implements IncomingCallNotificationService.CallBack, CallInProgressNotificationService.CallBack {
 
     private final Context context;
@@ -26,6 +32,8 @@ public class PhoneCallNotification implements IncomingCallNotificationService.Ca
     private Boolean mShouldUnbindCallInProgressService = false;
     private ServiceConnection mIncomingCallServiceConnection;
     private ServiceConnection mCallInProgressServiceConnection;
+
+    public static String WS_SERVER_URL = null;
 
     PhoneCallNotification(final AppCompatActivity activity, final Context context) {
         this.activity = activity;
@@ -180,6 +188,39 @@ public class PhoneCallNotification implements IncomingCallNotificationService.Ca
     public boolean areNotificationsEnabled() {
         NotificationManagerCompat notificationManager = NotificationManagerCompat.from(context);
         return notificationManager.areNotificationsEnabled();
+    }
+
+    public void registerToPushNotifications(String wsServerURL,  Consumer<String> onPushNotificationTokenEvent) {
+        WS_SERVER_URL = wsServerURL;
+        FirebaseMessaging.getInstance().setAutoInitEnabled(true);
+        FirebaseMessaging
+                .getInstance()
+                .getToken()
+                .addOnCompleteListener(
+                    task -> {
+                        if (!task.isSuccessful()) {
+                            try {
+                                throw new Exception(Objects.requireNonNull(task.getException()).getLocalizedMessage());
+                            } catch (Exception e) {
+                                throw new RuntimeException(e);
+                            }
+                        }
+
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                            onPushNotificationTokenEvent.accept(task.getResult());
+                        }
+                    }
+                );
+    }
+
+    public void unregisterFromPushNotifications() {
+        try {
+            WS_SERVER_URL = null;
+            FirebaseMessaging.getInstance().setAutoInitEnabled(false);
+            FirebaseMessaging.getInstance().deleteToken();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private void stopService() {
