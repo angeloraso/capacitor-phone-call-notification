@@ -31,14 +31,13 @@ public class PhoneCallNotificationPlugin extends Plugin {
 
     public static Bridge staticBridge = null;
 
-    private PhoneCallNotification phoneCallNotification;
+    private static boolean isAppInForeground = false;
 
     static final String PHONE_CALL_NOTIFICATIONS = "display";
 
     public void load() {
-        AppCompatActivity activity = getActivity();
-        Context context = getContext();
-        phoneCallNotification = new PhoneCallNotification(activity, context);
+        staticBridge = this.bridge;
+        PhoneCallNotification.initialize(getActivity());
     }
 
     private void onPhoneCallNotificationEvent(String response) {
@@ -95,13 +94,7 @@ public class PhoneCallNotificationPlugin extends Plugin {
                 return;
             }
 
-            String serverURL = call.getString("serverURL");
-            if (serverURL == null) {
-                call.reject("Phone call notification plugin error: server URL is required");
-                return;
-            }
-
-            phoneCallNotification.registerToPushNotifications(serverURL, this::onPushNotificationTokenEvent);
+          PhoneCallNotification.registerToPushNotifications(getSettings(call), this::onPushNotificationTokenEvent);
             call.resolve();
         } catch (Exception exception) {
             call.reject(exception.getMessage());
@@ -116,7 +109,7 @@ public class PhoneCallNotificationPlugin extends Plugin {
                 return;
             }
 
-            phoneCallNotification.unregisterFromPushNotifications();
+          PhoneCallNotification.unregisterFromPushNotifications();
             call.resolve();
         } catch (Exception exception) {
             call.reject(exception.getMessage());
@@ -144,7 +137,7 @@ public class PhoneCallNotificationPlugin extends Plugin {
     }
 
     public void showIncomingCallNotification(NotificationSettings settings) {
-        phoneCallNotification.showIncomingCallNotification(
+      PhoneCallNotification.showIncomingCallNotification(
                 settings,
                 new IncomingCallNotificationListener() {
                     @Override
@@ -171,7 +164,7 @@ public class PhoneCallNotificationPlugin extends Plugin {
     }
 
     public void showCallInProgressNotification(NotificationSettings settings) {
-        phoneCallNotification.showCallInProgressNotification(
+      PhoneCallNotification.showCallInProgressNotification(
                 settings,
                 new CallInProgressNotificationListener() {
                     @Override
@@ -206,9 +199,9 @@ public class PhoneCallNotificationPlugin extends Plugin {
         }
 
         if (type.equals("incoming")) {
-            phoneCallNotification.hideIncomingCall();
+          PhoneCallNotification.hideIncomingCall();
         } else if (type.equals("inProgress")) {
-            phoneCallNotification.hideCallInProgress();
+          PhoneCallNotification.hideCallInProgress();
         }
 
         call.resolve();
@@ -246,7 +239,7 @@ public class PhoneCallNotificationPlugin extends Plugin {
     }
 
     private String getNotificationPermissionText() {
-        if (phoneCallNotification.areNotificationsEnabled()) {
+        if (PhoneCallNotification.areNotificationsEnabled()) {
             return "granted";
         } else {
             return "denied";
@@ -379,12 +372,22 @@ public class PhoneCallNotificationPlugin extends Plugin {
         return settings;
     }
 
+    public static boolean isAppInForeground() {
+        return isAppInForeground;
+    }
+
     /**
      * Called when the activity will start interacting with the user.
      */
     @Override
     public void handleOnResume() {
-        phoneCallNotification.onResume();
+      PhoneCallNotification.onResume();
+        isAppInForeground = true;
+    }
+
+    @Override
+    public void handleOnPause() {
+        isAppInForeground = false;
     }
 
     /**
@@ -392,6 +395,7 @@ public class PhoneCallNotificationPlugin extends Plugin {
      */
     @Override
     public void handleOnDestroy() {
-        phoneCallNotification.onDestroy();
+      PhoneCallNotification.onDestroy();
+        isAppInForeground = false;
     }
 }
