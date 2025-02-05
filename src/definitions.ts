@@ -37,8 +37,8 @@ export interface PhoneCallNotificationPlugin {
   hide(data: { type: NotificationType }): Promise<void>;
   checkPermissions(): Promise<PermissionStatus>;
   requestPermissions(): Promise<PermissionStatus>;
-  registerToPushNotifications(data?: Partial<NotificationSettings>): Promise<void>;
-  unregisterFromPushNotifications(): Promise<void>;
+  registerPushNotifications(data?: Partial<NotificationSettings>): Promise<void>;
+  unregisterPushNotifications(): Promise<void>;
   addListener(
     eventName: 'response',
     listenerFunc: (data: { response: NotificationResponse }) => void,

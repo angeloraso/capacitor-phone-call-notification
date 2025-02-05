@@ -167,7 +167,7 @@ public class PhoneCallNotification implements IncomingCallNotificationService.Ca
     return notificationManager.areNotificationsEnabled();
   }
 
-  public static void registerToPushNotifications(NotificationSettings settings, Consumer<String> onPushNotificationTokenEvent) {
+  public static void registerPushNotifications(NotificationSettings settings, Consumer<String> onPushNotificationTokenEvent) {
     FirebaseMessaging.getInstance().setAutoInitEnabled(true);
     FirebaseMessaging
       .getInstance()
@@ -189,7 +189,7 @@ public class PhoneCallNotification implements IncomingCallNotificationService.Ca
       );
   }
 
-  public static void unregisterFromPushNotifications() {
+  public static void unregisterPushNotifications() {
     try {
       pushNotificationSettings = null;
       FirebaseMessaging.getInstance().setAutoInitEnabled(false);

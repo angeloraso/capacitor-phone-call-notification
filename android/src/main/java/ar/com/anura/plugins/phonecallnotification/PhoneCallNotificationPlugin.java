@@ -1,11 +1,7 @@
 package ar.com.anura.plugins.phonecallnotification;
 
 import android.Manifest;
-import android.content.Context;
 import android.os.Build;
-
-import androidx.appcompat.app.AppCompatActivity;
-
 import com.getcapacitor.Bridge;
 import com.getcapacitor.JSObject;
 import com.getcapacitor.PermissionState;
@@ -87,14 +83,14 @@ public class PhoneCallNotificationPlugin extends Plugin {
     }
 
     @PluginMethod
-    public void registerToPushNotifications(PluginCall call) {
+    public void registerPushNotifications(PluginCall call) {
         try {
             if (getActivity().isFinishing()) {
                 call.reject("Phone call notification plugin error: App is finishing");
                 return;
             }
 
-          PhoneCallNotification.registerToPushNotifications(getSettings(call), this::onPushNotificationTokenEvent);
+          PhoneCallNotification.registerPushNotifications(getSettings(call), this::onPushNotificationTokenEvent);
             call.resolve();
         } catch (Exception exception) {
             call.reject(exception.getMessage());
@@ -102,14 +98,14 @@ public class PhoneCallNotificationPlugin extends Plugin {
     }
 
     @PluginMethod
-    public void unregisterFromPushNotifications(PluginCall call) {
+    public void unregisterPushNotifications(PluginCall call) {
         try {
             if (getActivity().isFinishing()) {
                 call.reject("Phone call notification plugin error: App is finishing");
                 return;
             }
 
-          PhoneCallNotification.unregisterFromPushNotifications();
+          PhoneCallNotification.unregisterPushNotifications();
             call.resolve();
         } catch (Exception exception) {
             call.reject(exception.getMessage());

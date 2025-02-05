@@ -18,11 +18,11 @@ export class PhoneCallNotificationWeb extends WebPlugin implements PhoneCallNoti
     throw this.unimplemented('Not implemented on web.');
   }
 
-  async registerToPushNotifications(): Promise<void> {
+  async registerPushNotifications(): Promise<void> {
     throw this.unimplemented('Not implemented on web.');
   }
 
-  async unregisterFromPushNotifications(): Promise<void> {
+  async unregisterPushNotifications(): Promise<void> {
     throw this.unimplemented('Not implemented on web.');
   }
 }

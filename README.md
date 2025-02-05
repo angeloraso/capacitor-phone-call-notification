@@ -17,8 +17,8 @@ npx cap sync
 * [`hide(...)`](#hide)
 * [`checkPermissions()`](#checkpermissions)
 * [`requestPermissions()`](#requestpermissions)
-* [`registerToPushNotifications(...)`](#registertopushnotifications)
-* [`unregisterFromPushNotifications()`](#unregisterfrompushnotifications)
+* [`registerPushNotifications(...)`](#registerpushnotifications)
+* [`unregisterPushNotifications()`](#unregisterpushnotifications)
 * [`addListener('response', ...)`](#addlistenerresponse-)
 * [`addListener('pushNotificationToken', ...)`](#addlistenerpushnotificationtoken-)
 * [`addListener('pushNotificationData', ...)`](#addlistenerpushnotificationdata-)
@@ -79,10 +79,10 @@ requestPermissions() => Promise<PermissionStatus>
 --------------------
 
 
-### registerToPushNotifications(...)
+### registerPushNotifications(...)
 
 ```typescript
-registerToPushNotifications(data?: Partial<NotificationSettings> | undefined) => Promise<void>
+registerPushNotifications(data?: Partial<NotificationSettings> | undefined) => Promise<void>
 ```
 
 | Param      | Type                                                                                                        |
@@ -92,10 +92,10 @@ registerToPushNotifications(data?: Partial<NotificationSettings> | undefined) =>
 --------------------
 
 
-### unregisterFromPushNotifications()
+### unregisterPushNotifications()
 
 ```typescript
-unregisterFromPushNotifications() => Promise<void>
+unregisterPushNotifications() => Promise<void>
 ```
 
 --------------------
