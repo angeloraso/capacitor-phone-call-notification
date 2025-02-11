@@ -64,7 +64,7 @@ public class PhoneCallNotificationPlugin extends Plugin {
         }
     }
 
-    public static void onRemoteMessage(RemoteMessage remoteMessage) {
+    public static void onMessageReceived(RemoteMessage remoteMessage) {
         PhoneCallNotificationPlugin pushPlugin = PhoneCallNotificationPlugin.getPhoneCallNotificationInstance();
         if (pushPlugin != null ) {
             pushPlugin.onPushNotificationDataEvent(remoteMessage.getData());

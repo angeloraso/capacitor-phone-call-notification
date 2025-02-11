@@ -13,72 +13,61 @@ public class PushNotificationService extends FirebaseMessagingService {
     private static final String TAG = "PushNotificationService";
 
     @Override
-    public void onMessageReceived(@NonNull RemoteMessage remoteMessage) {
-        super.onMessageReceived(remoteMessage);
-
-        String message = remoteMessageToString(remoteMessage);
-        Log.d(TAG, "FCM remote message: " + message);
-
+    public void onNewToken(@NonNull final String token) {
+      super.onNewToken(token);
+      Log.d(TAG, "[Push Notification] Refreshed token: " + token);
       if (PhoneCallNotificationPlugin.isAppInForeground()) {
-        PhoneCallNotificationPlugin.onRemoteMessage(remoteMessage);
-      } else {
-        NotificationSettings settings = PhoneCallNotification.getPushNotificationSettings();
-        settings.setCallerName("Push notification");
-        settings.setCallerNumber("2213456789");
-
-        if (!PhoneCallNotificationPlugin.isAppInForeground()) {
-          PhoneCallNotification.showIncomingCallNotification(
-            PhoneCallNotification.getPushNotificationSettings(),
-            new IncomingCallNotificationListener() {
-              @Override
-              public void onTap() {
-                Log.d(TAG, "Push notification: TAP");
-              }
-
-              @Override
-              public void onDecline() {
-                Log.d(TAG, "Push notification: DECLINE");
-              }
-
-              @Override
-              public void onAnswer() {
-                Log.d(TAG, "Push notification: ANSWER");
-              }
-
-              @Override
-              public void onTerminate() {
-                Log.d(TAG, "Push notification: TERMINATE");
-              }
-            });
-        }
+        Runnable runnable = () -> PhoneCallNotificationPlugin.onNewToken(token);
+        AndroidDispatcher.dispatchOnUIThread(runnable);
       }
     }
 
     @Override
-    public void onNewToken(@NonNull String token) {
-        super.onNewToken(token);
-        Log.d(TAG, "FCM token: " + token);
-        PhoneCallNotificationPlugin.onNewToken(token);
+    public void onMessageReceived(@NonNull RemoteMessage remoteMessage) {
+        super.onMessageReceived(remoteMessage);
+        Log.d(TAG, "[Push Notification] Remote message received: " + remoteMessageToString(remoteMessage));
+        if (PhoneCallNotificationPlugin.isAppInForeground()) {
+          Runnable runnable = () -> PhoneCallNotificationPlugin.onMessageReceived(remoteMessage);
+          AndroidDispatcher.dispatchOnUIThread(runnable);
+        } else {
+          Runnable runnable = () -> {
+            
+          };
+          AndroidDispatcher.dispatchOnUIThread(runnable);
+      }
     }
 
+    private Class<? extends AppCompatActivity> getMainActivityClass(Context context) {
+      try {
+        String packageName = context.getPackageName();
+        Class<?> mainActivityClass = Class.forName(packageName + ".MainActivity");
+        if (AppCompatActivity.class.isAssignableFrom(mainActivityClass)) {
+          return mainActivityClass.asSubclass(AppCompatActivity.class);
+        } else {
+          throw new RuntimeException("MainActivity does not extend AppCompatActivity.");
+        }
+      } catch (ClassNotFoundException e) {
+        throw new RuntimeException("Unable to resolve MainActivity class.");
+      }
+    }
 
-  private String remoteMessageToString(RemoteMessage remoteMessage) {
-    StringBuilder builder = new StringBuilder();
-    builder.append("From [");
-    builder.append(remoteMessage.getFrom());
-    builder.append("], Message Id [");
-    builder.append(remoteMessage.getMessageId());
-    builder.append("], TTL [");
-    builder.append(remoteMessage.getTtl());
-    builder.append("], Original Priority [");
-    builder.append(remoteMessage.getOriginalPriority());
-    builder.append("], Received Priority [");
-    builder.append(remoteMessage.getPriority());
-    builder.append("], Sent Time [");
-    builder.append(remoteMessage.getSentTime());
-    builder.append("], Data [");
-    builder.append(new JSONObject(remoteMessage.getData()).toString());
-    builder.append("]");
-    return builder.toString();
-  }
+    private String remoteMessageToString(RemoteMessage remoteMessage) {
+      StringBuilder builder = new StringBuilder();
+      builder.append("From [");
+      builder.append(remoteMessage.getFrom());
+      builder.append("], Message Id [");
+      builder.append(remoteMessage.getMessageId());
+      builder.append("], TTL [");
+      builder.append(remoteMessage.getTtl());
+      builder.append("], Original Priority [");
+      builder.append(remoteMessage.getOriginalPriority());
+      builder.append("], Received Priority [");
+      builder.append(remoteMessage.getPriority());
+      builder.append("], Sent Time [");
+      builder.append(remoteMessage.getSentTime());
+      builder.append("], Data [");
+      builder.append(new JSONObject(remoteMessage.getData()).toString());
+      builder.append("]");
+      return builder.toString();
+    }
 }
