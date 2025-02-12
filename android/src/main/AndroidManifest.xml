@@ -76,6 +76,11 @@
           </intent-filter>
       </service>
 
+      <receiver
+        android:name=".PushNotificationActionReceiver"
+        android:exported="false">
+      </receiver>
+
     </application>
 
 </manifest>

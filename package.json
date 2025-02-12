@@ -1,6 +1,6 @@
 {
   "name": "@anuradev/capacitor-phone-call-notification",
-  "version": "7.4.6",
+  "version": "7.4.7",
   "description": "Capacitor plugin to create phone call notifications",
   "main": "dist/plugin.cjs.js",
   "module": "dist/esm/index.js",

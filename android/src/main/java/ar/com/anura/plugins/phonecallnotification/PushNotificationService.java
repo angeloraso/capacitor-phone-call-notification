@@ -84,7 +84,7 @@ public class PushNotificationService extends FirebaseMessagingService {
       .setCategory(Notification.CATEGORY_CALL)
       .setWhen(System.currentTimeMillis())
       .setVisibility(Notification.VISIBILITY_PUBLIC)
-      .setAutoCancel(false)
+      .setAutoCancel(true)
       .setContentIntent(getPendingIntent(context,TAP_ACTION))
       .setColor(Color.parseColor(settings.getColor()))
       .setLocalOnly(true);
@@ -121,20 +121,6 @@ public class PushNotificationService extends FirebaseMessagingService {
       notificationBuilder.setSmallIcon(getApplicationContext().getApplicationInfo().icon);
       notificationBuilder.setContentText(remoteMessage.getData().get("from_display_name"));
 
-      Notification.Action answerAction = new Notification.Action.Builder(
-        Icon.createWithResource(this, getIconResId("answer", "drawable")),
-        Html.fromHtml(
-          "<font color=\"" +
-            Color.parseColor(settings.getAnswerButtonColor()) +
-            "\">" +
-            settings.getAnswerButtonText() +
-            "</font>",
-          Html.FROM_HTML_MODE_LEGACY
-        ),
-        getPendingIntent(context, ANSWER_ACTION)
-      )
-        .build();
-
       Notification.Action declineAction = new Notification.Action.Builder(
         Icon.createWithResource(this, getIconResId("decline", "drawable")),
         Html.fromHtml(
@@ -146,8 +132,20 @@ public class PushNotificationService extends FirebaseMessagingService {
           Html.FROM_HTML_MODE_LEGACY
         ),
         getPendingIntent(context, DECLINE_ACTION)
-      )
-        .build();
+      ).build();
+
+      Notification.Action answerAction = new Notification.Action.Builder(
+        Icon.createWithResource(this, getIconResId("answer", "drawable")),
+        Html.fromHtml(
+          "<font color=\"" +
+            Color.parseColor(settings.getAnswerButtonColor()) +
+            "\">" +
+            settings.getAnswerButtonText() +
+            "</font>",
+          Html.FROM_HTML_MODE_LEGACY
+        ),
+        getPendingIntent(context, ANSWER_ACTION)
+      ).build();
 
       notificationBuilder.setActions(declineAction, answerAction);
     }
@@ -157,7 +155,7 @@ public class PushNotificationService extends FirebaseMessagingService {
     }
 
     Notification notification = notificationBuilder.build();
-    notificationManager.notify(1001, notification);
+    notificationManager.notify(123456789, notification);
   }
 
   @NonNull
@@ -174,12 +172,16 @@ public class PushNotificationService extends FirebaseMessagingService {
   }
 
   private PendingIntent getPendingIntent(Context context, String action) {
-    Class<? extends AppCompatActivity> mainActivity = getMainActivityClass(context);
-    Intent intent = new Intent(this, mainActivity);
-    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-    intent.putExtra("response", action);
-    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-    return PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+    Intent intent = new Intent(context, PushNotificationActionReceiver.class);
+    intent.putExtra("notificationId", 123456789);
+    intent.setAction(action);
+
+    return PendingIntent.getBroadcast(
+      context,
+      0,
+      intent,
+      PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE
+    );
   }
 
   private int getIconResId(String icon, String type) {
@@ -188,21 +190,6 @@ public class PushNotificationService extends FirebaseMessagingService {
 
     return res.getIdentifier(icon, type, pkgName);
   }
-
-  private Class<? extends AppCompatActivity> getMainActivityClass(Context context) {
-    try {
-      String packageName = context.getPackageName();
-      Class<?> mainActivityClass = Class.forName(packageName + ".MainActivity");
-      if (AppCompatActivity.class.isAssignableFrom(mainActivityClass)) {
-        return mainActivityClass.asSubclass(AppCompatActivity.class);
-      } else {
-        throw new RuntimeException("MainActivity does not extend AppCompatActivity.");
-      }
-    } catch (ClassNotFoundException e) {
-      throw new RuntimeException("Unable to resolve MainActivity class.");
-    }
-  }
-
 
     private String remoteMessageToString(RemoteMessage remoteMessage) {
     StringBuilder builder = new StringBuilder();

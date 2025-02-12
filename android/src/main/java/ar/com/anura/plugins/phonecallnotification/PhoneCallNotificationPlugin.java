@@ -34,6 +34,8 @@ public class PhoneCallNotificationPlugin extends Plugin {
 
     static final String PHONE_CALL_NOTIFICATIONS = "display";
 
+    static String pushNotificationResponse = null;
+
     public void load() {
         staticBridge = this.bridge;
         PhoneCallNotification.initialize(getActivity());
@@ -105,8 +107,9 @@ public class PhoneCallNotificationPlugin extends Plugin {
         Intent intent = getActivity().getIntent();
         Bundle extras = intent.getExtras();
         JSObject res = new JSObject();
-        if (extras != null) {
+        if (extras != null && pushNotificationResponse == null) {
             String response = (String) extras.get("response");
+            pushNotificationResponse = response;
             res.put("response", response);
         } else {
             res.put("response", "");
