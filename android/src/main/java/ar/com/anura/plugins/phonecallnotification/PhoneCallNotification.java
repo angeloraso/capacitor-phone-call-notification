@@ -90,10 +90,6 @@ public class PhoneCallNotification implements IncomingCallNotificationService.Ca
     }
   }
 
-  public static NotificationSettings getPushNotificationSettings() {
-    return pushNotificationSettings;
-  }
-
   public static void showIncomingCallNotification(final NotificationSettings settings, final IncomingCallNotificationListener listener) {
     mSettings = settings;
     incomingCallNotificationListener = listener;

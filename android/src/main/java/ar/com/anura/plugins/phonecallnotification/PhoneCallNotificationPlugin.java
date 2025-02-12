@@ -90,7 +90,7 @@ public class PhoneCallNotificationPlugin extends Plugin {
                 return;
             }
 
-          PhoneCallNotification.registerPushNotifications(getSettings(call), this::onPushNotificationTokenEvent);
+            PhoneCallNotification.registerPushNotifications(getSettings(call), this::onPushNotificationTokenEvent);
             call.resolve();
         } catch (Exception exception) {
             call.reject(exception.getMessage());
@@ -105,7 +105,7 @@ public class PhoneCallNotificationPlugin extends Plugin {
                 return;
             }
 
-          PhoneCallNotification.unregisterPushNotifications();
+            PhoneCallNotification.unregisterPushNotifications();
             call.resolve();
         } catch (Exception exception) {
             call.reject(exception.getMessage());
@@ -195,9 +195,9 @@ public class PhoneCallNotificationPlugin extends Plugin {
         }
 
         if (type.equals("incoming")) {
-          PhoneCallNotification.hideIncomingCall();
+            PhoneCallNotification.hideIncomingCall();
         } else if (type.equals("inProgress")) {
-          PhoneCallNotification.hideCallInProgress();
+            PhoneCallNotification.hideCallInProgress();
         }
 
         call.resolve();
@@ -377,7 +377,7 @@ public class PhoneCallNotificationPlugin extends Plugin {
      */
     @Override
     public void handleOnResume() {
-      PhoneCallNotification.onResume();
+        PhoneCallNotification.onResume();
         isAppInForeground = true;
     }
 
@@ -391,7 +391,7 @@ public class PhoneCallNotificationPlugin extends Plugin {
      */
     @Override
     public void handleOnDestroy() {
-      PhoneCallNotification.onDestroy();
+        PhoneCallNotification.onDestroy();
         isAppInForeground = false;
     }
 }
