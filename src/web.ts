@@ -10,6 +10,10 @@ export class PhoneCallNotificationWeb extends WebPlugin implements PhoneCallNoti
     throw this.unimplemented('Not implemented on web.');
   }
 
+  async getPushNotificationResponse(): Promise<{response: string}> {
+    throw this.unimplemented('Not implemented on web.');
+  }
+
   async requestPermissions(): Promise<PermissionStatus> {
     throw this.unimplemented('Not implemented on web.');
   }

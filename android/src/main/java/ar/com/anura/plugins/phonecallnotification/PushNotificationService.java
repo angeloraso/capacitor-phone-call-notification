@@ -18,9 +18,11 @@ import android.provider.Settings;
 import android.text.Html;
 import android.util.Log;
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationManagerCompat;
 
+import com.getcapacitor.BridgeActivity;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
@@ -71,9 +73,9 @@ public class PushNotificationService extends FirebaseMessagingService {
     notificationChannel.setSound(Settings.System.DEFAULT_NOTIFICATION_URI, null);
     notificationManager.createNotificationChannel(notificationChannel);
 
-    String TAP_ACTION = "tap_incoming_call_notification";
-    String DECLINE_ACTION = "decline_incoming_call";
-    String ANSWER_ACTION = "answer_incoming_call";
+    String TAP_ACTION = "tap";
+    String DECLINE_ACTION = "decline";
+    String ANSWER_ACTION = "answer";
 
     Notification.Builder notificationBuilder = new Notification.Builder(this, CHANNEL_ID)
       .setContentTitle(settings.getChannelName())
@@ -172,9 +174,11 @@ public class PushNotificationService extends FirebaseMessagingService {
   }
 
   private PendingIntent getPendingIntent(Context context, String action) {
-    Intent intent = new Intent(context, IncomingCallNotificationActivity.class);
+    Class<? extends AppCompatActivity> mainActivity = getMainActivityClass(context);
+    Intent intent = new Intent(this, mainActivity);
+    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+    intent.putExtra("response", action);
     intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-    intent.setAction(action);
     return PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
   }
 
@@ -185,7 +189,22 @@ public class PushNotificationService extends FirebaseMessagingService {
     return res.getIdentifier(icon, type, pkgName);
   }
 
-  private String remoteMessageToString(RemoteMessage remoteMessage) {
+  private Class<? extends AppCompatActivity> getMainActivityClass(Context context) {
+    try {
+      String packageName = context.getPackageName();
+      Class<?> mainActivityClass = Class.forName(packageName + ".MainActivity");
+      if (AppCompatActivity.class.isAssignableFrom(mainActivityClass)) {
+        return mainActivityClass.asSubclass(AppCompatActivity.class);
+      } else {
+        throw new RuntimeException("MainActivity does not extend AppCompatActivity.");
+      }
+    } catch (ClassNotFoundException e) {
+      throw new RuntimeException("Unable to resolve MainActivity class.");
+    }
+  }
+
+
+    private String remoteMessageToString(RemoteMessage remoteMessage) {
     StringBuilder builder = new StringBuilder();
     builder.append("From [");
     builder.append(remoteMessage.getFrom());

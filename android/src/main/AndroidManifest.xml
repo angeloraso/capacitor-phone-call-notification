@@ -76,13 +76,6 @@
           </intent-filter>
       </service>
 
-      <receiver
-        android:name=".PushNotificationReceiver"
-        android:exported="false">
-        <intent-filter>
-          <action android:name="ar.com.anura.plugins.phonecallnotification.action.PUSH_NOTIFICATION_RECEIVED"/>
-        </intent-filter>
-      </receiver>
     </application>
 
 </manifest>

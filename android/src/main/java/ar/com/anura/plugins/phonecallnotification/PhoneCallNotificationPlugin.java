@@ -1,7 +1,10 @@
 package ar.com.anura.plugins.phonecallnotification;
 
 import android.Manifest;
+import android.content.Intent;
 import android.os.Build;
+import android.os.Bundle;
+
 import com.getcapacitor.Bridge;
 import com.getcapacitor.JSObject;
 import com.getcapacitor.PermissionState;
@@ -98,6 +101,21 @@ public class PhoneCallNotificationPlugin extends Plugin {
     }
 
     @PluginMethod
+    public void getPushNotificationResponse(PluginCall call) {
+        Intent intent = getActivity().getIntent();
+        Bundle extras = intent.getExtras();
+        JSObject res = new JSObject();
+        if (extras != null) {
+            String response = (String) extras.get("response");
+            res.put("response", response);
+        } else {
+            res.put("response", "");
+        }
+
+        call.resolve(res);
+    }
+
+    @PluginMethod
     public void unregisterPushNotifications(PluginCall call) {
         try {
             if (getActivity().isFinishing()) {
@@ -133,7 +151,7 @@ public class PhoneCallNotificationPlugin extends Plugin {
     }
 
     public void showIncomingCallNotification(NotificationSettings settings) {
-      PhoneCallNotification.showIncomingCallNotification(
+        PhoneCallNotification.showIncomingCallNotification(
                 settings,
                 new IncomingCallNotificationListener() {
                     @Override
@@ -160,7 +178,7 @@ public class PhoneCallNotificationPlugin extends Plugin {
     }
 
     public void showCallInProgressNotification(NotificationSettings settings) {
-      PhoneCallNotification.showCallInProgressNotification(
+        PhoneCallNotification.showCallInProgressNotification(
                 settings,
                 new CallInProgressNotificationListener() {
                     @Override

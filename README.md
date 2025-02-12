@@ -16,6 +16,7 @@ npx cap sync
 * [`show(...)`](#show)
 * [`hide(...)`](#hide)
 * [`checkPermissions()`](#checkpermissions)
+* [`getAction()`](#getaction)
 * [`requestPermissions()`](#requestpermissions)
 * [`registerPushNotifications(...)`](#registerpushnotifications)
 * [`unregisterPushNotifications()`](#unregisterpushnotifications)
@@ -64,6 +65,17 @@ checkPermissions() => Promise<PermissionStatus>
 ```
 
 **Returns:** <code>Promise&lt;<a href="#permissionstatus">PermissionStatus</a>&gt;</code>
+
+--------------------
+
+
+### getAction()
+
+```typescript
+getAction() => Promise<{ action: string; }>
+```
+
+**Returns:** <code>Promise&lt;{ action: string; }&gt;</code>
 
 --------------------
 
