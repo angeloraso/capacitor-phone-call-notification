@@ -101,16 +101,16 @@ public class PhoneCallNotificationPlugin extends Plugin {
     }
 
     @PluginMethod
-    public void getPushNotificationResponse(PluginCall call) {
-      SharedPreferences sharedPreferences = getContext().getSharedPreferences("push_notification_storage", Context.MODE_PRIVATE);
-      String callId = sharedPreferences.getString("callId", "");
-      String response = sharedPreferences.getString("response", "");
+    public void getPushNotificationData(PluginCall call) {
+        SharedPreferences sharedPreferences = getContext().getSharedPreferences("push_notification_storage", Context.MODE_PRIVATE);
+        String callId = sharedPreferences.getString("callId", "");
+        String response = sharedPreferences.getString("response", "");
 
-      JSObject res = new JSObject();
-      res.put("callId", callId);
-      res.put("response", response);
+        JSObject res = new JSObject();
+        res.put("callId", callId);
+        res.put("response", response);
 
-      call.resolve(res);
+        call.resolve(res);
     }
 
     @PluginMethod
