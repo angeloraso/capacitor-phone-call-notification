@@ -16,7 +16,7 @@ npx cap sync
 * [`show(...)`](#show)
 * [`hide(...)`](#hide)
 * [`checkPermissions()`](#checkpermissions)
-* [`getPushNotificationResponse()`](#getpushnotificationresponse)
+* [`getPushNotificationData()`](#getpushnotificationdata)
 * [`requestPermissions()`](#requestpermissions)
 * [`registerPushNotifications(...)`](#registerpushnotifications)
 * [`unregisterPushNotifications()`](#unregisterpushnotifications)
@@ -69,13 +69,13 @@ checkPermissions() => Promise<PermissionStatus>
 --------------------
 
 
-### getPushNotificationResponse()
+### getPushNotificationData()
 
 ```typescript
-getPushNotificationResponse() => Promise<{ response: string; }>
+getPushNotificationData() => Promise<{ response: string; callId: string; }>
 ```
 
-**Returns:** <code>Promise&lt;{ response: string; }&gt;</code>
+**Returns:** <code>Promise&lt;{ response: string; callId: string; }&gt;</code>
 
 --------------------
 

@@ -1,9 +1,9 @@
 package ar.com.anura.plugins.phonecallnotification;
 
 import android.Manifest;
-import android.content.Intent;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Build;
-import android.os.Bundle;
 
 import com.getcapacitor.Bridge;
 import com.getcapacitor.JSObject;
@@ -33,8 +33,6 @@ public class PhoneCallNotificationPlugin extends Plugin {
     private static boolean isAppInForeground = false;
 
     static final String PHONE_CALL_NOTIFICATIONS = "display";
-
-    static String pushNotificationResponse = null;
 
     public void load() {
         staticBridge = this.bridge;
@@ -104,18 +102,15 @@ public class PhoneCallNotificationPlugin extends Plugin {
 
     @PluginMethod
     public void getPushNotificationResponse(PluginCall call) {
-        Intent intent = getActivity().getIntent();
-        Bundle extras = intent.getExtras();
-        JSObject res = new JSObject();
-        if (extras != null && pushNotificationResponse == null) {
-            String response = (String) extras.get("response");
-            pushNotificationResponse = response;
-            res.put("response", response);
-        } else {
-            res.put("response", "");
-        }
+      SharedPreferences sharedPreferences = getContext().getSharedPreferences("push_notification_storage", Context.MODE_PRIVATE);
+      String callId = sharedPreferences.getString("callId", "");
+      String response = sharedPreferences.getString("response", "");
 
-        call.resolve(res);
+      JSObject res = new JSObject();
+      res.put("callId", callId);
+      res.put("response", response);
+
+      call.resolve(res);
     }
 
     @PluginMethod

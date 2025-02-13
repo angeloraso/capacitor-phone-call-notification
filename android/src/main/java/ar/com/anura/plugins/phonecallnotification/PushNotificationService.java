@@ -13,20 +13,19 @@ import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.drawable.Icon;
 import android.os.Build;
-import android.os.PowerManager;
 import android.provider.Settings;
 import android.text.Html;
 import android.util.Log;
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationManagerCompat;
 
-import com.getcapacitor.BridgeActivity;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
 import org.json.JSONObject;
+
+import java.util.Map;
 
 public class PushNotificationService extends FirebaseMessagingService {
 
@@ -51,13 +50,7 @@ public class PushNotificationService extends FirebaseMessagingService {
         runnable = () -> PhoneCallNotificationPlugin.onMessageReceived(remoteMessage);
       } else {
         runnable = () -> {
-          PowerManager mPowerManager = (PowerManager) getApplicationContext().getSystemService(Context.POWER_SERVICE);
-          PowerManager.WakeLock wakeLock = mPowerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, TAG + ":Push Notification Processing");
-          wakeLock.acquire(20000L); // 20 seconds
-
           showIncomingCallNotification(getApplicationContext(), remoteMessage);
-
-          wakeLock.release();
         };
       }
       AndroidDispatcher.dispatchOnUIThread(runnable);
@@ -76,6 +69,10 @@ public class PushNotificationService extends FirebaseMessagingService {
     String TAP_ACTION = "tap";
     String DECLINE_ACTION = "decline";
     String ANSWER_ACTION = "answer";
+    int NOTIFICATION_ID = 123456789;
+
+    Map<String, String> data = remoteMessage.getData();
+    String callId = data.get("call-id");
 
     Notification.Builder notificationBuilder = new Notification.Builder(this, CHANNEL_ID)
       .setContentTitle(settings.getChannelName())
@@ -85,7 +82,7 @@ public class PushNotificationService extends FirebaseMessagingService {
       .setWhen(System.currentTimeMillis())
       .setVisibility(Notification.VISIBILITY_PUBLIC)
       .setAutoCancel(true)
-      .setContentIntent(getPendingIntent(context,TAP_ACTION))
+      .setContentIntent(getPendingIntent(context, NOTIFICATION_ID, TAP_ACTION, callId))
       .setColor(Color.parseColor(settings.getColor()))
       .setLocalOnly(true);
 
@@ -110,7 +107,7 @@ public class PushNotificationService extends FirebaseMessagingService {
 
       Notification.CallStyle notificationStyle;
       notificationStyle =
-        Notification.CallStyle.forIncomingCall(caller, getPendingIntent(context, DECLINE_ACTION), getPendingIntent(context, ANSWER_ACTION));
+        Notification.CallStyle.forIncomingCall(caller, getPendingIntent(context, NOTIFICATION_ID, DECLINE_ACTION, callId), getPendingIntent(context, NOTIFICATION_ID, ANSWER_ACTION, callId));
 
       notificationStyle.setAnswerButtonColorHint(Color.parseColor(settings.getAnswerButtonColor()));
       notificationStyle.setDeclineButtonColorHint(Color.parseColor(settings.getDeclineButtonColor()));
@@ -131,7 +128,7 @@ public class PushNotificationService extends FirebaseMessagingService {
             "</font>",
           Html.FROM_HTML_MODE_LEGACY
         ),
-        getPendingIntent(context, DECLINE_ACTION)
+        getPendingIntent(context, NOTIFICATION_ID, DECLINE_ACTION, callId)
       ).build();
 
       Notification.Action answerAction = new Notification.Action.Builder(
@@ -144,7 +141,7 @@ public class PushNotificationService extends FirebaseMessagingService {
             "</font>",
           Html.FROM_HTML_MODE_LEGACY
         ),
-        getPendingIntent(context, ANSWER_ACTION)
+        getPendingIntent(context, NOTIFICATION_ID, ANSWER_ACTION, callId)
       ).build();
 
       notificationBuilder.setActions(declineAction, answerAction);
@@ -155,7 +152,7 @@ public class PushNotificationService extends FirebaseMessagingService {
     }
 
     Notification notification = notificationBuilder.build();
-    notificationManager.notify(123456789, notification);
+    notificationManager.notify(NOTIFICATION_ID, notification);
   }
 
   @NonNull
@@ -171,9 +168,10 @@ public class PushNotificationService extends FirebaseMessagingService {
     return notificationChannel;
   }
 
-  private PendingIntent getPendingIntent(Context context, String action) {
+  private PendingIntent getPendingIntent(Context context, int notificationId, String action, String callId) {
     Intent intent = new Intent(context, PushNotificationActionReceiver.class);
-    intent.putExtra("notificationId", 123456789);
+    intent.putExtra("notificationId", notificationId);
+    intent.putExtra("callId", callId);
     intent.setAction(action);
 
     return PendingIntent.getBroadcast(

@@ -3,10 +3,13 @@ package ar.com.anura.plugins.phonecallnotification;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.util.Log;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.NotificationManagerCompat;
+
+import java.util.Objects;
 
 
 public class PushNotificationActionReceiver extends BroadcastReceiver {
@@ -20,13 +23,21 @@ public class PushNotificationActionReceiver extends BroadcastReceiver {
     NotificationManagerCompat notificationManager = NotificationManagerCompat.from(context);
     notificationManager.cancel(notificationId);
 
-    Class<? extends AppCompatActivity> mainActivity = getMainActivityClass(context);
-    Intent mainIntent = new Intent(context, mainActivity);
-    mainIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
     String response = intent.getAction();
-    mainIntent.putExtra("response", response);
-    PhoneCallNotificationPlugin.pushNotificationResponse = null;
-    context.startActivity(mainIntent);
+    String callId = intent.getStringExtra("callId");
+
+    SharedPreferences sharedPreferences = context.getSharedPreferences("push_notification_storage", Context.MODE_PRIVATE);
+    SharedPreferences.Editor editor = sharedPreferences.edit();
+    editor.putString("callId", callId);
+    editor.putString("response", response);
+    editor.apply();
+
+    if (Objects.equals(response, "tap") || Objects.equals(response, "answer")) {
+      Class<? extends AppCompatActivity> mainActivity = getMainActivityClass(context);
+      Intent mainIntent = new Intent(context, mainActivity);
+      mainIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+      context.startActivity(mainIntent);
+    }
   }
 
   private Class<? extends AppCompatActivity> getMainActivityClass(Context context) {
