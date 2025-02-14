@@ -76,7 +76,6 @@ public class PushNotificationService extends FirebaseMessagingService {
 
     Notification.Builder notificationBuilder = new Notification.Builder(this, CHANNEL_ID)
       .setContentTitle(settings.getChannelName())
-      .setOngoing(true)
       .setTicker(settings.getChannelName())
       .setCategory(Notification.CATEGORY_CALL)
       .setWhen(System.currentTimeMillis())
@@ -86,7 +85,7 @@ public class PushNotificationService extends FirebaseMessagingService {
       .setColor(Color.parseColor(settings.getColor()))
       .setLocalOnly(true);
 
-    Intent intent = new Intent(context, IncomingCallFullNotificationActivity.class);
+    Intent intent = new Intent(context, PushNotificationFullActivity.class);
     intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
     PendingIntent pendingIntent = PendingIntent.getActivity(
       context,
@@ -169,12 +168,13 @@ public class PushNotificationService extends FirebaseMessagingService {
   }
 
   private PendingIntent getPendingIntent(Context context, int notificationId, String action, String callId) {
-    Intent intent = new Intent(context, PushNotificationActionReceiver.class);
+    Intent intent = new Intent(context, PushNotificationActivity.class);
+    intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
     intent.putExtra("notificationId", notificationId);
     intent.putExtra("callId", callId);
     intent.setAction(action);
 
-    return PendingIntent.getBroadcast(
+    return PendingIntent.getActivity(
       context,
       0,
       intent,
