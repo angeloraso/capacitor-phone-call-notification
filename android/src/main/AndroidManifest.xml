@@ -76,10 +76,21 @@
           </intent-filter>
       </service>
 
-      <receiver
-        android:name=".PushNotificationActionReceiver"
-        android:exported="false">
-      </receiver>
+      <activity
+        android:name=".PushNotificationFullActivity"
+        android:enabled="true"
+        android:launchMode="singleTask"
+        android:exported="false" >
+      </activity>
+
+      <activity
+        android:name=".PushNotificationActivity"
+        android:enabled="true"
+        android:launchMode="singleTask"
+        android:taskAffinity=""
+        android:excludeFromRecents="true"
+        android:exported="false" >
+      </activity>
 
     </application>
 
