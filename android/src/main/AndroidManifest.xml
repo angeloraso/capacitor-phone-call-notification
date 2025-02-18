@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <!-- Starting Android 13 we need to ask notification permission -->
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
     <!-- Needed for full screen intent in incoming call notifications -->
@@ -11,12 +9,7 @@
     <uses-permission android:name="android.permission.VIBRATE" />
     <!-- Needed for foreground service
     (https://developer.android.com/guide/components/foreground-services) -->
-    <uses-permission android:name="android.permission.MANAGE_OWN_CALLS"/>
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
-    <!-- Needed for Android 14
-    https://developer.android.com/about/versions/14/behavior-changes-14#fgs-types -->
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MICROPHONE" />
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_PHONE_CALL" />
     <!-- Required for foreground service started when a push is being received,
     without it app won't be able to access network if data saver is ON (for example) -->
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC" />
@@ -59,13 +52,13 @@
             android:name=".IncomingCallNotificationService"
             android:enabled="true"
             android:exported="false"
-            android:foregroundServiceType="microphone|phoneCall" />
+            android:foregroundServiceType="shortService" />
 
       <service
         android:name=".CallInProgressNotificationService"
         android:enabled="true"
         android:exported="false"
-        android:foregroundServiceType="microphone|phoneCall" />
+        android:foregroundServiceType="shortService" />
 
       <service
           android:name=".PushNotificationService"
