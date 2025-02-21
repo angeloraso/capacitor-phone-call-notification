@@ -1,5 +1,7 @@
 package ar.com.anura.plugins.phonecallnotification;
 
+import static android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_SHORT_SERVICE;
+
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -16,6 +18,8 @@ import android.os.Build;
 import android.os.IBinder;
 import android.provider.Settings;
 import android.text.Html;
+
+import androidx.annotation.NonNull;
 
 public class IncomingCallNotificationService extends Service {
 
@@ -97,14 +101,7 @@ public class IncomingCallNotificationService extends Service {
         }
 
         final String CHANNEL_ID = "incoming-call-notification-channel-id";
-        final int CHANNEL_IMPORTANCE = NotificationManager.IMPORTANCE_HIGH;
-        final long[] DEFAULT_VIBRATE_PATTERN = { 0, 250, 250, 250 };
-
-        final NotificationChannel notificationChannel = new NotificationChannel(CHANNEL_ID, mSettings.getChannelName(), CHANNEL_IMPORTANCE);
-        notificationChannel.setDescription(mSettings.getChannelDescription());
-        notificationChannel.setLockscreenVisibility(Notification.VISIBILITY_PUBLIC);
-        notificationChannel.enableVibration(true);
-        notificationChannel.setVibrationPattern(DEFAULT_VIBRATE_PATTERN);
+        final NotificationChannel notificationChannel = getNotificationChannel(mSettings, CHANNEL_ID);
         notificationChannel.setSound(Settings.System.DEFAULT_NOTIFICATION_URI, null);
         // Register the channel with the system; you can't change the importance or other notification behaviors after this
         getNotificationManager().createNotificationChannel(notificationChannel);
@@ -240,7 +237,24 @@ public class IncomingCallNotificationService extends Service {
         }
 
         Notification notification = notificationBuilder.build();
-        startForeground(NOTIFICATION_ID, notification);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+            startForeground(NOTIFICATION_ID, notification, FOREGROUND_SERVICE_TYPE_SHORT_SERVICE);
+        } else {
+            startForeground(NOTIFICATION_ID, notification);
+        }
+    }
+
+    @NonNull
+    private NotificationChannel getNotificationChannel(NotificationSettings settings, String CHANNEL_ID) {
+        final int CHANNEL_IMPORTANCE = NotificationManager.IMPORTANCE_HIGH;
+        final long[] DEFAULT_VIBRATE_PATTERN = { 0, 250, 250, 250 };
+
+        final NotificationChannel notificationChannel = new NotificationChannel(CHANNEL_ID, settings.getChannelName(), CHANNEL_IMPORTANCE);
+        notificationChannel.setDescription(settings.getChannelDescription());
+        notificationChannel.setLockscreenVisibility(Notification.VISIBILITY_PUBLIC);
+        notificationChannel.enableVibration(true);
+        notificationChannel.setVibrationPattern(DEFAULT_VIBRATE_PATTERN);
+        return notificationChannel;
     }
 
     private PendingIntent getPendingIntent(String action) {

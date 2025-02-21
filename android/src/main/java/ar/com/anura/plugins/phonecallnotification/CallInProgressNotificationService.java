@@ -1,5 +1,7 @@
 package ar.com.anura.plugins.phonecallnotification;
 
+import static android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_SHORT_SERVICE;
+
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -102,7 +104,7 @@ public class CallInProgressNotificationService extends Service {
         // Register the channel with the system; you can't change the importance or other notification behaviors after this
         getNotificationManager().createNotificationChannel(notificationChannel);
 
-        long milliseconds = mSettings.getDuration() * 1000;
+        long milliseconds = mSettings.getDuration() * 1000L;
         long startTimeMillis = System.currentTimeMillis() - milliseconds;
 
         Notification.Builder notificationBuilder = new Notification.Builder(this, CHANNEL_ID)
@@ -169,7 +171,11 @@ public class CallInProgressNotificationService extends Service {
         }
 
         Notification notification = notificationBuilder.build();
-        startForeground(NOTIFICATION_ID, notification);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+            startForeground(NOTIFICATION_ID, notification, FOREGROUND_SERVICE_TYPE_SHORT_SERVICE);
+        } else {
+            startForeground(NOTIFICATION_ID, notification);
+        }
     }
 
     private PendingIntent getPendingIntent(String action) {
