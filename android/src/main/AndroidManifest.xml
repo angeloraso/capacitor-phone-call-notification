@@ -10,17 +10,6 @@
     <!-- Needed for foreground service
     (https://developer.android.com/guide/components/foreground-services) -->
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
-    <!-- Required for foreground service started when a push is being received,
-    without it app won't be able to access network if data saver is ON (for example) -->
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC" />
-    <!-- Needed to keep a permanent foreground service and keep app alive to be able to receive
-    messages & calls for third party accounts for which push notifications aren't available,
-    and starting Android 15 dataSync is limited to 6 hours per day
-    and can't be used with RECEIVE_BOOT_COMPLETED intent either -->
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" />
-    <!-- Needed for auto start at boot if keep alive service is enabled -->
-    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
-
 
   <application>
         <activity
