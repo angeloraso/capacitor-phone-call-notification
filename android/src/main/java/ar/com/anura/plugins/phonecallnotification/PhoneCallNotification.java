@@ -7,21 +7,14 @@ import android.content.ServiceConnection;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
-import android.util.Log;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.NotificationManagerCompat;
-
-import com.google.firebase.messaging.FirebaseMessaging;
-
-import java.util.Objects;
-import java.util.function.Consumer;
 
 public class PhoneCallNotification implements IncomingCallNotificationService.CallBack, CallInProgressNotificationService.CallBack {
 
   private static AppCompatActivity activity;
   private static NotificationSettings mSettings;
-  private static NotificationSettings pushNotificationSettings;
   private static IncomingCallNotificationListener incomingCallNotificationListener;
 
   private static CallInProgressNotificationListener callInProgressNotificationListener;
@@ -161,38 +154,6 @@ public class PhoneCallNotification implements IncomingCallNotificationService.Ca
   public static boolean areNotificationsEnabled() {
     NotificationManagerCompat notificationManager = NotificationManagerCompat.from(activity.getApplicationContext());
     return notificationManager.areNotificationsEnabled();
-  }
-
-  public static void registerPushNotifications(NotificationSettings settings, Consumer<String> onPushNotificationTokenEvent) {
-    FirebaseMessaging.getInstance().setAutoInitEnabled(true);
-    FirebaseMessaging
-      .getInstance()
-      .getToken()
-      .addOnCompleteListener(
-        task -> {
-          if (!task.isSuccessful()) {
-            try {
-              throw new Exception(Objects.requireNonNull(task.getException()).getLocalizedMessage());
-            } catch (Exception e) {
-              throw new RuntimeException(e);
-            }
-          }
-
-          Log.d("Phone call notification token", "FCM remote message: " + task.getResult());
-          pushNotificationSettings = settings;
-          onPushNotificationTokenEvent.accept(task.getResult());
-        }
-      );
-  }
-
-  public static void unregisterPushNotifications() {
-    try {
-      pushNotificationSettings = null;
-      FirebaseMessaging.getInstance().setAutoInitEnabled(false);
-      FirebaseMessaging.getInstance().deleteToken();
-    } catch (Exception e) {
-      throw new RuntimeException(e);
-    }
   }
 
   private static void stopService() {

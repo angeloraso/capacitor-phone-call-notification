@@ -11,12 +11,13 @@
     (https://developer.android.com/guide/components/foreground-services) -->
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
 
-  <application>
+    <application>
+
         <activity
-            android:name=".IncomingCallFullNotificationActivity"
-            android:enabled="true"
-            android:launchMode="singleTask"
-            android:exported="false" >
+          android:name=".IncomingCallFullNotificationActivity"
+          android:enabled="true"
+          android:launchMode="singleTask"
+          android:exported="false" >
         </activity>
 
         <activity
@@ -37,42 +38,17 @@
           android:exported="false" >
         </activity>
 
-      <service
-            android:name=".IncomingCallNotificationService"
-            android:enabled="true"
-            android:exported="false"
-            android:foregroundServiceType="shortService" />
-
-      <service
-        android:name=".CallInProgressNotificationService"
-        android:enabled="true"
-        android:exported="false"
-        android:foregroundServiceType="shortService" />
-
-      <service
-          android:name=".PushNotificationService"
+        <service
+          android:name=".IncomingCallNotificationService"
           android:enabled="true"
-          android:exported="false">
-          <intent-filter>
-              <action android:name="com.google.firebase.MESSAGING_EVENT" />
-          </intent-filter>
-      </service>
+          android:exported="false"
+          android:foregroundServiceType="shortService" />
 
-      <activity
-        android:name=".PushNotificationFullActivity"
-        android:enabled="true"
-        android:launchMode="singleTask"
-        android:exported="false" >
-      </activity>
-
-      <activity
-        android:name=".PushNotificationActivity"
-        android:enabled="true"
-        android:launchMode="singleTask"
-        android:taskAffinity=""
-        android:excludeFromRecents="true"
-        android:exported="false" >
-      </activity>
+        <service
+          android:name=".CallInProgressNotificationService"
+          android:enabled="true"
+          android:exported="false"
+          android:foregroundServiceType="shortService" />
 
     </application>
 

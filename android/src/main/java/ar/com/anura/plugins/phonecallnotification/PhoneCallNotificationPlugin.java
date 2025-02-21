@@ -1,23 +1,16 @@
 package ar.com.anura.plugins.phonecallnotification;
 
 import android.Manifest;
-import android.content.Context;
-import android.content.SharedPreferences;
 import android.os.Build;
 
-import com.getcapacitor.Bridge;
 import com.getcapacitor.JSObject;
 import com.getcapacitor.PermissionState;
 import com.getcapacitor.Plugin;
 import com.getcapacitor.PluginCall;
-import com.getcapacitor.PluginHandle;
 import com.getcapacitor.PluginMethod;
 import com.getcapacitor.annotation.CapacitorPlugin;
 import com.getcapacitor.annotation.Permission;
 import com.getcapacitor.annotation.PermissionCallback;
-import com.google.firebase.messaging.RemoteMessage;
-
-import java.util.Map;
 
 @CapacitorPlugin(
     name = "PhoneCallNotification",
@@ -28,14 +21,9 @@ import java.util.Map;
 )
 public class PhoneCallNotificationPlugin extends Plugin {
 
-    public static Bridge staticBridge = null;
-
-    private static boolean isAppInForeground = false;
-
     static final String PHONE_CALL_NOTIFICATIONS = "display";
 
     public void load() {
-        staticBridge = this.bridge;
         PhoneCallNotification.initialize(getActivity());
     }
 
@@ -44,88 +32,6 @@ public class PhoneCallNotificationPlugin extends Plugin {
         res.put("response", response);
         bridge.triggerWindowJSEvent("response");
         notifyListeners("response", res);
-    }
-
-    private void onPushNotificationTokenEvent(String token) {
-        JSObject res = new JSObject();
-        res.put("value", token);
-        bridge.triggerWindowJSEvent("pushNotificationToken");
-        notifyListeners("pushNotificationToken", res);
-    }
-
-    private void onPushNotificationDataEvent(Map<String, String> data) {
-        JSObject res = new JSObject();
-        res.put("data", data);
-        bridge.triggerWindowJSEvent("pushNotificationData");
-        notifyListeners("pushNotificationData", res);
-    }
-
-    public static void onNewToken(String token) {
-        PhoneCallNotificationPlugin pushPlugin = PhoneCallNotificationPlugin.getPhoneCallNotificationInstance();
-        if (pushPlugin != null) {
-            pushPlugin.onPushNotificationTokenEvent(token);
-        }
-    }
-
-    public static void onMessageReceived(RemoteMessage remoteMessage) {
-        PhoneCallNotificationPlugin pushPlugin = PhoneCallNotificationPlugin.getPhoneCallNotificationInstance();
-        if (pushPlugin != null ) {
-            pushPlugin.onPushNotificationDataEvent(remoteMessage.getData());
-        }
-    }
-
-    public static PhoneCallNotificationPlugin getPhoneCallNotificationInstance() {
-        if (staticBridge != null && staticBridge.getWebView() != null) {
-            PluginHandle handle = staticBridge.getPlugin("PhoneCallNotification");
-            if (handle == null) {
-                return null;
-            }
-            return (PhoneCallNotificationPlugin) handle.getInstance();
-        }
-        return null;
-    }
-
-    @PluginMethod
-    public void registerPushNotifications(PluginCall call) {
-        try {
-            if (getActivity().isFinishing()) {
-                call.reject("Phone call notification plugin error: App is finishing");
-                return;
-            }
-
-            PhoneCallNotification.registerPushNotifications(getSettings(call), this::onPushNotificationTokenEvent);
-            call.resolve();
-        } catch (Exception exception) {
-            call.reject(exception.getMessage());
-        }
-    }
-
-    @PluginMethod
-    public void getPushNotificationData(PluginCall call) {
-        SharedPreferences sharedPreferences = getContext().getSharedPreferences("push_notification_storage", Context.MODE_PRIVATE);
-        String callId = sharedPreferences.getString("callId", "");
-        String response = sharedPreferences.getString("response", "");
-
-        JSObject res = new JSObject();
-        res.put("callId", callId);
-        res.put("response", response);
-
-        call.resolve(res);
-    }
-
-    @PluginMethod
-    public void unregisterPushNotifications(PluginCall call) {
-        try {
-            if (getActivity().isFinishing()) {
-                call.reject("Phone call notification plugin error: App is finishing");
-                return;
-            }
-
-            PhoneCallNotification.unregisterPushNotifications();
-            call.resolve();
-        } catch (Exception exception) {
-            call.reject(exception.getMessage());
-        }
     }
 
     @PluginMethod
@@ -384,22 +290,12 @@ public class PhoneCallNotificationPlugin extends Plugin {
         return settings;
     }
 
-    public static boolean isAppInForeground() {
-        return isAppInForeground;
-    }
-
     /**
      * Called when the activity will start interacting with the user.
      */
     @Override
     public void handleOnResume() {
         PhoneCallNotification.onResume();
-        isAppInForeground = true;
-    }
-
-    @Override
-    public void handleOnPause() {
-        isAppInForeground = false;
     }
 
     /**
@@ -408,6 +304,5 @@ public class PhoneCallNotificationPlugin extends Plugin {
     @Override
     public void handleOnDestroy() {
         PhoneCallNotification.onDestroy();
-        isAppInForeground = false;
     }
 }

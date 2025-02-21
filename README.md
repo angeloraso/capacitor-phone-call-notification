@@ -16,13 +16,8 @@ npx cap sync
 * [`show(...)`](#show)
 * [`hide(...)`](#hide)
 * [`checkPermissions()`](#checkpermissions)
-* [`getPushNotificationData()`](#getpushnotificationdata)
 * [`requestPermissions()`](#requestpermissions)
-* [`registerPushNotifications(...)`](#registerpushnotifications)
-* [`unregisterPushNotifications()`](#unregisterpushnotifications)
 * [`addListener('response', ...)`](#addlistenerresponse-)
-* [`addListener('pushNotificationToken', ...)`](#addlistenerpushnotificationtoken-)
-* [`addListener('pushNotificationData', ...)`](#addlistenerpushnotificationdata-)
 * [`removeAllListeners()`](#removealllisteners)
 * [Interfaces](#interfaces)
 * [Type Aliases](#type-aliases)
@@ -69,17 +64,6 @@ checkPermissions() => Promise<PermissionStatus>
 --------------------
 
 
-### getPushNotificationData()
-
-```typescript
-getPushNotificationData() => Promise<{ response: string; callId: string; }>
-```
-
-**Returns:** <code>Promise&lt;{ response: string; callId: string; }&gt;</code>
-
---------------------
-
-
 ### requestPermissions()
 
 ```typescript
@@ -87,28 +71,6 @@ requestPermissions() => Promise<PermissionStatus>
 ```
 
 **Returns:** <code>Promise&lt;<a href="#permissionstatus">PermissionStatus</a>&gt;</code>
-
---------------------
-
-
-### registerPushNotifications(...)
-
-```typescript
-registerPushNotifications(data?: Partial<NotificationSettings> | undefined) => Promise<void>
-```
-
-| Param      | Type                                                                                                        |
-| ---------- | ----------------------------------------------------------------------------------------------------------- |
-| **`data`** | <code><a href="#partial">Partial</a>&lt;<a href="#notificationsettings">NotificationSettings</a>&gt;</code> |
-
---------------------
-
-
-### unregisterPushNotifications()
-
-```typescript
-unregisterPushNotifications() => Promise<void>
-```
 
 --------------------
 
@@ -123,38 +85,6 @@ addListener(eventName: 'response', listenerFunc: (data: { response: Notification
 | ------------------ | ------------------------------------------------------------------------------------------------------- |
 | **`eventName`**    | <code>'response'</code>                                                                                 |
 | **`listenerFunc`** | <code>(data: { response: <a href="#notificationresponse">NotificationResponse</a>; }) =&gt; void</code> |
-
-**Returns:** <code>Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt;</code>
-
---------------------
-
-
-### addListener('pushNotificationToken', ...)
-
-```typescript
-addListener(eventName: 'pushNotificationToken', listenerFunc: (data: { value: string; }) => void) => Promise<PluginListenerHandle>
-```
-
-| Param              | Type                                               |
-| ------------------ | -------------------------------------------------- |
-| **`eventName`**    | <code>'pushNotificationToken'</code>               |
-| **`listenerFunc`** | <code>(data: { value: string; }) =&gt; void</code> |
-
-**Returns:** <code>Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt;</code>
-
---------------------
-
-
-### addListener('pushNotificationData', ...)
-
-```typescript
-addListener(eventName: 'pushNotificationData', listenerFunc: (data: { data: Record<string, string>; }) => void) => Promise<PluginListenerHandle>
-```
-
-| Param              | Type                                                                                          |
-| ------------------ | --------------------------------------------------------------------------------------------- |
-| **`eventName`**    | <code>'pushNotificationData'</code>                                                           |
-| **`listenerFunc`** | <code>(data: { data: <a href="#record">Record</a>&lt;string, string&gt;; }) =&gt; void</code> |
 
 **Returns:** <code>Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt;</code>
 
@@ -240,12 +170,5 @@ Make all properties in T optional
 #### NotificationResponse
 
 <code>'tap' | 'answer' | 'decline' | 'terminate' | 'hold'</code>
-
-
-#### Record
-
-Construct a type with a set of properties K of type T
-
-<code>{ [P in K]: T; }</code>
 
 </docgen-api>
