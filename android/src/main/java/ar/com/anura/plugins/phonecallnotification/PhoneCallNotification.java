@@ -4,9 +4,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.os.Handler;
 import android.os.IBinder;
-import android.os.Looper;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.NotificationManagerCompat;
@@ -103,10 +101,8 @@ public class PhoneCallNotification implements IncomingCallNotificationService.Ca
     Intent intent = new Intent(activity.getApplicationContext(), IncomingCallNotificationService.class);
 
     activity.getApplicationContext().bindService(intent, mIncomingCallServiceConnection, Context.BIND_AUTO_CREATE);
-    new Handler(Looper.getMainLooper()).post(() -> {
-      activity.getApplicationContext().startForegroundService(intent);
-      mShouldUnbindIncomingCallService = true;
-    });
+    activity.getApplicationContext().startForegroundService(intent);
+    mShouldUnbindIncomingCallService = true;
   }
 
   public static void showCallInProgressNotification(final NotificationSettings settings, final CallInProgressNotificationListener listener) {
@@ -129,10 +125,8 @@ public class PhoneCallNotification implements IncomingCallNotificationService.Ca
     Intent intent = new Intent(activity.getApplicationContext(), CallInProgressNotificationService.class);
 
     activity.getApplicationContext().bindService(intent, mCallInProgressServiceConnection, Context.BIND_AUTO_CREATE);
-    new Handler(Looper.getMainLooper()).post(() -> {
-      activity.getApplicationContext().startForegroundService(intent);
-      mShouldUnbindCallInProgressService = true;
-    });
+    activity.getApplicationContext().startForegroundService(intent);
+    mShouldUnbindCallInProgressService = true;
   }
 
   public static void hideIncomingCall() {
