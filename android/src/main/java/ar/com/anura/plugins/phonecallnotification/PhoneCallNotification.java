@@ -99,10 +99,12 @@ public class PhoneCallNotification implements IncomingCallNotificationService.Ca
       };
 
     Intent intent = new Intent(activity.getApplicationContext(), IncomingCallNotificationService.class);
-
     activity.getApplicationContext().bindService(intent, mIncomingCallServiceConnection, Context.BIND_AUTO_CREATE);
-    activity.getApplicationContext().startForegroundService(intent);
-    mShouldUnbindIncomingCallService = true;
+
+    if (IncomingCallNotificationService.isServiceRunning()) {
+      activity.getApplicationContext().startForegroundService(intent);
+      mShouldUnbindIncomingCallService = true;
+    }
   }
 
   public static void showCallInProgressNotification(final NotificationSettings settings, final CallInProgressNotificationListener listener) {
@@ -123,10 +125,12 @@ public class PhoneCallNotification implements IncomingCallNotificationService.Ca
       };
 
     Intent intent = new Intent(activity.getApplicationContext(), CallInProgressNotificationService.class);
-
     activity.getApplicationContext().bindService(intent, mCallInProgressServiceConnection, Context.BIND_AUTO_CREATE);
-    activity.getApplicationContext().startForegroundService(intent);
-    mShouldUnbindCallInProgressService = true;
+
+    if (CallInProgressNotificationService.isServiceRunning()) {
+      activity.getApplicationContext().startForegroundService(intent);
+      mShouldUnbindCallInProgressService = true;
+    }
   }
 
   public static void hideIncomingCall() {

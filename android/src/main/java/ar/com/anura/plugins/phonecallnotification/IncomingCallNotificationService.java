@@ -22,7 +22,7 @@ import android.text.Html;
 import androidx.annotation.NonNull;
 
 public class IncomingCallNotificationService extends Service {
-
+    private static boolean isRunning = false;
     public static String TAP_ACTION = "tap_incoming_call_notification";
     public static String DECLINE_ACTION = "decline_incoming_call";
     public static String ANSWER_ACTION = "answer_incoming_call";
@@ -45,7 +45,7 @@ public class IncomingCallNotificationService extends Service {
     class LocalBinder extends Binder {
 
         IncomingCallNotificationService getService() {
-            return IncomingCallNotificationService.this;
+        return IncomingCallNotificationService.this;
         }
     }
 
@@ -67,6 +67,7 @@ public class IncomingCallNotificationService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
+        isRunning = true;
         mSettings = new NotificationSettings();
     }
 
@@ -75,6 +76,7 @@ public class IncomingCallNotificationService extends Service {
         super.onDestroy();
         mSettings = null;
         stopForeground(true);
+        isRunning = false;
         getNotificationManager().cancel(NOTIFICATION_ID);
     }
 
@@ -84,6 +86,10 @@ public class IncomingCallNotificationService extends Service {
      */
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        if (!isRunning) {
+        stopSelf();
+        }
+
         return START_NOT_STICKY;
     }
 
@@ -91,13 +97,13 @@ public class IncomingCallNotificationService extends Service {
         String iconName = mSettings.getIcon();
         int iconResource = getIconResId(iconName);
         if (iconResource == 0) { // If no icon at all was found, fall back to the app's icon
-            iconResource = getApplicationContext().getApplicationInfo().icon;
+        iconResource = getApplicationContext().getApplicationInfo().icon;
         }
 
         String pictureName = mSettings.getPicture();
         int pictureResource = getIconResId(pictureName);
         if (pictureResource == 0) { // If no icon at all was found, fall back to the app's icon
-            pictureResource = getApplicationContext().getApplicationInfo().icon;
+        pictureResource = getApplicationContext().getApplicationInfo().icon;
         }
 
         final String CHANNEL_ID = "incoming-call-notification-channel-id";
@@ -107,23 +113,23 @@ public class IncomingCallNotificationService extends Service {
         getNotificationManager().createNotificationChannel(notificationChannel);
 
         Notification.Builder notificationBuilder = new Notification.Builder(this, CHANNEL_ID)
-            .setContentTitle(mSettings.getChannelName())
-            // Ongoing notifications cannot be dismissed by the user
-            .setOngoing(true)
-            // Set the "ticker" text which is sent to accessibility services.
-            .setTicker(mSettings.getChannelName())
-            // To know if it is necessary to disturb the user with a notification despite having activated the "Do not interrupt" mode
-            .setCategory(Notification.CATEGORY_CALL)
-            // Add a timestamp pertaining to the notification
-            .setWhen(System.currentTimeMillis())
-            // VISIBILITY_PUBLIC displays the full content of the notification
-            .setVisibility(Notification.VISIBILITY_PUBLIC)
-            // Make this notification automatically dismissed when the user touches it.
-            .setAutoCancel(false)
-            .setContentIntent(getPendingIntent(TAP_ACTION))
-            .setColor(Color.parseColor(mSettings.getColor()))
-            // Set whether or not this notification should not bridge to other devices.
-            .setLocalOnly(true);
+        .setContentTitle(mSettings.getChannelName())
+        // Ongoing notifications cannot be dismissed by the user
+        .setOngoing(true)
+        // Set the "ticker" text which is sent to accessibility services.
+        .setTicker(mSettings.getChannelName())
+        // To know if it is necessary to disturb the user with a notification despite having activated the "Do not interrupt" mode
+        .setCategory(Notification.CATEGORY_CALL)
+        // Add a timestamp pertaining to the notification
+        .setWhen(System.currentTimeMillis())
+        // VISIBILITY_PUBLIC displays the full content of the notification
+        .setVisibility(Notification.VISIBILITY_PUBLIC)
+        // Make this notification automatically dismissed when the user touches it.
+        .setAutoCancel(false)
+        .setContentIntent(getPendingIntent(TAP_ACTION))
+        .setColor(Color.parseColor(mSettings.getColor()))
+        // Set whether or not this notification should not bridge to other devices.
+        .setLocalOnly(true);
 
         Boolean thereIsACallInProgress = mSettings.getThereIsACallInProgress();
 
@@ -131,116 +137,116 @@ public class IncomingCallNotificationService extends Service {
         Intent intent = new Intent(context, IncomingCallFullNotificationActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
         PendingIntent pendingIntent = PendingIntent.getActivity(
-            context,
-            0,
-            intent,
-            PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE
+        context,
+        0,
+        intent,
+        PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE
         );
         notificationBuilder.setFullScreenIntent(pendingIntent, true);
 
         // Android 12+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && !thereIsACallInProgress) {
-            Icon icon = Icon.createWithResource(this, pictureResource);
-            Person caller = new Person.Builder()
-                .setIcon(icon)
-                .setName(mSettings.getCallerName() + " - " + mSettings.getCallerNumber())
-                .setImportant(true)
-                .build();
+        Icon icon = Icon.createWithResource(this, pictureResource);
+        Person caller = new Person.Builder()
+            .setIcon(icon)
+            .setName(mSettings.getCallerName() + " - " + mSettings.getCallerNumber())
+            .setImportant(true)
+            .build();
 
-            Notification.CallStyle notificationStyle;
-            notificationStyle =
-                Notification.CallStyle.forIncomingCall(caller, getPendingIntent(DECLINE_ACTION), getPendingIntent(ANSWER_ACTION));
+        Notification.CallStyle notificationStyle;
+        notificationStyle =
+            Notification.CallStyle.forIncomingCall(caller, getPendingIntent(DECLINE_ACTION), getPendingIntent(ANSWER_ACTION));
 
-            notificationStyle.setAnswerButtonColorHint(Color.parseColor(mSettings.getAnswerButtonColor()));
-            notificationStyle.setDeclineButtonColorHint(Color.parseColor(mSettings.getDeclineButtonColor()));
-            notificationBuilder.setStyle((notificationStyle));
-            notificationBuilder.setSmallIcon(getIconResId("answer", "drawable"));
-            notificationBuilder.setForegroundServiceBehavior(Notification.FOREGROUND_SERVICE_IMMEDIATE);
+        notificationStyle.setAnswerButtonColorHint(Color.parseColor(mSettings.getAnswerButtonColor()));
+        notificationStyle.setDeclineButtonColorHint(Color.parseColor(mSettings.getDeclineButtonColor()));
+        notificationBuilder.setStyle((notificationStyle));
+        notificationBuilder.setSmallIcon(getIconResId("answer", "drawable"));
+        notificationBuilder.setForegroundServiceBehavior(Notification.FOREGROUND_SERVICE_IMMEDIATE);
         } else {
-            notificationBuilder.setSmallIcon(iconResource);
-            notificationBuilder.setContentText(mSettings.getCallerName() + " - " + mSettings.getCallerNumber());
+        notificationBuilder.setSmallIcon(iconResource);
+        notificationBuilder.setContentText(mSettings.getCallerName() + " - " + mSettings.getCallerNumber());
 
-            if (thereIsACallInProgress) {
-                Notification.Action answerAction = new Notification.Action.Builder(
-                    Icon.createWithResource(this, getIconResId("hold_answer", "drawable")),
-                    Html.fromHtml(
-                        "<font color=\"" +
-                        Color.parseColor(mSettings.getHoldAndAnswerButtonColor()) +
-                        "\">" +
-                        mSettings.getHoldAndAnswerButtonText() +
-                        "</font>",
-                        Html.FROM_HTML_MODE_LEGACY
-                    ),
-                    getPendingIntent(ANSWER_ACTION)
-                )
-                    .build();
+        if (thereIsACallInProgress) {
+            Notification.Action answerAction = new Notification.Action.Builder(
+            Icon.createWithResource(this, getIconResId("hold_answer", "drawable")),
+            Html.fromHtml(
+                "<font color=\"" +
+                Color.parseColor(mSettings.getHoldAndAnswerButtonColor()) +
+                "\">" +
+                mSettings.getHoldAndAnswerButtonText() +
+                "</font>",
+                Html.FROM_HTML_MODE_LEGACY
+            ),
+            getPendingIntent(ANSWER_ACTION)
+            )
+            .build();
 
-                Notification.Action declineAction = new Notification.Action.Builder(
-                    Icon.createWithResource(this, getIconResId("decline", "drawable")),
-                    Html.fromHtml(
-                        "<font color=\"" +
-                        Color.parseColor(mSettings.getDeclineSecondCallButtonColor()) +
-                        "\">" +
-                        mSettings.getDeclineSecondCallButtonText() +
-                        "</font>",
-                        Html.FROM_HTML_MODE_LEGACY
-                    ),
-                    getPendingIntent(DECLINE_ACTION)
-                )
-                    .build();
+            Notification.Action declineAction = new Notification.Action.Builder(
+            Icon.createWithResource(this, getIconResId("decline", "drawable")),
+            Html.fromHtml(
+                "<font color=\"" +
+                Color.parseColor(mSettings.getDeclineSecondCallButtonColor()) +
+                "\">" +
+                mSettings.getDeclineSecondCallButtonText() +
+                "</font>",
+                Html.FROM_HTML_MODE_LEGACY
+            ),
+            getPendingIntent(DECLINE_ACTION)
+            )
+            .build();
 
-                Notification.Action terminateAction = new Notification.Action.Builder(
-                    Icon.createWithResource(this, getIconResId("terminate_answer", "drawable")),
-                    Html.fromHtml(
-                        "<font color=\"" +
-                        Color.parseColor(mSettings.getTerminateAndAnswerButtonColor()) +
-                        "\">" +
-                        mSettings.getTerminateAndAnswerButtonText() +
-                        "</font>",
-                        Html.FROM_HTML_MODE_LEGACY
-                    ),
-                    getPendingIntent(TERMINATE_ACTION)
-                )
-                    .build();
-                notificationBuilder.setActions(terminateAction, declineAction, answerAction);
-            } else {
-                Notification.Action answerAction = new Notification.Action.Builder(
-                    Icon.createWithResource(this, getIconResId("answer", "drawable")),
-                    Html.fromHtml(
-                        "<font color=\"" +
-                        Color.parseColor(mSettings.getAnswerButtonColor()) +
-                        "\">" +
-                        mSettings.getAnswerButtonText() +
-                        "</font>",
-                        Html.FROM_HTML_MODE_LEGACY
-                    ),
-                    getPendingIntent(ANSWER_ACTION)
-                )
-                    .build();
+            Notification.Action terminateAction = new Notification.Action.Builder(
+            Icon.createWithResource(this, getIconResId("terminate_answer", "drawable")),
+            Html.fromHtml(
+                "<font color=\"" +
+                Color.parseColor(mSettings.getTerminateAndAnswerButtonColor()) +
+                "\">" +
+                mSettings.getTerminateAndAnswerButtonText() +
+                "</font>",
+                Html.FROM_HTML_MODE_LEGACY
+            ),
+            getPendingIntent(TERMINATE_ACTION)
+            )
+            .build();
+            notificationBuilder.setActions(terminateAction, declineAction, answerAction);
+        } else {
+            Notification.Action answerAction = new Notification.Action.Builder(
+            Icon.createWithResource(this, getIconResId("answer", "drawable")),
+            Html.fromHtml(
+                "<font color=\"" +
+                Color.parseColor(mSettings.getAnswerButtonColor()) +
+                "\">" +
+                mSettings.getAnswerButtonText() +
+                "</font>",
+                Html.FROM_HTML_MODE_LEGACY
+            ),
+            getPendingIntent(ANSWER_ACTION)
+            )
+            .build();
 
-                Notification.Action declineAction = new Notification.Action.Builder(
-                    Icon.createWithResource(this, getIconResId("decline", "drawable")),
-                    Html.fromHtml(
-                        "<font color=\"" +
-                        Color.parseColor(mSettings.getDeclineButtonColor()) +
-                        "\">" +
-                        mSettings.getDeclineButtonText() +
-                        "</font>",
-                        Html.FROM_HTML_MODE_LEGACY
-                    ),
-                    getPendingIntent(DECLINE_ACTION)
-                )
-                    .build();
+            Notification.Action declineAction = new Notification.Action.Builder(
+            Icon.createWithResource(this, getIconResId("decline", "drawable")),
+            Html.fromHtml(
+                "<font color=\"" +
+                Color.parseColor(mSettings.getDeclineButtonColor()) +
+                "\">" +
+                mSettings.getDeclineButtonText() +
+                "</font>",
+                Html.FROM_HTML_MODE_LEGACY
+            ),
+            getPendingIntent(DECLINE_ACTION)
+            )
+            .build();
 
-                notificationBuilder.setActions(declineAction, answerAction);
-            }
+            notificationBuilder.setActions(declineAction, answerAction);
+        }
         }
 
         Notification notification = notificationBuilder.build();
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-            startForeground(NOTIFICATION_ID, notification, FOREGROUND_SERVICE_TYPE_SHORT_SERVICE);
+        startForeground(NOTIFICATION_ID, notification, FOREGROUND_SERVICE_TYPE_SHORT_SERVICE);
         } else {
-            startForeground(NOTIFICATION_ID, notification);
+        startForeground(NOTIFICATION_ID, notification);
         }
     }
 
@@ -281,15 +287,15 @@ public class IncomingCallNotificationService extends Service {
         int resId = getIconResId(name, "mipmap");
 
         if (resId == 0) {
-            resId = getIconResId(name, "drawable");
+        resId = getIconResId(name, "drawable");
         }
 
         if (resId == 0) {
-            resId = getIconResId("icon", "mipmap");
+        resId = getIconResId("icon", "mipmap");
         }
 
         if (resId == 0) {
-            resId = getIconResId("icon", "drawable");
+        resId = getIconResId("icon", "drawable");
         }
 
         return resId;
@@ -308,5 +314,9 @@ public class IncomingCallNotificationService extends Service {
         String pkgName = getPackageName();
 
         return res.getIdentifier(icon, type, pkgName);
+    }
+
+    public static boolean isServiceRunning() {
+        return isRunning;
     }
 }
