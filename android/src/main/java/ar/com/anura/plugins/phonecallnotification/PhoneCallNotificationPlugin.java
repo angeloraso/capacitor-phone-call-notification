@@ -1,6 +1,7 @@
 package ar.com.anura.plugins.phonecallnotification;
 
 import android.Manifest;
+import android.content.Intent;
 import android.os.Build;
 
 import com.getcapacitor.JSObject;
@@ -16,12 +17,12 @@ import com.getcapacitor.annotation.PermissionCallback;
     name = "PhoneCallNotification",
     permissions = @Permission(
         strings = { Manifest.permission.POST_NOTIFICATIONS },
-        alias = PhoneCallNotificationPlugin.PHONE_CALL_NOTIFICATIONS
+        alias = PhoneCallNotificationPlugin.PHONE_CALL_NOTIFICATIONS_PERMISSION
     )
 )
 public class PhoneCallNotificationPlugin extends Plugin {
 
-    static final String PHONE_CALL_NOTIFICATIONS = "display";
+    static final String PHONE_CALL_NOTIFICATIONS_PERMISSION = "display";
 
     public void load() {
         PhoneCallNotification.initialize(getActivity());
@@ -43,7 +44,7 @@ public class PhoneCallNotificationPlugin extends Plugin {
 
         NotificationSettings settings = getSettings(call);
         if (settings.getType().equals("incoming")) {
-            showIncomingCallNotification(settings);
+          showIncomingCallNotification(settings);
         } else if (settings.getType().equals("inProgress")) {
             showCallInProgressNotification(settings);
         } else {
@@ -126,42 +127,32 @@ public class PhoneCallNotificationPlugin extends Plugin {
     }
 
     @PluginMethod
-    public void checkPermissions(PluginCall call) {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
-            JSObject permissionsResultJSON = new JSObject();
-            permissionsResultJSON.put(PHONE_CALL_NOTIFICATIONS, getNotificationPermissionText());
-            call.resolve(permissionsResultJSON);
-        } else {
-            super.checkPermissions(call);
-        }
+    public void checkNotificationsPermission(PluginCall call) {
+      notificationPermissionCallback(call);
     }
 
     @PluginMethod
-    public void requestPermissions(PluginCall call) {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
-            JSObject permissionsResultJSON = new JSObject();
-            permissionsResultJSON.put(PHONE_CALL_NOTIFICATIONS, getNotificationPermissionText());
-            call.resolve(permissionsResultJSON);
-        } else {
-            if (getPermissionState(PHONE_CALL_NOTIFICATIONS) != PermissionState.GRANTED) {
-                requestPermissionForAlias(PHONE_CALL_NOTIFICATIONS, call, "permissionsCallback");
-            }
-        }
+    public void requestNotificationsPermission(PluginCall call) {
+      if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU || getPermissionState(PHONE_CALL_NOTIFICATIONS_PERMISSION) == PermissionState.GRANTED) {
+        notificationPermissionCallback(call);
+      } else {
+        requestPermissionForAlias(PHONE_CALL_NOTIFICATIONS_PERMISSION, call, "notificationPermissionCallback");
+      }
     }
 
     @PermissionCallback
-    private void permissionsCallback(PluginCall call) {
-        JSObject permissionsResultJSON = new JSObject();
-        permissionsResultJSON.put(PHONE_CALL_NOTIFICATIONS, getNotificationPermissionText());
-        call.resolve(permissionsResultJSON);
+    private void notificationPermissionCallback(PluginCall call) {
+      JSObject permissionsResultJSON = new JSObject();
+      permissionsResultJSON.put(PHONE_CALL_NOTIFICATIONS_PERMISSION, getPermissionText(PhoneCallNotification.areNotificationsEnabled()));
+      call.resolve(permissionsResultJSON);
     }
 
-    private String getNotificationPermissionText() {
-        if (PhoneCallNotification.areNotificationsEnabled()) {
-            return "granted";
-        } else {
-            return "denied";
-        }
+    private String getPermissionText(boolean enabled) {
+      if (enabled) {
+        return "granted";
+      } else {
+        return "denied";
+      }
     }
 
     private NotificationSettings getSettings(PluginCall call) {
@@ -288,21 +279,5 @@ public class PhoneCallNotificationPlugin extends Plugin {
         }
 
         return settings;
-    }
-
-    /**
-     * Called when the activity will start interacting with the user.
-     */
-    @Override
-    public void handleOnResume() {
-        PhoneCallNotification.onResume();
-    }
-
-    /**
-     * Called when the activity will be destroyed.
-     */
-    @Override
-    public void handleOnDestroy() {
-        PhoneCallNotification.onDestroy();
     }
 }

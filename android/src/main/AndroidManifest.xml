@@ -39,12 +39,6 @@
         </activity>
 
         <service
-          android:name=".IncomingCallNotificationService"
-          android:enabled="true"
-          android:exported="false"
-          android:foregroundServiceType="shortService" />
-
-        <service
           android:name=".CallInProgressNotificationService"
           android:enabled="true"
           android:exported="false"

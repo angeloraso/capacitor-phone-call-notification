@@ -2,6 +2,11 @@ package ar.com.anura.plugins.phonecallnotification;
 
 import static android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_SHORT_SERVICE;
 
+import static ar.com.anura.plugins.phonecallnotification.PhoneCallNotification.CALL_IN_PROGRESS_HOLD_ACTION;
+import static ar.com.anura.plugins.phonecallnotification.PhoneCallNotification.CALL_IN_PROGRESS_NOTIFICATION_ID;
+import static ar.com.anura.plugins.phonecallnotification.PhoneCallNotification.CALL_IN_PROGRESS_TAP_ACTION;
+import static ar.com.anura.plugins.phonecallnotification.PhoneCallNotification.CALL_IN_PROGRESS_TERMINATE_ACTION;
+
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -13,89 +18,45 @@ import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.drawable.Icon;
-import android.os.Binder;
 import android.os.Build;
 import android.os.IBinder;
 import android.text.Html;
 
 public class CallInProgressNotificationService extends Service {
-    private static boolean isRunning = false;
-    public static String TAP_ACTION = "tap_call_in_progress_notification";
-    public static String HOLD_ACTION = "hold_call_in_progress";
-    public static String TERMINATE_ACTION = "terminate_call_in_progress";
-
-    public static final int NOTIFICATION_ID = -234414143;
-
-    private final IBinder mLocalBinder = new LocalBinder();
-    public static CallBack callBack;
-
-    private NotificationSettings mSettings;
-
     public CallInProgressNotificationService() {}
 
     @Override
     public IBinder onBind(Intent intent) {
-        return mLocalBinder;
-    }
-
-    class LocalBinder extends Binder {
-
-        CallInProgressNotificationService getService() {
-        return CallInProgressNotificationService.this;
-        }
-    }
-
-    public interface CallBack {
-        void onTap();
-        void onHold();
-        void onTerminate();
-    }
-
-    public void setCallBack(CallBack callBack) {
-        CallInProgressNotificationService.callBack = callBack;
-    }
-
-    public void setSettings(NotificationSettings settings) {
-        this.mSettings = settings;
+        return null;
     }
 
     @Override
     public void onCreate() {
         super.onCreate();
-        isRunning = true;
-        mSettings = new NotificationSettings();
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        mSettings = null;
-        isRunning = false;
         stopForeground(true);
-        getNotificationManager().cancel(NOTIFICATION_ID);
+        getNotificationManager().cancel(CALL_IN_PROGRESS_NOTIFICATION_ID);
     }
 
-    /**
-     * START_NOT_STICKY: if the process (the App) is killed with no remaining start commands to deliver,
-     * then the service will be stopped instead of restarted
-     */
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        if (!isRunning) {
-        stopSelf();
-        }
-
-        return START_NOT_STICKY;
+        createNotification();
+        return START_STICKY;
     }
 
     public void createNotification() {
-        String iconName = mSettings.getIcon();
+        NotificationSettings settings = PhoneCallNotification.callInProgressNotificationSettings;
+        String iconName = settings.getIcon();
         int iconResource = getIconResId(iconName);
         if (iconResource == 0) { // If no icon at all was found, fall back to the app's icon
         iconResource = getApplicationContext().getApplicationInfo().icon;
         }
 
-        String pictureName = mSettings.getPicture();
+        String pictureName = settings.getPicture();
         int pictureResource = getIconResId(pictureName);
         if (pictureResource == 0) { // If no icon at all was found, fall back to the app's icon
         pictureResource = getApplicationContext().getApplicationInfo().icon;
@@ -104,21 +65,21 @@ public class CallInProgressNotificationService extends Service {
         final String CHANNEL_ID = "call-in-progress-notification-channel-id";
         final int CHANNEL_IMPORTANCE = NotificationManager.IMPORTANCE_MIN;
 
-        final NotificationChannel notificationChannel = new NotificationChannel(CHANNEL_ID, mSettings.getChannelName(), CHANNEL_IMPORTANCE);
-        notificationChannel.setDescription(mSettings.getChannelDescription());
+        final NotificationChannel notificationChannel = new NotificationChannel(CHANNEL_ID, settings.getChannelName(), CHANNEL_IMPORTANCE);
+        notificationChannel.setDescription(settings.getChannelDescription());
         notificationChannel.setLockscreenVisibility(Notification.VISIBILITY_PUBLIC);
         // Register the channel with the system; you can't change the importance or other notification behaviors after this
         getNotificationManager().createNotificationChannel(notificationChannel);
 
-        long milliseconds = mSettings.getDuration() * 1000L;
+        long milliseconds = settings.getDuration() * 1000L;
         long startTimeMillis = System.currentTimeMillis() - milliseconds;
 
         Notification.Builder notificationBuilder = new Notification.Builder(this, CHANNEL_ID)
-        .setContentTitle(mSettings.getChannelName())
+        .setContentTitle(settings.getChannelName())
         // Ongoing notifications cannot be dismissed by the user
         .setOngoing(false)
         // Set the "ticker" text which is sent to accessibility services.
-        .setTicker(mSettings.getChannelName())
+        .setTicker(settings.getChannelName())
         // To know if it is necessary to disturb the user with a notification despite having activated the "Do not interrupt" mode
         .setCategory(Notification.CATEGORY_CALL)
         // Add a timestamp pertaining to the notification
@@ -128,8 +89,8 @@ public class CallInProgressNotificationService extends Service {
         // VISIBILITY_PUBLIC displays the full content of the notification
         .setVisibility(Notification.VISIBILITY_PUBLIC)
         .setAutoCancel(true)
-        .setContentIntent(getPendingIntent(TAP_ACTION))
-        .setColor(Color.parseColor(mSettings.getColor()))
+        .setContentIntent(getPendingIntent(CALL_IN_PROGRESS_TAP_ACTION))
+        .setColor(Color.parseColor(settings.getColor()))
         // Set whether or not this notification should not bridge to other devices.
         .setLocalOnly(true);
 
@@ -138,24 +99,24 @@ public class CallInProgressNotificationService extends Service {
         Icon icon = Icon.createWithResource(this, pictureResource);
         Person caller = new Person.Builder()
             .setIcon(icon)
-            .setName(mSettings.getCallerName() + " - " + mSettings.getCallerNumber())
+            .setName(settings.getCallerName() + " - " + settings.getCallerNumber())
             .setImportant(true)
             .build();
 
-        Notification.CallStyle notificationStyle = Notification.CallStyle.forOngoingCall(caller, getPendingIntent(TERMINATE_ACTION));
+        Notification.CallStyle notificationStyle = Notification.CallStyle.forOngoingCall(caller, getPendingIntent(CALL_IN_PROGRESS_TERMINATE_ACTION));
         notificationBuilder.setStyle((notificationStyle));
         notificationBuilder.setSmallIcon(getIconResId("answer", "drawable"));
         notificationBuilder.setForegroundServiceBehavior(Notification.FOREGROUND_SERVICE_IMMEDIATE);
         } else {
         notificationBuilder.setSmallIcon(iconResource);
-        notificationBuilder.setContentText(mSettings.getCallerName() + " - " + mSettings.getCallerNumber());
+        notificationBuilder.setContentText(settings.getCallerName() + " - " + settings.getCallerNumber());
         Notification.Action answerAction = new Notification.Action.Builder(
             Icon.createWithResource(this, getIconResId("hold", "drawable")),
             Html.fromHtml(
-            "<font color=\"" + Color.parseColor(mSettings.getHoldButtonColor()) + "\">" + mSettings.getHoldButtonText() + "</font>",
+            "<font color=\"" + Color.parseColor(settings.getHoldButtonColor()) + "\">" + settings.getHoldButtonText() + "</font>",
             Html.FROM_HTML_MODE_LEGACY
             ),
-            getPendingIntent(HOLD_ACTION)
+            getPendingIntent(CALL_IN_PROGRESS_HOLD_ACTION)
         )
             .build();
 
@@ -163,13 +124,13 @@ public class CallInProgressNotificationService extends Service {
             Icon.createWithResource(this, getIconResId("decline", "drawable")),
             Html.fromHtml(
             "<font color=\"" +
-                Color.parseColor(mSettings.getTerminateButtonColor()) +
+                Color.parseColor(settings.getTerminateButtonColor()) +
                 "\">" +
-                mSettings.getTerminateButtonText() +
+              settings.getTerminateButtonText() +
                 "</font>",
             Html.FROM_HTML_MODE_LEGACY
             ),
-            getPendingIntent(TERMINATE_ACTION)
+            getPendingIntent(CALL_IN_PROGRESS_TERMINATE_ACTION)
         )
             .build();
 
@@ -178,9 +139,9 @@ public class CallInProgressNotificationService extends Service {
 
         Notification notification = notificationBuilder.build();
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-        startForeground(NOTIFICATION_ID, notification, FOREGROUND_SERVICE_TYPE_SHORT_SERVICE);
+        startForeground(CALL_IN_PROGRESS_NOTIFICATION_ID, notification, FOREGROUND_SERVICE_TYPE_SHORT_SERVICE);
         } else {
-        startForeground(NOTIFICATION_ID, notification);
+        startForeground(CALL_IN_PROGRESS_NOTIFICATION_ID, notification);
         }
     }
 
@@ -235,9 +196,5 @@ public class CallInProgressNotificationService extends Service {
         String pkgName = getPackageName();
 
         return res.getIdentifier(icon, type, pkgName);
-    }
-
-    public static boolean isServiceRunning() {
-        return isRunning;
     }
 }

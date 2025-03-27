@@ -1,9 +1,9 @@
 package ar.com.anura.plugins.phonecallnotification;
 
-import static ar.com.anura.plugins.phonecallnotification.IncomingCallNotificationService.ANSWER_ACTION;
-import static ar.com.anura.plugins.phonecallnotification.IncomingCallNotificationService.DECLINE_ACTION;
-import static ar.com.anura.plugins.phonecallnotification.IncomingCallNotificationService.TAP_ACTION;
-import static ar.com.anura.plugins.phonecallnotification.IncomingCallNotificationService.TERMINATE_ACTION;
+import static ar.com.anura.plugins.phonecallnotification.PhoneCallNotification.INCOMING_CALL_TAP_ACTION;
+import static ar.com.anura.plugins.phonecallnotification.PhoneCallNotification.INCOMING_CALL_DECLINE_ACTION;
+import static ar.com.anura.plugins.phonecallnotification.PhoneCallNotification.INCOMING_CALL_ANSWER_ACTION;
+import static ar.com.anura.plugins.phonecallnotification.PhoneCallNotification.INCOMING_CALL_TERMINATE_ACTION;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -11,26 +11,21 @@ import androidx.appcompat.app.AppCompatActivity;
 
 public class IncomingCallNotificationActivity extends AppCompatActivity {
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        Intent intent = getIntent();
+  @Override
+  protected void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+    Intent intent = getIntent();
 
-        if (IncomingCallNotificationService.callBack == null) {
-            finish();
-            return;
-        }
-
-        if (TAP_ACTION.equals(intent.getAction())) {
-            IncomingCallNotificationService.callBack.onIncomingCallNotificationTap();
-        } else if (DECLINE_ACTION.equals(intent.getAction())) {
-            IncomingCallNotificationService.callBack.onDecline();
-        } else if (ANSWER_ACTION.equals(intent.getAction())) {
-            IncomingCallNotificationService.callBack.onAnswer();
-        } else if (TERMINATE_ACTION.equals(intent.getAction())) {
-            IncomingCallNotificationService.callBack.onIncomingCallNotificationTerminate();
-        }
-
-        finish();
+    if (INCOMING_CALL_TAP_ACTION.equals(intent.getAction())) {
+        PhoneCallNotification.incomingCallNotificationListener.onTap();
+    } else if (INCOMING_CALL_DECLINE_ACTION.equals(intent.getAction())) {
+        PhoneCallNotification.incomingCallNotificationListener.onDecline();
+    } else if (INCOMING_CALL_ANSWER_ACTION.equals(intent.getAction())) {
+        PhoneCallNotification.incomingCallNotificationListener.onAnswer();
+    } else if (INCOMING_CALL_TERMINATE_ACTION.equals(intent.getAction())) {
+        PhoneCallNotification.incomingCallNotificationListener.onTerminate();
     }
+
+    finish();
+  }
 }

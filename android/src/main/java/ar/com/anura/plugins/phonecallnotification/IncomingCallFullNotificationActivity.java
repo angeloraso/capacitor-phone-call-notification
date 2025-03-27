@@ -12,11 +12,7 @@ public class IncomingCallFullNotificationActivity extends AppCompatActivity {
         setShowWhenLocked(true);
         setTurnScreenOn(true);
 
-        if (IncomingCallNotificationService.callBack == null) {
-            return;
-        }
-
-        IncomingCallNotificationService.callBack.onIncomingCallNotificationTap();
+        PhoneCallNotification.incomingCallNotificationListener.onTap();
         finish();
     }
 }
