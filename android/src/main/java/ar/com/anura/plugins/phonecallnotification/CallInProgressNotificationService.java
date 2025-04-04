@@ -1,11 +1,12 @@
 package ar.com.anura.plugins.phonecallnotification;
 
-import static android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_SHORT_SERVICE;
+import static android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_SPECIAL_USE;
 
 import static ar.com.anura.plugins.phonecallnotification.PhoneCallNotification.CALL_IN_PROGRESS_HOLD_ACTION;
 import static ar.com.anura.plugins.phonecallnotification.PhoneCallNotification.CALL_IN_PROGRESS_NOTIFICATION_ID;
 import static ar.com.anura.plugins.phonecallnotification.PhoneCallNotification.CALL_IN_PROGRESS_TAP_ACTION;
 import static ar.com.anura.plugins.phonecallnotification.PhoneCallNotification.CALL_IN_PROGRESS_TERMINATE_ACTION;
+import static ar.com.anura.plugins.phonecallnotification.PhoneCallNotification.incomingCallNotificationSettings;
 
 import android.app.Notification;
 import android.app.NotificationChannel;
@@ -21,6 +22,8 @@ import android.graphics.drawable.Icon;
 import android.os.Build;
 import android.os.IBinder;
 import android.text.Html;
+
+import androidx.annotation.NonNull;
 
 public class CallInProgressNotificationService extends Service {
     public CallInProgressNotificationService() {}
@@ -63,11 +66,7 @@ public class CallInProgressNotificationService extends Service {
         }
 
         final String CHANNEL_ID = "call-in-progress-notification-channel-id";
-        final int CHANNEL_IMPORTANCE = NotificationManager.IMPORTANCE_MIN;
-
-        final NotificationChannel notificationChannel = new NotificationChannel(CHANNEL_ID, settings.getChannelName(), CHANNEL_IMPORTANCE);
-        notificationChannel.setDescription(settings.getChannelDescription());
-        notificationChannel.setLockscreenVisibility(Notification.VISIBILITY_PUBLIC);
+        final NotificationChannel notificationChannel = getNotificationChannel(incomingCallNotificationSettings, CHANNEL_ID);
         // Register the channel with the system; you can't change the importance or other notification behaviors after this
         getNotificationManager().createNotificationChannel(notificationChannel);
 
@@ -126,7 +125,7 @@ public class CallInProgressNotificationService extends Service {
             "<font color=\"" +
                 Color.parseColor(settings.getTerminateButtonColor()) +
                 "\">" +
-              settings.getTerminateButtonText() +
+                settings.getTerminateButtonText() +
                 "</font>",
             Html.FROM_HTML_MODE_LEGACY
             ),
@@ -139,10 +138,20 @@ public class CallInProgressNotificationService extends Service {
 
         Notification notification = notificationBuilder.build();
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-        startForeground(CALL_IN_PROGRESS_NOTIFICATION_ID, notification, FOREGROUND_SERVICE_TYPE_SHORT_SERVICE);
+            startForeground(CALL_IN_PROGRESS_NOTIFICATION_ID, notification, FOREGROUND_SERVICE_TYPE_SPECIAL_USE);
         } else {
-        startForeground(CALL_IN_PROGRESS_NOTIFICATION_ID, notification);
+            startForeground(CALL_IN_PROGRESS_NOTIFICATION_ID, notification);
         }
+    }
+
+    @NonNull
+    private static NotificationChannel getNotificationChannel(NotificationSettings settings, String CHANNEL_ID) {
+        final int CHANNEL_IMPORTANCE = NotificationManager.IMPORTANCE_MIN;
+
+        final NotificationChannel notificationChannel = new NotificationChannel(CHANNEL_ID, settings.getChannelName(), CHANNEL_IMPORTANCE);
+        notificationChannel.setDescription(settings.getChannelDescription());
+        notificationChannel.setLockscreenVisibility(Notification.VISIBILITY_PUBLIC);
+        return notificationChannel;
     }
 
     private PendingIntent getPendingIntent(String action) {

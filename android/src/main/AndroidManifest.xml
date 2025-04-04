@@ -10,8 +10,11 @@
     <!-- Needed for foreground service
     (https://developer.android.com/guide/components/foreground-services) -->
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
+    <!-- Needed for Android 14
+    https://developer.android.com/about/versions/14/behavior-changes-14#fgs-types -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" />
 
-    <application>
+  <application>
 
         <activity
           android:name=".IncomingCallFullNotificationActivity"
@@ -29,6 +32,12 @@
           android:exported="false" >
         </activity>
 
+        <service
+          android:name=".IncomingCallNotificationService"
+          android:enabled="true"
+          android:exported="false"
+          android:foregroundServiceType="shortService"/>
+
         <activity
           android:name=".CallInProgressNotificationActivity"
           android:enabled="true"
@@ -42,7 +51,11 @@
           android:name=".CallInProgressNotificationService"
           android:enabled="true"
           android:exported="false"
-          android:foregroundServiceType="shortService" />
+          android:foregroundServiceType="specialUse">
+          <property
+            android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
+            android:value="Necessary to show the phone call time progress" />
+        </service>
 
     </application>
 
