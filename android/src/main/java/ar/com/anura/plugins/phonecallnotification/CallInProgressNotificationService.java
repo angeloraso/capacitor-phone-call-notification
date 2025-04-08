@@ -6,7 +6,6 @@ import static ar.com.anura.plugins.phonecallnotification.PhoneCallNotification.C
 import static ar.com.anura.plugins.phonecallnotification.PhoneCallNotification.CALL_IN_PROGRESS_NOTIFICATION_ID;
 import static ar.com.anura.plugins.phonecallnotification.PhoneCallNotification.CALL_IN_PROGRESS_TAP_ACTION;
 import static ar.com.anura.plugins.phonecallnotification.PhoneCallNotification.CALL_IN_PROGRESS_TERMINATE_ACTION;
-import static ar.com.anura.plugins.phonecallnotification.PhoneCallNotification.incomingCallNotificationSettings;
 
 import android.app.Notification;
 import android.app.NotificationChannel;
@@ -66,7 +65,7 @@ public class CallInProgressNotificationService extends Service {
         }
 
         final String CHANNEL_ID = "call-in-progress-notification-channel-id";
-        final NotificationChannel notificationChannel = getNotificationChannel(incomingCallNotificationSettings, CHANNEL_ID);
+        final NotificationChannel notificationChannel = getNotificationChannel(settings, CHANNEL_ID);
         // Register the channel with the system; you can't change the importance or other notification behaviors after this
         getNotificationManager().createNotificationChannel(notificationChannel);
 

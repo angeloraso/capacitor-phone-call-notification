@@ -6,7 +6,6 @@ import static ar.com.anura.plugins.phonecallnotification.PhoneCallNotification.I
 import static ar.com.anura.plugins.phonecallnotification.PhoneCallNotification.INCOMING_CALL_NOTIFICATION_ID;
 import static ar.com.anura.plugins.phonecallnotification.PhoneCallNotification.INCOMING_CALL_TAP_ACTION;
 import static ar.com.anura.plugins.phonecallnotification.PhoneCallNotification.INCOMING_CALL_TERMINATE_ACTION;
-import static ar.com.anura.plugins.phonecallnotification.PhoneCallNotification.incomingCallNotificationSettings;
 
 import android.app.Notification;
 import android.app.NotificationChannel;
@@ -57,29 +56,30 @@ public class IncomingCallNotificationService extends Service {
     }
 
     public void createNotification() {
-      String iconName = incomingCallNotificationSettings.getIcon();
+      NotificationSettings settings = PhoneCallNotification.incomingCallNotificationSettings;
+      String iconName = settings.getIcon();
       int iconResource = getIconResId(iconName);
       if (iconResource == 0) { // If no icon at all was found, fall back to the app's icon
         iconResource = getApplicationContext().getApplicationInfo().icon;
       }
 
-      String pictureName = incomingCallNotificationSettings.getPicture();
+      String pictureName = settings.getPicture();
       int pictureResource = getIconResId(pictureName);
       if (pictureResource == 0) { // If no icon at all was found, fall back to the app's icon
         pictureResource = getApplicationContext().getApplicationInfo().icon;
       }
 
       final String CHANNEL_ID = "incoming-call-notification-channel-id";
-      final NotificationChannel notificationChannel = getNotificationChannel(incomingCallNotificationSettings, CHANNEL_ID);
+      final NotificationChannel notificationChannel = getNotificationChannel(settings, CHANNEL_ID);
       // Register the channel with the system; you can't change the importance or other notification behaviors after this
       getNotificationManager().createNotificationChannel(notificationChannel);
 
       Notification.Builder notificationBuilder = new Notification.Builder(this, CHANNEL_ID)
-        .setContentTitle(incomingCallNotificationSettings.getChannelName())
+        .setContentTitle(settings.getChannelName())
         // Ongoing notifications cannot be dismissed by the user
         .setOngoing(true)
         // Set the "ticker" text which is sent to accessibility services.
-        .setTicker(incomingCallNotificationSettings.getChannelName())
+        .setTicker(settings.getChannelName())
         // To know if it is necessary to disturb the user with a notification despite having activated the "Do not interrupt" mode
         .setCategory(Notification.CATEGORY_CALL)
         // Add a timestamp pertaining to the notification
@@ -89,11 +89,11 @@ public class IncomingCallNotificationService extends Service {
         // Make this notification automatically dismissed when the user touches it.
         .setAutoCancel(false)
         .setContentIntent(getPendingIntent(INCOMING_CALL_TAP_ACTION))
-        .setColor(Color.parseColor(incomingCallNotificationSettings.getColor()))
+        .setColor(Color.parseColor(settings.getColor()))
         // Set whether or not this notification should not bridge to other devices.
         .setLocalOnly(true);
 
-      Boolean thereIsACallInProgress = incomingCallNotificationSettings.getThereIsACallInProgress();
+      Boolean thereIsACallInProgress = settings.getThereIsACallInProgress();
 
       Intent intent = new Intent(getApplicationContext(), IncomingCallFullNotificationActivity.class);
       intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
@@ -110,30 +110,30 @@ public class IncomingCallNotificationService extends Service {
         Icon icon = Icon.createWithResource(this, pictureResource);
         Person caller = new Person.Builder()
           .setIcon(icon)
-          .setName(incomingCallNotificationSettings.getCallerName() + " - " + incomingCallNotificationSettings.getCallerNumber())
+          .setName(settings.getCallerName() + " - " + settings.getCallerNumber())
           .setImportant(true)
           .build();
 
         Notification.CallStyle notificationStyle;
         notificationStyle = Notification.CallStyle.forIncomingCall(caller, getPendingIntent(INCOMING_CALL_DECLINE_ACTION), getPendingIntent(INCOMING_CALL_ANSWER_ACTION));
 
-        notificationStyle.setAnswerButtonColorHint(Color.parseColor(incomingCallNotificationSettings.getAnswerButtonColor()));
-        notificationStyle.setDeclineButtonColorHint(Color.parseColor(incomingCallNotificationSettings.getDeclineButtonColor()));
+        notificationStyle.setAnswerButtonColorHint(Color.parseColor(settings.getAnswerButtonColor()));
+        notificationStyle.setDeclineButtonColorHint(Color.parseColor(settings.getDeclineButtonColor()));
         notificationBuilder.setStyle((notificationStyle));
         notificationBuilder.setSmallIcon(getIconResId("answer", "drawable"));
         notificationBuilder.setForegroundServiceBehavior(Notification.FOREGROUND_SERVICE_IMMEDIATE);
       } else {
         notificationBuilder.setSmallIcon(iconResource);
-        notificationBuilder.setContentText(incomingCallNotificationSettings.getCallerName() + " - " + incomingCallNotificationSettings.getCallerNumber());
+        notificationBuilder.setContentText(settings.getCallerName() + " - " + settings.getCallerNumber());
 
         if (thereIsACallInProgress) {
           Notification.Action answerAction = new Notification.Action.Builder(
             Icon.createWithResource(this, getIconResId("hold_answer", "drawable")),
             Html.fromHtml(
               "<font color=\"" +
-                Color.parseColor(incomingCallNotificationSettings.getHoldAndAnswerButtonColor()) +
+                Color.parseColor(settings.getHoldAndAnswerButtonColor()) +
                 "\">" +
-                incomingCallNotificationSettings.getHoldAndAnswerButtonText() +
+                settings.getHoldAndAnswerButtonText() +
                 "</font>",
               Html.FROM_HTML_MODE_LEGACY
             ),
@@ -145,9 +145,9 @@ public class IncomingCallNotificationService extends Service {
             Icon.createWithResource(this, getIconResId("decline", "drawable")),
             Html.fromHtml(
               "<font color=\"" +
-                Color.parseColor(incomingCallNotificationSettings.getDeclineSecondCallButtonColor()) +
+                Color.parseColor(settings.getDeclineSecondCallButtonColor()) +
                 "\">" +
-                incomingCallNotificationSettings.getDeclineSecondCallButtonText() +
+                settings.getDeclineSecondCallButtonText() +
                 "</font>",
               Html.FROM_HTML_MODE_LEGACY
             ),
@@ -159,9 +159,9 @@ public class IncomingCallNotificationService extends Service {
             Icon.createWithResource(this, getIconResId("terminate_answer", "drawable")),
             Html.fromHtml(
               "<font color=\"" +
-                Color.parseColor(incomingCallNotificationSettings.getTerminateAndAnswerButtonColor()) +
+                Color.parseColor(settings.getTerminateAndAnswerButtonColor()) +
                 "\">" +
-                incomingCallNotificationSettings.getTerminateAndAnswerButtonText() +
+                settings.getTerminateAndAnswerButtonText() +
                 "</font>",
               Html.FROM_HTML_MODE_LEGACY
             ),
@@ -174,9 +174,9 @@ public class IncomingCallNotificationService extends Service {
             Icon.createWithResource(this, getIconResId("answer", "drawable")),
             Html.fromHtml(
               "<font color=\"" +
-                Color.parseColor(incomingCallNotificationSettings.getAnswerButtonColor()) +
+                Color.parseColor(settings.getAnswerButtonColor()) +
                 "\">" +
-                incomingCallNotificationSettings.getAnswerButtonText() +
+                settings.getAnswerButtonText() +
                 "</font>",
               Html.FROM_HTML_MODE_LEGACY
             ),
@@ -188,9 +188,9 @@ public class IncomingCallNotificationService extends Service {
             Icon.createWithResource(this, getIconResId("decline", "drawable")),
             Html.fromHtml(
               "<font color=\"" +
-                Color.parseColor(incomingCallNotificationSettings.getDeclineButtonColor()) +
+                Color.parseColor(settings.getDeclineButtonColor()) +
                 "\">" +
-                incomingCallNotificationSettings.getDeclineButtonText() +
+                settings.getDeclineButtonText() +
                 "</font>",
               Html.FROM_HTML_MODE_LEGACY
             ),
