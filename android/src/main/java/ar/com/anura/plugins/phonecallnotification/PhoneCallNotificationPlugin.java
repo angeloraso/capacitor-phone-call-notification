@@ -1,7 +1,6 @@
 package ar.com.anura.plugins.phonecallnotification;
 
 import android.Manifest;
-import android.content.Intent;
 import android.os.Build;
 
 import com.getcapacitor.JSObject;
@@ -14,270 +13,235 @@ import com.getcapacitor.annotation.Permission;
 import com.getcapacitor.annotation.PermissionCallback;
 
 @CapacitorPlugin(
-    name = "PhoneCallNotification",
-    permissions = @Permission(
-        strings = { Manifest.permission.POST_NOTIFICATIONS },
-        alias = PhoneCallNotificationPlugin.PHONE_CALL_NOTIFICATIONS_PERMISSION
-    )
+  name = "PhoneCallNotification",
+  permissions = @Permission(
+    strings = { Manifest.permission.POST_NOTIFICATIONS },
+    alias = PhoneCallNotificationPlugin.PHONE_CALL_NOTIFICATIONS_PERMISSION
+  )
 )
 public class PhoneCallNotificationPlugin extends Plugin {
+  static final String PHONE_CALL_NOTIFICATIONS_PERMISSION = "display";
 
-    static final String PHONE_CALL_NOTIFICATIONS_PERMISSION = "display";
+  public void load() {
+    PhoneCallNotification.initialize(getActivity());
+  }
 
-    public void load() {
-        PhoneCallNotification.initialize(getActivity());
+  private void onPhoneCallNotificationEvent(String response) {
+    JSObject res = new JSObject();
+    res.put("response", response);
+    bridge.triggerWindowJSEvent("response");
+    notifyListeners("response", res);
+  }
+
+  @PluginMethod
+  public void showIncomingPhoneCallNotification(PluginCall call) {
+    if (getActivity().isFinishing()) {
+      call.reject("Phone call notification plugin error: App is finishing");
+      return;
     }
 
-    private void onPhoneCallNotificationEvent(String response) {
-        JSObject res = new JSObject();
-        res.put("response", response);
-        bridge.triggerWindowJSEvent("response");
-        notifyListeners("response", res);
-    }
+    IncomingPhoneCallNotificationSettings settings = getIncomingPhoneCallNotificationSettings(call);
 
-    @PluginMethod
-    public void show(PluginCall call) {
-        if (getActivity().isFinishing()) {
-            call.reject("Phone call notification plugin error: App is finishing");
-            return;
+    PhoneCallNotification.showIncomingCallNotification(
+      settings,
+      new IncomingCallNotificationListener() {
+        @Override
+        public void onTap() {
+          onPhoneCallNotificationEvent("tap");
         }
 
-        NotificationSettings settings = getSettings(call);
-        if (settings.getType().equals("incoming")) {
-          showIncomingCallNotification(settings);
-        } else if (settings.getType().equals("inProgress")) {
-            showCallInProgressNotification(settings);
-        } else {
-            call.reject("Phone call notification plugin error: Notification type is required");
-            return;
+        @Override
+        public void onDecline() {
+          onPhoneCallNotificationEvent("decline");
         }
 
-        call.resolve();
-    }
-
-    public void showIncomingCallNotification(NotificationSettings settings) {
-        PhoneCallNotification.showIncomingCallNotification(
-                settings,
-                new IncomingCallNotificationListener() {
-                    @Override
-                    public void onTap() {
-                        onPhoneCallNotificationEvent("tap");
-                    }
-
-                    @Override
-                    public void onDecline() {
-                        onPhoneCallNotificationEvent("decline");
-                    }
-
-                    @Override
-                    public void onAnswer() {
-                        onPhoneCallNotificationEvent("answer");
-                    }
-
-                    @Override
-                    public void onTerminate() {
-                        onPhoneCallNotificationEvent("terminate");
-                    }
-                }
-        );
-    }
-
-    public void showCallInProgressNotification(NotificationSettings settings) {
-        PhoneCallNotification.showCallInProgressNotification(
-                settings,
-                new CallInProgressNotificationListener() {
-                    @Override
-                    public void onTap() {
-                        onPhoneCallNotificationEvent("tap");
-                    }
-
-                    @Override
-                    public void onHold() {
-                        onPhoneCallNotificationEvent("hold");
-                    }
-
-                    @Override
-                    public void onTerminate() {
-                        onPhoneCallNotificationEvent("terminate");
-                    }
-                }
-        );
-    }
-
-    @PluginMethod
-    public void hide(PluginCall call) {
-        if (getActivity().isFinishing()) {
-            call.reject("Phone call notification plugin error: App is finishing");
-            return;
+        @Override
+        public void onAnswer() {
+          onPhoneCallNotificationEvent("answer");
         }
 
-        String type = call.getString("type");
-        if (type == null) {
-            call.reject("The notification type is required");
-            return;
+        @Override
+        public void onTerminate() {
+          onPhoneCallNotificationEvent("terminate");
         }
+      }
+    );
+  }
 
-        if (type.equals("incoming")) {
-            PhoneCallNotification.hideIncomingCall();
-        } else if (type.equals("inProgress")) {
-            PhoneCallNotification.hideCallInProgress();
-        }
-
-        call.resolve();
+  @PluginMethod
+  public void showCallInProgressNotification(PluginCall call) {
+    if (getActivity().isFinishing()) {
+      call.reject("Phone call notification plugin error: App is finishing");
+      return;
     }
 
-    @PluginMethod
-    public void checkNotificationsPermission(PluginCall call) {
+    CallInProgressNotificationSettings settings = getCallInProgressNotificationSettings(call);
+
+    PhoneCallNotification.showCallInProgressNotification(
+      settings,
+      new CallInProgressNotificationListener() {
+        @Override
+        public void onTap() {
+          onPhoneCallNotificationEvent("tap");
+        }
+
+        @Override
+        public void onHold() {
+          onPhoneCallNotificationEvent("hold");
+        }
+
+        @Override
+        public void onTerminate() {
+          onPhoneCallNotificationEvent("terminate");
+        }
+      }
+    );
+  }
+
+  @PluginMethod
+  public void hideIncomingPhoneCallNotification(PluginCall call) {
+    if (getActivity().isFinishing()) {
+      call.reject("Phone call notification plugin error: App is finishing");
+      return;
+    }
+
+    PhoneCallNotification.hideIncomingPhoneCallNotification();
+    call.resolve();
+  }
+
+  @PluginMethod
+  public void hideCallInProgressNotification(PluginCall call) {
+    if (getActivity().isFinishing()) {
+      call.reject("Phone call notification plugin error: App is finishing");
+      return;
+    }
+
+    PhoneCallNotification.hideCallInProgressNotification();
+    call.resolve();
+  }
+
+  @PluginMethod
+  public void hideAll(PluginCall call) {
+    if (getActivity().isFinishing()) {
+      call.reject("Phone call notification plugin error: App is finishing");
+      return;
+    }
+
+    PhoneCallNotification.hideIncomingPhoneCallNotification();
+    PhoneCallNotification.hideCallInProgressNotification();
+    call.resolve();
+  }
+
+  @PluginMethod
+  public void checkNotificationsPermission(PluginCall call) {
+    notificationPermissionCallback(call);
+  }
+
+  @PluginMethod
+  public void requestNotificationsPermission(PluginCall call) {
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU || getPermissionState(PHONE_CALL_NOTIFICATIONS_PERMISSION) == PermissionState.GRANTED) {
       notificationPermissionCallback(call);
+    } else {
+      requestPermissionForAlias(PHONE_CALL_NOTIFICATIONS_PERMISSION, call, "notificationPermissionCallback");
     }
+  }
 
-    @PluginMethod
-    public void requestNotificationsPermission(PluginCall call) {
-      if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU || getPermissionState(PHONE_CALL_NOTIFICATIONS_PERMISSION) == PermissionState.GRANTED) {
-        notificationPermissionCallback(call);
-      } else {
-        requestPermissionForAlias(PHONE_CALL_NOTIFICATIONS_PERMISSION, call, "notificationPermissionCallback");
-      }
+  @PermissionCallback
+  private void notificationPermissionCallback(PluginCall call) {
+    JSObject permissionsResultJSON = new JSObject();
+    permissionsResultJSON.put(PHONE_CALL_NOTIFICATIONS_PERMISSION, getPermissionText(PhoneCallNotification.areNotificationsEnabled()));
+    call.resolve(permissionsResultJSON);
+  }
+
+  private String getPermissionText(boolean enabled) {
+    if (enabled) {
+      return "granted";
+    } else {
+      return "denied";
     }
+  }
 
-    @PermissionCallback
-    private void notificationPermissionCallback(PluginCall call) {
-      JSObject permissionsResultJSON = new JSObject();
-      permissionsResultJSON.put(PHONE_CALL_NOTIFICATIONS_PERMISSION, getPermissionText(PhoneCallNotification.areNotificationsEnabled()));
-      call.resolve(permissionsResultJSON);
-    }
+  private IncomingPhoneCallNotificationSettings getIncomingPhoneCallNotificationSettings(PluginCall call) {
+    String icon = call.getString("icon");
+    String picture = call.getString("picture");
+    Boolean callWaiting = call.getBoolean("callWaiting");
+    String declineButtonText = call.getString("declineButtonText");
+    String declineButtonColor = call.getString("declineButtonColor");
+    String answerButtonText = call.getString("answerButtonText");
+    String answerButtonColor = call.getString("answerButtonColor");
+    String terminateAndAnswerButtonText = call.getString("terminateAndAnswerButtonText");
+    String terminateAndAnswerButtonColor = call.getString("terminateAndAnswerButtonColor");
+    String terminateButtonText = call.getString("terminateButtonText");
+    String terminateButtonColor = call.getString("terminateButtonColor");
+    String declineCallWaitingButtonText = call.getString("declineCallWaitingButtonText");
+    String declineCallWaitingButtonColor = call.getString("declineCallWaitingButtonColor");
+    String holdButtonText = call.getString("holdButtonText");
+    String holdButtonColor = call.getString("holdButtonColor");
+    String holdAndAnswerButtonText = call.getString("holdAndAnswerButtonText");
+    String holdAndAnswerButtonColor = call.getString("holdAndAnswerButtonColor");
+    String color = call.getString("color");
+    Integer durationValue = call.getInt("duration");
+    int duration = durationValue != null ? durationValue : 0;
+    String channelName = call.getString("channelName");
+    String channelDescription = call.getString("channelDescription");
+    String callingName = call.getString("callingName");
+    String callingNumber = call.getString("callingNumber");
 
-    private String getPermissionText(boolean enabled) {
-      if (enabled) {
-        return "granted";
-      } else {
-        return "denied";
-      }
-    }
+    return new IncomingPhoneCallNotificationSettings.Builder()
+      .icon(icon)
+      .picture(picture)
+      .callWaiting(callWaiting)
+      .declineButtonText(declineButtonText)
+      .declineButtonColor(declineButtonColor)
+      .answerButtonText(answerButtonText)
+      .answerButtonColor(answerButtonColor)
+      .terminateAndAnswerButtonText(terminateAndAnswerButtonText)
+      .terminateAndAnswerButtonColor(terminateAndAnswerButtonColor)
+      .terminateButtonText(terminateButtonText)
+      .terminateButtonColor(terminateButtonColor)
+      .declineCallWaitingButtonText(declineCallWaitingButtonText)
+      .declineCallWaitingButtonColor(declineCallWaitingButtonColor)
+      .holdButtonText(holdButtonText)
+      .holdButtonColor(holdButtonColor)
+      .holdAndAnswerButtonText(holdAndAnswerButtonText)
+      .holdAndAnswerButtonColor(holdAndAnswerButtonColor)
+      .color(color)
+      .duration(duration)
+      .channelName(channelName)
+      .channelDescription(channelDescription)
+      .callingName(callingName)
+      .callingNumber(callingNumber)
+      .build();
+  }
 
-    private NotificationSettings getSettings(PluginCall call) {
-        NotificationSettings settings = new NotificationSettings();
+  private CallInProgressNotificationSettings getCallInProgressNotificationSettings(PluginCall call) {
+    String icon = call.getString("icon");
+    String picture = call.getString("picture");
+    String terminateButtonText = call.getString("terminateButtonText");
+    String terminateButtonColor = call.getString("terminateButtonColor");
+    String holdButtonText = call.getString("holdButtonText");
+    String holdButtonColor = call.getString("holdButtonColor");
+    String color = call.getString("color");
+    Integer durationValue = call.getInt("duration");
+    int duration = durationValue != null ? durationValue : 0;
+    String channelName = call.getString("channelName");
+    String channelDescription = call.getString("channelDescription");
+    String callingName = call.getString("callingName");
+    String callingNumber = call.getString("callingNumber");
 
-        String type = call.getString("type");
-        if (type != null) {
-            settings.setType(type);
-        }
-
-        String callerName = call.getString("callerName");
-        if (callerName != null) {
-            settings.setCallerName(callerName);
-        }
-
-        String callerNumber = call.getString("callerNumber");
-        if (callerNumber != null) {
-            settings.setCallerNumber(callerNumber);
-        }
-
-        String icon = call.getString("icon");
-        if (icon != null) {
-            settings.setIcon(icon);
-        }
-
-        Boolean thereIsACallInProgress = call.getBoolean("thereIsACallInProgress");
-        if (thereIsACallInProgress != null) {
-            settings.setThereIsACallInProgress(thereIsACallInProgress);
-        }
-
-        String declineButtonText = call.getString("declineButtonText");
-        if (declineButtonText != null) {
-            settings.setDeclineButtonText(declineButtonText);
-        }
-
-        String answerButtonText = call.getString("answerButtonText");
-        if (answerButtonText != null) {
-            settings.setAnswerButtonText(answerButtonText);
-        }
-
-        String terminateAndAnswerButtonText = call.getString("terminateAndAnswerButtonText");
-        if (terminateAndAnswerButtonText != null) {
-            settings.setTerminateAndAnswerButtonText(terminateAndAnswerButtonText);
-        }
-
-        String terminateButtonText = call.getString("terminateButtonText");
-        if (terminateButtonText != null) {
-            settings.setTerminateButtonText(terminateButtonText);
-        }
-
-        String holdButtonText = call.getString("holdButtonText");
-        if (holdButtonText != null) {
-            settings.setHoldButtonText(holdButtonText);
-        }
-
-        String declineSecondCallButtonText = call.getString("declineSecondCallButtonText");
-        if (declineSecondCallButtonText != null) {
-            settings.setDeclineSecondCallButtonText(declineSecondCallButtonText);
-        }
-
-        String holdAndAnswerButtonText = call.getString("holdAndAnswerButtonText");
-        if (holdAndAnswerButtonText != null) {
-            settings.setHoldAndAnswerButtonText(holdAndAnswerButtonText);
-        }
-
-        String declineButtonColor = call.getString("declineButtonColor");
-        if (declineButtonColor != null) {
-            settings.setDeclineButtonColor(declineButtonColor);
-        }
-
-        String answerButtonColor = call.getString("answerButtonColor");
-        if (answerButtonColor != null) {
-            settings.setAnswerButtonColor(answerButtonColor);
-        }
-
-        String terminateAndAnswerButtonColor = call.getString("terminateAndAnswerButtonColor");
-        if (terminateAndAnswerButtonColor != null) {
-            settings.setTerminateAndAnswerButtonColor(terminateAndAnswerButtonColor);
-        }
-
-        String terminateButtonColor = call.getString("terminateButtonColor");
-        if (terminateButtonColor != null) {
-            settings.setTerminateButtonColor(terminateButtonColor);
-        }
-
-        String holdButtonColor = call.getString("holdButtonColor");
-        if (holdButtonColor != null) {
-            settings.setHoldButtonColor(holdButtonColor);
-        }
-
-        String declineSecondCallButtonColor = call.getString("declineSecondCallButtonColor");
-        if (declineSecondCallButtonColor != null) {
-            settings.setDeclineSecondCallButtonColor(declineSecondCallButtonColor);
-        }
-
-        String holdAndAnswerButtonColor = call.getString("holdAndAnswerButtonColor");
-        if (holdAndAnswerButtonColor != null) {
-            settings.setHoldAndAnswerButtonColor(holdAndAnswerButtonColor);
-        }
-
-        String color = call.getString("color");
-        if (color != null) {
-            settings.setColor(color);
-        }
-
-        Integer duration = call.getInt("duration");
-        if (duration != null && duration >= 0) {
-            settings.setDuration(duration);
-        }
-
-        String picture = call.getString("picture");
-        if (picture != null) {
-            settings.setPicture(picture);
-        }
-
-        String channelName = call.getString("channelName");
-        if (channelName != null) {
-            settings.setChannelName(channelName);
-        }
-
-        String channelDescription = call.getString("channelDescription");
-        if (channelDescription != null) {
-            settings.setChannelDescription(channelDescription);
-        }
-
-        return settings;
-    }
+    return new CallInProgressNotificationSettings.Builder()
+      .icon(icon)
+      .picture(picture)
+      .terminateButtonText(terminateButtonText)
+      .terminateButtonColor(terminateButtonColor)
+      .holdButtonText(holdButtonText)
+      .holdButtonColor(holdButtonColor)
+      .color(color)
+      .duration(duration)
+      .channelName(channelName)
+      .channelDescription(channelDescription)
+      .callingName(callingName)
+      .callingNumber(callingNumber)
+      .build();
+  }
 }

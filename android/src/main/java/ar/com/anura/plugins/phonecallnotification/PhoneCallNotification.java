@@ -6,10 +6,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.NotificationManagerCompat;
 
 public class PhoneCallNotification {
-
   private static AppCompatActivity activity;
-  static NotificationSettings incomingCallNotificationSettings;
-  static NotificationSettings callInProgressNotificationSettings;
   static IncomingCallNotificationListener incomingCallNotificationListener;
   static CallInProgressNotificationListener callInProgressNotificationListener;
 
@@ -27,39 +24,35 @@ public class PhoneCallNotification {
 
   public static void initialize(final AppCompatActivity activity) {
     PhoneCallNotification.activity = activity;
-    incomingCallNotificationSettings = new NotificationSettings();
-    callInProgressNotificationSettings = new NotificationSettings();
   }
 
-  public static void showIncomingCallNotification(final NotificationSettings settings, final IncomingCallNotificationListener listener) {
-    incomingCallNotificationSettings = settings;
+  public static void showIncomingCallNotification(final IncomingPhoneCallNotificationSettings settings, final IncomingCallNotificationListener listener) {
     incomingCallNotificationListener = listener;
 
     Context context = activity.getApplicationContext();
 
     Intent intent = new Intent(activity.getApplicationContext(), IncomingCallNotificationService.class);
+    intent.putExtra("settings", settings);
     context.startForegroundService(intent);
   }
 
-  public static void showCallInProgressNotification(final NotificationSettings settings, final CallInProgressNotificationListener listener) {
-    callInProgressNotificationSettings = settings;
+  public static void showCallInProgressNotification(final CallInProgressNotificationSettings settings, final CallInProgressNotificationListener listener) {
     callInProgressNotificationListener = listener;
 
     Context context = activity.getApplicationContext();
 
     Intent intent = new Intent(context, CallInProgressNotificationService.class);
+    intent.putExtra("settings", settings);
     context.startForegroundService(intent);
   }
 
-  public static void hideIncomingCall() {
-    incomingCallNotificationSettings = null;
+  public static void hideIncomingPhoneCallNotification() {
     Context context = activity.getApplicationContext();
     Intent intent = new Intent(context, IncomingCallNotificationService.class);
     context.stopService(intent);
   }
 
-  public static void hideCallInProgress() {
-    callInProgressNotificationSettings = null;
+  public static void hideCallInProgressNotification() {
     Context context = activity.getApplicationContext();
     Intent intent = new Intent(context, CallInProgressNotificationService.class);
     context.stopService(intent);

@@ -46,12 +46,17 @@ public class CallInProgressNotificationService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        createNotification();
+      CallInProgressNotificationSettings settings = (CallInProgressNotificationSettings) intent.getSerializableExtra("settings");
+
+        if (settings == null) {
+          settings = new CallInProgressNotificationSettings.Builder().build();
+        }
+
+        createNotification(settings);
         return START_STICKY;
     }
 
-    public void createNotification() {
-        NotificationSettings settings = PhoneCallNotification.callInProgressNotificationSettings;
+    public void createNotification(CallInProgressNotificationSettings settings) {
         String iconName = settings.getIcon();
         int iconResource = getIconResId(iconName);
         if (iconResource == 0) { // If no icon at all was found, fall back to the app's icon
@@ -97,7 +102,7 @@ public class CallInProgressNotificationService extends Service {
         Icon icon = Icon.createWithResource(this, pictureResource);
         Person caller = new Person.Builder()
             .setIcon(icon)
-            .setName(settings.getCallerName() + " - " + settings.getCallerNumber())
+            .setName(settings.getCallingName() + " - " + settings.getCallingNumber())
             .setImportant(true)
             .build();
 
@@ -107,7 +112,7 @@ public class CallInProgressNotificationService extends Service {
         notificationBuilder.setForegroundServiceBehavior(Notification.FOREGROUND_SERVICE_IMMEDIATE);
         } else {
         notificationBuilder.setSmallIcon(iconResource);
-        notificationBuilder.setContentText(settings.getCallerName() + " - " + settings.getCallerNumber());
+        notificationBuilder.setContentText(settings.getCallingName() + " - " + settings.getCallingNumber());
         Notification.Action answerAction = new Notification.Action.Builder(
             Icon.createWithResource(this, getIconResId("hold", "drawable")),
             Html.fromHtml(
@@ -144,7 +149,7 @@ public class CallInProgressNotificationService extends Service {
     }
 
     @NonNull
-    private static NotificationChannel getNotificationChannel(NotificationSettings settings, String CHANNEL_ID) {
+    private static NotificationChannel getNotificationChannel(CallInProgressNotificationSettings settings, String CHANNEL_ID) {
         final int CHANNEL_IMPORTANCE = NotificationManager.IMPORTANCE_MIN;
 
         final NotificationChannel notificationChannel = new NotificationChannel(CHANNEL_ID, settings.getChannelName(), CHANNEL_IMPORTANCE);
