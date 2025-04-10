@@ -20,7 +20,7 @@ public class IncomingPhoneCallNotificationSettings implements Serializable {
   public static final String DEFAULT_HOLD_BUTTON_COLOR = "#2b94f4";
   public static final String DEFAULT_HOLD_AND_ANSWER_BUTTON_TEXT = "Hold & answer";
   public static final String DEFAULT_HOLD_AND_ANSWER_BUTTON_COLOR = "#65bf6c";
-  public static final String DEFAULT_COLOR = "#55335A";
+  public static final String DEFAULT_COLOR = "#666666";
   public static final int DEFAULT_DURATION = 0;
   public static final String DEFAULT_CHANNEL_NAME = "phone-call-notification";
   public static final String DEFAULT_CHANNEL_DESCRIPTION = "Phone call notifications";
