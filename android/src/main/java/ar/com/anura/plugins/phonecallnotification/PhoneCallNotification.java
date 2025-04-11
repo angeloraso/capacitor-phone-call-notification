@@ -55,20 +55,12 @@ public class PhoneCallNotification {
   }
 
   public static void hideIncomingPhoneCallNotification() {
-    if (!areNotificationsEnabled()) {
-      return;
-    }
-
     Context context = activity.getApplicationContext();
     Intent intent = new Intent(context, IncomingCallNotificationService.class);
     context.stopService(intent);
   }
 
   public static void hideCallInProgressNotification() {
-    if (!areNotificationsEnabled()) {
-      return;
-    }
-
     Context context = activity.getApplicationContext();
     Intent intent = new Intent(context, CallInProgressNotificationService.class);
     context.stopService(intent);
