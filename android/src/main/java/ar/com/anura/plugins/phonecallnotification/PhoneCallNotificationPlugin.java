@@ -66,6 +66,8 @@ public class PhoneCallNotificationPlugin extends Plugin {
         }
       }
     );
+
+    call.resolve();
   }
 
   @PluginMethod
@@ -96,6 +98,8 @@ public class PhoneCallNotificationPlugin extends Plugin {
         }
       }
     );
+
+    call.resolve();
   }
 
   @PluginMethod

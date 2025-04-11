@@ -27,6 +27,10 @@ public class PhoneCallNotification {
   }
 
   public static void showIncomingCallNotification(final IncomingPhoneCallNotificationSettings settings, final IncomingCallNotificationListener listener) {
+    if (!areNotificationsEnabled()) {
+      return;
+    }
+
     incomingCallNotificationListener = listener;
 
     Context context = activity.getApplicationContext();
@@ -37,6 +41,10 @@ public class PhoneCallNotification {
   }
 
   public static void showCallInProgressNotification(final CallInProgressNotificationSettings settings, final CallInProgressNotificationListener listener) {
+    if (!areNotificationsEnabled()) {
+      return;
+    }
+
     callInProgressNotificationListener = listener;
 
     Context context = activity.getApplicationContext();
@@ -47,12 +55,20 @@ public class PhoneCallNotification {
   }
 
   public static void hideIncomingPhoneCallNotification() {
+    if (!areNotificationsEnabled()) {
+      return;
+    }
+
     Context context = activity.getApplicationContext();
     Intent intent = new Intent(context, IncomingCallNotificationService.class);
     context.stopService(intent);
   }
 
   public static void hideCallInProgressNotification() {
+    if (!areNotificationsEnabled()) {
+      return;
+    }
+
     Context context = activity.getApplicationContext();
     Intent intent = new Intent(context, CallInProgressNotificationService.class);
     context.stopService(intent);
