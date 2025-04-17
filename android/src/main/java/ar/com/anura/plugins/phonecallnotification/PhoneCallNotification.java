@@ -37,6 +37,7 @@ public class PhoneCallNotification {
 
     Intent intent = new Intent(activity.getApplicationContext(), IncomingCallNotificationService.class);
     intent.putExtra("settings", settings);
+    IncomingCallNotificationService.requestStart();
     context.startForegroundService(intent);
   }
 
@@ -51,18 +52,21 @@ public class PhoneCallNotification {
 
     Intent intent = new Intent(context, CallInProgressNotificationService.class);
     intent.putExtra("settings", settings);
+    CallInProgressNotificationService.requestStart();
     context.startForegroundService(intent);
   }
 
   public static void hideIncomingPhoneCallNotification() {
     Context context = activity.getApplicationContext();
     Intent intent = new Intent(context, IncomingCallNotificationService.class);
+    IncomingCallNotificationService.requestStop();
     context.stopService(intent);
   }
 
   public static void hideCallInProgressNotification() {
     Context context = activity.getApplicationContext();
     Intent intent = new Intent(context, CallInProgressNotificationService.class);
+    CallInProgressNotificationService.requestStop();
     context.stopService(intent);
   }
 

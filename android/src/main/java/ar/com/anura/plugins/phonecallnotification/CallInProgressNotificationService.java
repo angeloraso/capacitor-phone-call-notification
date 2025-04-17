@@ -21,10 +21,14 @@ import android.graphics.drawable.Icon;
 import android.os.Build;
 import android.os.IBinder;
 import android.text.Html;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 
 public class CallInProgressNotificationService extends Service {
+    private static boolean shouldStop = false;
+    private static final String TAG = "CallInProgressNotificationService";
+
     public CallInProgressNotificationService() {}
 
     @Override
@@ -146,6 +150,11 @@ public class CallInProgressNotificationService extends Service {
         } else {
             startForeground(CALL_IN_PROGRESS_NOTIFICATION_ID, notification);
         }
+
+        if (shouldStop) {
+          Log.d(TAG, "Should stop service");
+          stopSelf();
+        }
     }
 
     @NonNull
@@ -209,5 +218,13 @@ public class CallInProgressNotificationService extends Service {
         String pkgName = getPackageName();
 
         return res.getIdentifier(icon, type, pkgName);
+    }
+
+    public static void requestStop() {
+      shouldStop = true;
+    }
+
+    public static void requestStart() {
+      shouldStop = false;
     }
 }
