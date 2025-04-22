@@ -26,23 +26,48 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 
 public class IncomingCallNotificationService extends Service {
-  private static boolean shouldStop = false;
+  private static boolean started = false;
+  private static boolean stopImmediately = false;
   private static final String TAG = "IncomingCallNotificationService";
 
   public IncomingCallNotificationService() {}
 
+  public static void startService(Context context, IncomingPhoneCallNotificationSettings settings) {
+    Log.d(TAG, "startService");
+    started = false;
+    stopImmediately = false;
+    Intent intent = new Intent(context, IncomingCallNotificationService.class);
+    intent.putExtra("settings", settings);
+    context.startForegroundService(intent);
+  }
+
+  public static void stopService(Context context) {
+    if (started) {
+      Log.d(TAG, "stopService: service was started");
+      Intent intent = new Intent(context, IncomingCallNotificationService.class);
+      context.stopService(intent);
+      started = false;
+    } else {
+      Log.d(TAG, "stopService: service was not started");
+      stopImmediately = true;
+    }
+  }
+
   @Override
   public IBinder onBind(Intent intent) {
+    Log.d(TAG, "onBind");
     return null;
   }
 
   @Override
   public void onCreate() {
+    Log.d(TAG, "onCreate");
     super.onCreate();
   }
 
   @Override
   public void onDestroy() {
+    Log.d(TAG, "onDestroy");
     super.onDestroy();
     stopForeground(true);
     getNotificationManager().cancel(INCOMING_CALL_NOTIFICATION_ID);
@@ -54,6 +79,7 @@ public class IncomingCallNotificationService extends Service {
    */
   @Override
   public int onStartCommand(Intent intent, int flags, int startId) {
+    Log.d(TAG, "onStartCommand");
     IncomingPhoneCallNotificationSettings settings = (IncomingPhoneCallNotificationSettings) intent.getSerializableExtra("settings");
 
     if (settings == null) {
@@ -65,6 +91,7 @@ public class IncomingCallNotificationService extends Service {
   }
 
   public void createNotification(IncomingPhoneCallNotificationSettings settings) {
+    Log.d(TAG, "createNotification");
     String iconName = settings.getIcon();
     int iconResource = getIconResId(iconName);
     if (iconResource == 0) { // If no icon at all was found, fall back to the app's icon
@@ -217,9 +244,11 @@ public class IncomingCallNotificationService extends Service {
       startForeground(INCOMING_CALL_NOTIFICATION_ID, notification);
     }
 
-    if (shouldStop) {
-      Log.d(TAG, "Should stop service");
-      stopSelf();
+    started = true;
+
+    if (stopImmediately) {
+      Log.d(TAG, "Stop immediately");
+      IncomingCallNotificationService.stopService(getApplicationContext());
     }
   }
 
@@ -288,13 +317,5 @@ public class IncomingCallNotificationService extends Service {
     String pkgName = getPackageName();
 
     return res.getIdentifier(icon, type, pkgName);
-  }
-
-  public static void requestStop() {
-    shouldStop = true;
-  }
-
-  public static void requestStart() {
-    shouldStop = false;
   }
 }

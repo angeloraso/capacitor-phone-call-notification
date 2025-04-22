@@ -2,10 +2,13 @@ package ar.com.anura.plugins.phonecallnotification;
 
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.NotificationManagerCompat;
 
 public class PhoneCallNotification {
+  private static final String TAG = "PhoneCallNotification";
   private static AppCompatActivity activity;
   static IncomingCallNotificationListener incomingCallNotificationListener;
   static CallInProgressNotificationListener callInProgressNotificationListener;
@@ -31,14 +34,9 @@ public class PhoneCallNotification {
       return;
     }
 
+    Log.d(TAG, "showIncomingCallNotification");
     incomingCallNotificationListener = listener;
-
-    Context context = activity.getApplicationContext();
-
-    Intent intent = new Intent(activity.getApplicationContext(), IncomingCallNotificationService.class);
-    intent.putExtra("settings", settings);
-    IncomingCallNotificationService.requestStart();
-    context.startForegroundService(intent);
+    IncomingCallNotificationService.startService(activity.getApplicationContext(), settings);
   }
 
   public static void showCallInProgressNotification(final CallInProgressNotificationSettings settings, final CallInProgressNotificationListener listener) {
@@ -46,28 +44,19 @@ public class PhoneCallNotification {
       return;
     }
 
+    Log.d(TAG, "showCallInProgressNotification");
     callInProgressNotificationListener = listener;
-
-    Context context = activity.getApplicationContext();
-
-    Intent intent = new Intent(context, CallInProgressNotificationService.class);
-    intent.putExtra("settings", settings);
-    CallInProgressNotificationService.requestStart();
-    context.startForegroundService(intent);
+    CallInProgressNotificationService.startService(activity.getApplicationContext(), settings);
   }
 
   public static void hideIncomingPhoneCallNotification() {
-    Context context = activity.getApplicationContext();
-    Intent intent = new Intent(context, IncomingCallNotificationService.class);
-    IncomingCallNotificationService.requestStop();
-    context.stopService(intent);
+    Log.d(TAG, "hideIncomingPhoneCallNotification");
+    IncomingCallNotificationService.stopService(activity.getApplicationContext());
   }
 
   public static void hideCallInProgressNotification() {
-    Context context = activity.getApplicationContext();
-    Intent intent = new Intent(context, CallInProgressNotificationService.class);
-    CallInProgressNotificationService.requestStop();
-    context.stopService(intent);
+    Log.d(TAG, "hideCallInProgressNotification");
+    CallInProgressNotificationService.stopService(activity.getApplicationContext());
   }
 
   public static boolean areNotificationsEnabled() {
