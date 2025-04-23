@@ -13,8 +13,10 @@ npx cap sync
 
 <docgen-index>
 
-* [`show(...)`](#show)
-* [`hide(...)`](#hide)
+* [`showIncomingPhoneCallNotification(...)`](#showincomingphonecallnotification)
+* [`showCallInProgressNotification(...)`](#showcallinprogressnotification)
+* [`hideIncomingPhoneCallNotification()`](#hideincomingphonecallnotification)
+* [`hideCallInProgressNotification()`](#hidecallinprogressnotification)
 * [`checkPermissions()`](#checkpermissions)
 * [`requestPermissions()`](#requestpermissions)
 * [`addListener('response', ...)`](#addlistenerresponse-)
@@ -27,28 +29,46 @@ npx cap sync
 <docgen-api>
 <!--Update the source file JSDoc comments and rerun docgen to update the docs below-->
 
-### show(...)
+### showIncomingPhoneCallNotification(...)
 
 ```typescript
-show(data?: Partial<NotificationSettings> | undefined) => Promise<void>
+showIncomingPhoneCallNotification(data?: Partial<IncomingPhoneCallNotificationSettings> | undefined) => Promise<void>
 ```
 
-| Param      | Type                                                                                                        |
-| ---------- | ----------------------------------------------------------------------------------------------------------- |
-| **`data`** | <code><a href="#partial">Partial</a>&lt;<a href="#notificationsettings">NotificationSettings</a>&gt;</code> |
+| Param      | Type                                                                                                                                          |
+| ---------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
+| **`data`** | <code><a href="#partial">Partial</a>&lt;<a href="#incomingphonecallnotificationsettings">IncomingPhoneCallNotificationSettings</a>&gt;</code> |
 
 --------------------
 
 
-### hide(...)
+### showCallInProgressNotification(...)
 
 ```typescript
-hide(data: { type: NotificationType; }) => Promise<void>
+showCallInProgressNotification(data?: Partial<CallInProgressNotificationSettings> | undefined) => Promise<void>
 ```
 
-| Param      | Type                                                                     |
-| ---------- | ------------------------------------------------------------------------ |
-| **`data`** | <code>{ type: <a href="#notificationtype">NotificationType</a>; }</code> |
+| Param      | Type                                                                                                                                    |
+| ---------- | --------------------------------------------------------------------------------------------------------------------------------------- |
+| **`data`** | <code><a href="#partial">Partial</a>&lt;<a href="#callinprogressnotificationsettings">CallInProgressNotificationSettings</a>&gt;</code> |
+
+--------------------
+
+
+### hideIncomingPhoneCallNotification()
+
+```typescript
+hideIncomingPhoneCallNotification() => Promise<void>
+```
+
+--------------------
+
+
+### hideCallInProgressNotification()
+
+```typescript
+hideCallInProgressNotification() => Promise<void>
+```
 
 --------------------
 
@@ -103,34 +123,51 @@ removeAllListeners() => Promise<void>
 ### Interfaces
 
 
-#### NotificationSettings
+#### IncomingPhoneCallNotificationSettings
 
-| Prop                                | Type                                                          |
-| ----------------------------------- | ------------------------------------------------------------- |
-| **`type`**                          | <code><a href="#notificationtype">NotificationType</a></code> |
-| **`duration`**                      | <code>number</code>                                           |
-| **`callerName`**                    | <code>string</code>                                           |
-| **`callerNumber`**                  | <code>string</code>                                           |
-| **`icon`**                          | <code>string</code>                                           |
-| **`picture`**                       | <code>string</code>                                           |
-| **`thereIsACallInProgress`**        | <code>boolean</code>                                          |
-| **`declineButtonText`**             | <code>string</code>                                           |
-| **`declineButtonColor`**            | <code>string</code>                                           |
-| **`answerButtonText`**              | <code>string</code>                                           |
-| **`answerButtonColor`**             | <code>string</code>                                           |
-| **`terminateButtonText`**           | <code>string</code>                                           |
-| **`terminateButtonColor`**          | <code>string</code>                                           |
-| **`holdButtonText`**                | <code>string</code>                                           |
-| **`holdButtonColor`**               | <code>string</code>                                           |
-| **`terminateAndAnswerButtonText`**  | <code>string</code>                                           |
-| **`terminateAndAnswerButtonColor`** | <code>string</code>                                           |
-| **`declineSecondCallButtonText`**   | <code>string</code>                                           |
-| **`declineSecondCallButtonColor`**  | <code>string</code>                                           |
-| **`holdAndAnswerButtonText`**       | <code>string</code>                                           |
-| **`holdAndAnswerButtonColor`**      | <code>string</code>                                           |
-| **`color`**                         | <code>string</code>                                           |
-| **`channelName`**                   | <code>string</code>                                           |
-| **`channelDescription`**            | <code>string</code>                                           |
+| Prop                                | Type                 |
+| ----------------------------------- | -------------------- |
+| **`icon`**                          | <code>string</code>  |
+| **`picture`**                       | <code>string</code>  |
+| **`callWaiting`**                   | <code>boolean</code> |
+| **`declineButtonText`**             | <code>string</code>  |
+| **`declineButtonColor`**            | <code>string</code>  |
+| **`answerButtonText`**              | <code>string</code>  |
+| **`answerButtonColor`**             | <code>string</code>  |
+| **`terminateAndAnswerButtonText`**  | <code>string</code>  |
+| **`terminateAndAnswerButtonColor`** | <code>string</code>  |
+| **`terminateButtonText`**           | <code>string</code>  |
+| **`terminateButtonColor`**          | <code>string</code>  |
+| **`declineCallWaitingButtonText`**  | <code>string</code>  |
+| **`declineCallWaitingButtonColor`** | <code>string</code>  |
+| **`holdButtonText`**                | <code>string</code>  |
+| **`holdButtonColor`**               | <code>string</code>  |
+| **`holdAndAnswerButtonText`**       | <code>string</code>  |
+| **`holdAndAnswerButtonColor`**      | <code>string</code>  |
+| **`color`**                         | <code>string</code>  |
+| **`duration`**                      | <code>number</code>  |
+| **`channelName`**                   | <code>string</code>  |
+| **`channelDescription`**            | <code>string</code>  |
+| **`callingName`**                   | <code>string</code>  |
+| **`callingNumber`**                 | <code>string</code>  |
+
+
+#### CallInProgressNotificationSettings
+
+| Prop                       | Type                |
+| -------------------------- | ------------------- |
+| **`icon`**                 | <code>string</code> |
+| **`picture`**              | <code>string</code> |
+| **`terminateButtonText`**  | <code>string</code> |
+| **`terminateButtonColor`** | <code>string</code> |
+| **`holdButtonText`**       | <code>string</code> |
+| **`holdButtonColor`**      | <code>string</code> |
+| **`color`**                | <code>string</code> |
+| **`duration`**             | <code>number</code> |
+| **`channelName`**          | <code>string</code> |
+| **`channelDescription`**   | <code>string</code> |
+| **`callingName`**          | <code>string</code> |
+| **`callingNumber`**        | <code>string</code> |
 
 
 #### PermissionStatus
@@ -155,11 +192,6 @@ removeAllListeners() => Promise<void>
 Make all properties in T optional
 
 <code>{ [P in keyof T]?: T[P]; }</code>
-
-
-#### NotificationType
-
-<code>'incoming' | 'inProgress' | 'missed'</code>
 
 
 #### PermissionState

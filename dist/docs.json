@@ -1,0 +1,494 @@
+{
+  "api": {
+    "name": "PhoneCallNotificationPlugin",
+    "slug": "phonecallnotificationplugin",
+    "docs": "",
+    "tags": [],
+    "methods": [
+      {
+        "name": "showIncomingPhoneCallNotification",
+        "signature": "(data?: Partial<IncomingPhoneCallNotificationSettings> | undefined) => Promise<void>",
+        "parameters": [
+          {
+            "name": "data",
+            "docs": "",
+            "type": "Partial<IncomingPhoneCallNotificationSettings> | undefined"
+          }
+        ],
+        "returns": "Promise<void>",
+        "tags": [],
+        "docs": "",
+        "complexTypes": [
+          "Partial",
+          "IncomingPhoneCallNotificationSettings"
+        ],
+        "slug": "showincomingphonecallnotification"
+      },
+      {
+        "name": "showCallInProgressNotification",
+        "signature": "(data?: Partial<CallInProgressNotificationSettings> | undefined) => Promise<void>",
+        "parameters": [
+          {
+            "name": "data",
+            "docs": "",
+            "type": "Partial<CallInProgressNotificationSettings> | undefined"
+          }
+        ],
+        "returns": "Promise<void>",
+        "tags": [],
+        "docs": "",
+        "complexTypes": [
+          "Partial",
+          "CallInProgressNotificationSettings"
+        ],
+        "slug": "showcallinprogressnotification"
+      },
+      {
+        "name": "hideIncomingPhoneCallNotification",
+        "signature": "() => Promise<void>",
+        "parameters": [],
+        "returns": "Promise<void>",
+        "tags": [],
+        "docs": "",
+        "complexTypes": [],
+        "slug": "hideincomingphonecallnotification"
+      },
+      {
+        "name": "hideCallInProgressNotification",
+        "signature": "() => Promise<void>",
+        "parameters": [],
+        "returns": "Promise<void>",
+        "tags": [],
+        "docs": "",
+        "complexTypes": [],
+        "slug": "hidecallinprogressnotification"
+      },
+      {
+        "name": "checkPermissions",
+        "signature": "() => Promise<PermissionStatus>",
+        "parameters": [],
+        "returns": "Promise<PermissionStatus>",
+        "tags": [],
+        "docs": "",
+        "complexTypes": [
+          "PermissionStatus"
+        ],
+        "slug": "checkpermissions"
+      },
+      {
+        "name": "requestPermissions",
+        "signature": "() => Promise<PermissionStatus>",
+        "parameters": [],
+        "returns": "Promise<PermissionStatus>",
+        "tags": [],
+        "docs": "",
+        "complexTypes": [
+          "PermissionStatus"
+        ],
+        "slug": "requestpermissions"
+      },
+      {
+        "name": "addListener",
+        "signature": "(eventName: 'response', listenerFunc: (data: { response: NotificationResponse; }) => void) => Promise<PluginListenerHandle>",
+        "parameters": [
+          {
+            "name": "eventName",
+            "docs": "",
+            "type": "'response'"
+          },
+          {
+            "name": "listenerFunc",
+            "docs": "",
+            "type": "(data: { response: NotificationResponse; }) => void"
+          }
+        ],
+        "returns": "Promise<PluginListenerHandle>",
+        "tags": [],
+        "docs": "",
+        "complexTypes": [
+          "PluginListenerHandle",
+          "NotificationResponse"
+        ],
+        "slug": "addlistenerresponse-"
+      },
+      {
+        "name": "removeAllListeners",
+        "signature": "() => Promise<void>",
+        "parameters": [],
+        "returns": "Promise<void>",
+        "tags": [],
+        "docs": "",
+        "complexTypes": [],
+        "slug": "removealllisteners"
+      }
+    ],
+    "properties": []
+  },
+  "interfaces": [
+    {
+      "name": "IncomingPhoneCallNotificationSettings",
+      "slug": "incomingphonecallnotificationsettings",
+      "docs": "",
+      "tags": [],
+      "methods": [],
+      "properties": [
+        {
+          "name": "icon",
+          "tags": [],
+          "docs": "",
+          "complexTypes": [],
+          "type": "string"
+        },
+        {
+          "name": "picture",
+          "tags": [],
+          "docs": "",
+          "complexTypes": [],
+          "type": "string"
+        },
+        {
+          "name": "callWaiting",
+          "tags": [],
+          "docs": "",
+          "complexTypes": [],
+          "type": "boolean"
+        },
+        {
+          "name": "declineButtonText",
+          "tags": [],
+          "docs": "",
+          "complexTypes": [],
+          "type": "string"
+        },
+        {
+          "name": "declineButtonColor",
+          "tags": [],
+          "docs": "",
+          "complexTypes": [],
+          "type": "string"
+        },
+        {
+          "name": "answerButtonText",
+          "tags": [],
+          "docs": "",
+          "complexTypes": [],
+          "type": "string"
+        },
+        {
+          "name": "answerButtonColor",
+          "tags": [],
+          "docs": "",
+          "complexTypes": [],
+          "type": "string"
+        },
+        {
+          "name": "terminateAndAnswerButtonText",
+          "tags": [],
+          "docs": "",
+          "complexTypes": [],
+          "type": "string"
+        },
+        {
+          "name": "terminateAndAnswerButtonColor",
+          "tags": [],
+          "docs": "",
+          "complexTypes": [],
+          "type": "string"
+        },
+        {
+          "name": "terminateButtonText",
+          "tags": [],
+          "docs": "",
+          "complexTypes": [],
+          "type": "string"
+        },
+        {
+          "name": "terminateButtonColor",
+          "tags": [],
+          "docs": "",
+          "complexTypes": [],
+          "type": "string"
+        },
+        {
+          "name": "declineCallWaitingButtonText",
+          "tags": [],
+          "docs": "",
+          "complexTypes": [],
+          "type": "string"
+        },
+        {
+          "name": "declineCallWaitingButtonColor",
+          "tags": [],
+          "docs": "",
+          "complexTypes": [],
+          "type": "string"
+        },
+        {
+          "name": "holdButtonText",
+          "tags": [],
+          "docs": "",
+          "complexTypes": [],
+          "type": "string"
+        },
+        {
+          "name": "holdButtonColor",
+          "tags": [],
+          "docs": "",
+          "complexTypes": [],
+          "type": "string"
+        },
+        {
+          "name": "holdAndAnswerButtonText",
+          "tags": [],
+          "docs": "",
+          "complexTypes": [],
+          "type": "string"
+        },
+        {
+          "name": "holdAndAnswerButtonColor",
+          "tags": [],
+          "docs": "",
+          "complexTypes": [],
+          "type": "string"
+        },
+        {
+          "name": "color",
+          "tags": [],
+          "docs": "",
+          "complexTypes": [],
+          "type": "string"
+        },
+        {
+          "name": "duration",
+          "tags": [],
+          "docs": "",
+          "complexTypes": [],
+          "type": "number"
+        },
+        {
+          "name": "channelName",
+          "tags": [],
+          "docs": "",
+          "complexTypes": [],
+          "type": "string"
+        },
+        {
+          "name": "channelDescription",
+          "tags": [],
+          "docs": "",
+          "complexTypes": [],
+          "type": "string"
+        },
+        {
+          "name": "callingName",
+          "tags": [],
+          "docs": "",
+          "complexTypes": [],
+          "type": "string"
+        },
+        {
+          "name": "callingNumber",
+          "tags": [],
+          "docs": "",
+          "complexTypes": [],
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "CallInProgressNotificationSettings",
+      "slug": "callinprogressnotificationsettings",
+      "docs": "",
+      "tags": [],
+      "methods": [],
+      "properties": [
+        {
+          "name": "icon",
+          "tags": [],
+          "docs": "",
+          "complexTypes": [],
+          "type": "string"
+        },
+        {
+          "name": "picture",
+          "tags": [],
+          "docs": "",
+          "complexTypes": [],
+          "type": "string"
+        },
+        {
+          "name": "terminateButtonText",
+          "tags": [],
+          "docs": "",
+          "complexTypes": [],
+          "type": "string"
+        },
+        {
+          "name": "terminateButtonColor",
+          "tags": [],
+          "docs": "",
+          "complexTypes": [],
+          "type": "string"
+        },
+        {
+          "name": "holdButtonText",
+          "tags": [],
+          "docs": "",
+          "complexTypes": [],
+          "type": "string"
+        },
+        {
+          "name": "holdButtonColor",
+          "tags": [],
+          "docs": "",
+          "complexTypes": [],
+          "type": "string"
+        },
+        {
+          "name": "color",
+          "tags": [],
+          "docs": "",
+          "complexTypes": [],
+          "type": "string"
+        },
+        {
+          "name": "duration",
+          "tags": [],
+          "docs": "",
+          "complexTypes": [],
+          "type": "number"
+        },
+        {
+          "name": "channelName",
+          "tags": [],
+          "docs": "",
+          "complexTypes": [],
+          "type": "string"
+        },
+        {
+          "name": "channelDescription",
+          "tags": [],
+          "docs": "",
+          "complexTypes": [],
+          "type": "string"
+        },
+        {
+          "name": "callingName",
+          "tags": [],
+          "docs": "",
+          "complexTypes": [],
+          "type": "string"
+        },
+        {
+          "name": "callingNumber",
+          "tags": [],
+          "docs": "",
+          "complexTypes": [],
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "PermissionStatus",
+      "slug": "permissionstatus",
+      "docs": "",
+      "tags": [],
+      "methods": [],
+      "properties": [
+        {
+          "name": "display",
+          "tags": [],
+          "docs": "",
+          "complexTypes": [
+            "PermissionState"
+          ],
+          "type": "PermissionState"
+        }
+      ]
+    },
+    {
+      "name": "PluginListenerHandle",
+      "slug": "pluginlistenerhandle",
+      "docs": "",
+      "tags": [],
+      "methods": [],
+      "properties": [
+        {
+          "name": "remove",
+          "tags": [],
+          "docs": "",
+          "complexTypes": [],
+          "type": "() => Promise<void>"
+        }
+      ]
+    }
+  ],
+  "enums": [],
+  "typeAliases": [
+    {
+      "name": "Partial",
+      "slug": "partial",
+      "docs": "Make all properties in T optional",
+      "types": [
+        {
+          "text": "{\r\n    [P in keyof T]?: T[P];\r\n}",
+          "complexTypes": [
+            "T",
+            "P"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "PermissionState",
+      "slug": "permissionstate",
+      "docs": "",
+      "types": [
+        {
+          "text": "'prompt'",
+          "complexTypes": []
+        },
+        {
+          "text": "'prompt-with-rationale'",
+          "complexTypes": []
+        },
+        {
+          "text": "'granted'",
+          "complexTypes": []
+        },
+        {
+          "text": "'denied'",
+          "complexTypes": []
+        }
+      ]
+    },
+    {
+      "name": "NotificationResponse",
+      "slug": "notificationresponse",
+      "docs": "",
+      "types": [
+        {
+          "text": "'tap'",
+          "complexTypes": []
+        },
+        {
+          "text": "'answer'",
+          "complexTypes": []
+        },
+        {
+          "text": "'decline'",
+          "complexTypes": []
+        },
+        {
+          "text": "'terminate'",
+          "complexTypes": []
+        },
+        {
+          "text": "'hold'",
+          "complexTypes": []
+        }
+      ]
+    }
+  ],
+  "pluginConfigs": []
+}
