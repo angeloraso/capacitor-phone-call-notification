@@ -12,10 +12,10 @@ export class PhoneCallNotificationWeb extends WebPlugin {
     async hideCallInProgressNotification() {
         throw this.unimplemented('Not implemented on web.');
     }
-    async requestPermissions() {
+    async checkNotificationsPermission() {
         throw this.unimplemented('Not implemented on web.');
     }
-    async checkPermissions() {
+    async requestNotificationsPermission() {
         throw this.unimplemented('Not implemented on web.');
     }
 }

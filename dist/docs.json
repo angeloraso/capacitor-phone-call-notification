@@ -64,28 +64,28 @@
         "slug": "hidecallinprogressnotification"
       },
       {
-        "name": "checkPermissions",
-        "signature": "() => Promise<PermissionStatus>",
+        "name": "checkNotificationsPermission",
+        "signature": "() => Promise<NotificationPermissionStatus>",
         "parameters": [],
-        "returns": "Promise<PermissionStatus>",
+        "returns": "Promise<NotificationPermissionStatus>",
         "tags": [],
         "docs": "",
         "complexTypes": [
-          "PermissionStatus"
+          "NotificationPermissionStatus"
         ],
-        "slug": "checkpermissions"
+        "slug": "checknotificationspermission"
       },
       {
-        "name": "requestPermissions",
-        "signature": "() => Promise<PermissionStatus>",
+        "name": "requestNotificationsPermission",
+        "signature": "() => Promise<NotificationPermissionStatus>",
         "parameters": [],
-        "returns": "Promise<PermissionStatus>",
+        "returns": "Promise<NotificationPermissionStatus>",
         "tags": [],
         "docs": "",
         "complexTypes": [
-          "PermissionStatus"
+          "NotificationPermissionStatus"
         ],
-        "slug": "requestpermissions"
+        "slug": "requestnotificationspermission"
       },
       {
         "name": "addListener",
@@ -389,14 +389,14 @@
       ]
     },
     {
-      "name": "PermissionStatus",
-      "slug": "permissionstatus",
+      "name": "NotificationPermissionStatus",
+      "slug": "notificationpermissionstatus",
       "docs": "",
       "tags": [],
       "methods": [],
       "properties": [
         {
-          "name": "display",
+          "name": "notifications",
           "tags": [],
           "docs": "",
           "complexTypes": [

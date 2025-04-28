@@ -1,8 +1,8 @@
 import type { PermissionState, PluginListenerHandle } from '@capacitor/core';
 export declare type NotificationType = 'incoming' | 'inProgress' | 'missed';
 export declare type NotificationResponse = 'tap' | 'answer' | 'decline' | 'terminate' | 'hold';
-export interface PermissionStatus {
-    display: PermissionState;
+export interface NotificationPermissionStatus {
+    notifications: PermissionState;
 }
 export interface IncomingPhoneCallNotificationSettings {
     icon: string;
@@ -48,8 +48,8 @@ export interface PhoneCallNotificationPlugin {
     showCallInProgressNotification(data?: Partial<CallInProgressNotificationSettings>): Promise<void>;
     hideIncomingPhoneCallNotification(): Promise<void>;
     hideCallInProgressNotification(): Promise<void>;
-    checkPermissions(): Promise<PermissionStatus>;
-    requestPermissions(): Promise<PermissionStatus>;
+    checkNotificationsPermission(): Promise<NotificationPermissionStatus>;
+    requestNotificationsPermission(): Promise<NotificationPermissionStatus>;
     addListener(eventName: 'response', listenerFunc: (data: {
         response: NotificationResponse;
     }) => void): Promise<PluginListenerHandle>;
