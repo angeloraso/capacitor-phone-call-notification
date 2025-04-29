@@ -76,14 +76,17 @@ public class CallInProgressNotificationService extends Service {
   @Override
   public int onStartCommand(Intent intent, int flags, int startId) {
     Log.d(TAG, "onStartCommand");
-    CallInProgressNotificationSettings settings = (CallInProgressNotificationSettings) intent.getSerializableExtra("settings");
+    CallInProgressNotificationSettings settings = null;
+    if (intent != null) {
+      settings = (CallInProgressNotificationSettings) intent.getSerializableExtra("settings");
+    }
 
     if (settings == null) {
       settings = new CallInProgressNotificationSettings.Builder().build();
     }
 
     createNotification(settings);
-    return START_STICKY;
+    return START_REDELIVER_INTENT;
   }
 
   public void createNotification(CallInProgressNotificationSettings settings) {
