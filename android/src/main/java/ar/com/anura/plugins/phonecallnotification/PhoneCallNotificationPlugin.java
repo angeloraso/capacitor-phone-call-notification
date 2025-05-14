@@ -20,8 +20,8 @@ import com.getcapacitor.annotation.PermissionCallback;
   )
 )
 public class PhoneCallNotificationPlugin extends Plugin {
-  static final String PHONE_CALL_NOTIFICATIONS_PERMISSION = "display";
-
+  static final String PHONE_CALL_NOTIFICATIONS_PERMISSION = "notifications";
+  
   public void load() {
     PhoneCallNotification.initialize(getActivity());
   }

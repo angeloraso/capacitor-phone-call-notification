@@ -17,8 +17,8 @@ npx cap sync
 * [`showCallInProgressNotification(...)`](#showcallinprogressnotification)
 * [`hideIncomingPhoneCallNotification()`](#hideincomingphonecallnotification)
 * [`hideCallInProgressNotification()`](#hidecallinprogressnotification)
-* [`checkPermissions()`](#checkpermissions)
-* [`requestPermissions()`](#requestpermissions)
+* [`checkNotificationsPermission()`](#checknotificationspermission)
+* [`requestNotificationsPermission()`](#requestnotificationspermission)
 * [`addListener('response', ...)`](#addlistenerresponse-)
 * [`removeAllListeners()`](#removealllisteners)
 * [Interfaces](#interfaces)
@@ -73,24 +73,24 @@ hideCallInProgressNotification() => Promise<void>
 --------------------
 
 
-### checkPermissions()
+### checkNotificationsPermission()
 
 ```typescript
-checkPermissions() => Promise<PermissionStatus>
+checkNotificationsPermission() => Promise<NotificationPermissionStatus>
 ```
 
-**Returns:** <code>Promise&lt;<a href="#permissionstatus">PermissionStatus</a>&gt;</code>
+**Returns:** <code>Promise&lt;<a href="#notificationpermissionstatus">NotificationPermissionStatus</a>&gt;</code>
 
 --------------------
 
 
-### requestPermissions()
+### requestNotificationsPermission()
 
 ```typescript
-requestPermissions() => Promise<PermissionStatus>
+requestNotificationsPermission() => Promise<NotificationPermissionStatus>
 ```
 
-**Returns:** <code>Promise&lt;<a href="#permissionstatus">PermissionStatus</a>&gt;</code>
+**Returns:** <code>Promise&lt;<a href="#notificationpermissionstatus">NotificationPermissionStatus</a>&gt;</code>
 
 --------------------
 
@@ -170,11 +170,11 @@ removeAllListeners() => Promise<void>
 | **`callingNumber`**        | <code>string</code> |
 
 
-#### PermissionStatus
+#### NotificationPermissionStatus
 
-| Prop          | Type                                                        |
-| ------------- | ----------------------------------------------------------- |
-| **`display`** | <code><a href="#permissionstate">PermissionState</a></code> |
+| Prop                | Type                                                        |
+| ------------------- | ----------------------------------------------------------- |
+| **`notifications`** | <code><a href="#permissionstate">PermissionState</a></code> |
 
 
 #### PluginListenerHandle
