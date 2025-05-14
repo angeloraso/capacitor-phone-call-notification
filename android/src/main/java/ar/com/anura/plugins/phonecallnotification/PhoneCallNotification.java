@@ -1,7 +1,5 @@
 package ar.com.anura.plugins.phonecallnotification;
 
-import android.content.Context;
-import android.content.Intent;
 import android.util.Log;
 
 import androidx.appcompat.app.AppCompatActivity;
