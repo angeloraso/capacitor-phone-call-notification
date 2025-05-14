@@ -80,7 +80,12 @@ public class IncomingCallNotificationService extends Service {
   @Override
   public int onStartCommand(Intent intent, int flags, int startId) {
     Log.d(TAG, "onStartCommand");
-    IncomingPhoneCallNotificationSettings settings = (IncomingPhoneCallNotificationSettings) intent.getSerializableExtra("settings");
+
+    IncomingPhoneCallNotificationSettings settings = null;
+
+    if (intent != null) {
+      settings = (IncomingPhoneCallNotificationSettings) intent.getSerializableExtra("settings");
+    }
 
     if (settings == null) {
       settings = new IncomingPhoneCallNotificationSettings.Builder().build();
