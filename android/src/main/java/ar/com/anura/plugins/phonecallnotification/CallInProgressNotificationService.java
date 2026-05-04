@@ -114,7 +114,7 @@ public class CallInProgressNotificationService extends Service {
     Notification.Builder notificationBuilder = new Notification.Builder(this, CHANNEL_ID)
       .setContentTitle(settings.getChannelName())
       // Ongoing notifications cannot be dismissed by the user
-      .setOngoing(false)
+      .setOngoing(true)
       // Set the "ticker" text which is sent to accessibility services.
       .setTicker(settings.getChannelName())
       // To know if it is necessary to disturb the user with a notification despite having activated the "Do not interrupt" mode
@@ -125,7 +125,7 @@ public class CallInProgressNotificationService extends Service {
       .setUsesChronometer(true)
       // VISIBILITY_PUBLIC displays the full content of the notification
       .setVisibility(Notification.VISIBILITY_PUBLIC)
-      .setAutoCancel(true)
+      .setAutoCancel(false)
       .setContentIntent(getPendingIntent(CALL_IN_PROGRESS_TAP_ACTION))
       .setColor(Color.parseColor(settings.getColor()))
       // Set whether or not this notification should not bridge to other devices.
