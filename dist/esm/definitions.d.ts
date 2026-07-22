@@ -1,6 +1,6 @@
 import type { PermissionState, PluginListenerHandle } from '@capacitor/core';
-export declare type NotificationType = 'incoming' | 'inProgress' | 'missed';
-export declare type NotificationResponse = 'tap' | 'answer' | 'decline' | 'terminate' | 'hold';
+export type NotificationType = 'incoming' | 'inProgress' | 'missed';
+export type NotificationResponse = 'tap' | 'answer' | 'decline' | 'terminate' | 'hold';
 export interface NotificationPermissionStatus {
     notifications: PermissionState;
 }
