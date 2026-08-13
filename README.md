@@ -2,6 +2,8 @@
 
 Capacitor plugin to create phone call notifications
 
+For an in-progress call, pass the current number of sessions in `sessionCount`. The expanded notification only displays the switch-session button when that value is greater than one. Button presses are emitted through the `response` listener as `terminate`, `mute`, `hold`, or `switchSession`.
+
 ## Install
 
 ```bash
@@ -208,20 +210,25 @@ removeAllListeners() => Promise<void>
 
 #### CallInProgressNotificationSettings
 
-| Prop                       | Type                |
-| -------------------------- | ------------------- |
-| **`icon`**                 | <code>string</code> |
-| **`picture`**              | <code>string</code> |
-| **`terminateButtonText`**  | <code>string</code> |
-| **`terminateButtonColor`** | <code>string</code> |
-| **`holdButtonText`**       | <code>string</code> |
-| **`holdButtonColor`**      | <code>string</code> |
-| **`color`**                | <code>string</code> |
-| **`duration`**             | <code>number</code> |
-| **`channelName`**          | <code>string</code> |
-| **`channelDescription`**   | <code>string</code> |
-| **`callingName`**          | <code>string</code> |
-| **`callingNumber`**        | <code>string</code> |
+| Prop                           | Type                |
+| ------------------------------ | ------------------- |
+| **`icon`**                     | <code>string</code> |
+| **`picture`**                  | <code>string</code> |
+| **`terminateButtonText`**      | <code>string</code> |
+| **`terminateButtonColor`**     | <code>string</code> |
+| **`holdButtonText`**           | <code>string</code> |
+| **`holdButtonColor`**          | <code>string</code> |
+| **`muteButtonText`**           | <code>string</code> |
+| **`muteButtonColor`**          | <code>string</code> |
+| **`switchSessionButtonText`**  | <code>string</code> |
+| **`switchSessionButtonColor`** | <code>string</code> |
+| **`sessionCount`**             | <code>number</code> |
+| **`color`**                    | <code>string</code> |
+| **`duration`**                 | <code>number</code> |
+| **`channelName`**              | <code>string</code> |
+| **`channelDescription`**       | <code>string</code> |
+| **`callingName`**              | <code>string</code> |
+| **`callingNumber`**            | <code>string</code> |
 
 
 #### NotificationPermissionStatus
@@ -262,6 +269,6 @@ Make all properties in T optional
 
 #### NotificationResponse
 
-<code>'tap' | 'answer' | 'decline' | 'terminate' | 'hold'</code>
+<code>'tap' | 'answer' | 'decline' | 'terminate' | 'hold' | 'mute' | 'switchSession'</code>
 
 </docgen-api>

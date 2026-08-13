@@ -1,6 +1,6 @@
 import type { PermissionState, PluginListenerHandle } from '@capacitor/core';
 export type NotificationType = 'incoming' | 'inProgress' | 'missed';
-export type NotificationResponse = 'tap' | 'answer' | 'decline' | 'terminate' | 'hold';
+export type NotificationResponse = 'tap' | 'answer' | 'decline' | 'terminate' | 'hold' | 'mute' | 'switchSession';
 export interface NotificationPermissionStatus {
     notifications: PermissionState;
 }
@@ -39,6 +39,11 @@ export interface CallInProgressNotificationSettings {
     terminateButtonColor: string;
     holdButtonText: string;
     holdButtonColor: string;
+    muteButtonText: string;
+    muteButtonColor: string;
+    switchSessionButtonText: string;
+    switchSessionButtonColor: string;
+    sessionCount: number;
     color: string;
     duration: number;
     channelName: string;

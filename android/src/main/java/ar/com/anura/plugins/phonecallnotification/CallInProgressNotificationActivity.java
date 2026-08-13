@@ -1,6 +1,8 @@
 package ar.com.anura.plugins.phonecallnotification;
 
 import static ar.com.anura.plugins.phonecallnotification.PhoneCallNotification.CALL_IN_PROGRESS_HOLD_ACTION;
+import static ar.com.anura.plugins.phonecallnotification.PhoneCallNotification.CALL_IN_PROGRESS_MUTE_ACTION;
+import static ar.com.anura.plugins.phonecallnotification.PhoneCallNotification.CALL_IN_PROGRESS_SWITCH_SESSION_ACTION;
 import static ar.com.anura.plugins.phonecallnotification.PhoneCallNotification.CALL_IN_PROGRESS_TAP_ACTION;
 import static ar.com.anura.plugins.phonecallnotification.PhoneCallNotification.CALL_IN_PROGRESS_TERMINATE_ACTION;
 
@@ -36,6 +38,8 @@ public class CallInProgressNotificationActivity extends AppCompatActivity {
   private String getResponse(String action) {
     if (CALL_IN_PROGRESS_TAP_ACTION.equals(action)) return "tap";
     if (CALL_IN_PROGRESS_HOLD_ACTION.equals(action)) return "hold";
+    if (CALL_IN_PROGRESS_MUTE_ACTION.equals(action)) return "mute";
+    if (CALL_IN_PROGRESS_SWITCH_SESSION_ACTION.equals(action)) return "switchSession";
     if (CALL_IN_PROGRESS_TERMINATE_ACTION.equals(action)) return "terminate";
     return null;
   }

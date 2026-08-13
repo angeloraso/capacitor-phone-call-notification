@@ -21,6 +21,8 @@ public class PhoneCallNotification {
 
   public static final String CALL_IN_PROGRESS_TAP_ACTION = "tap_call_in_progress_notification";
   public static final String CALL_IN_PROGRESS_HOLD_ACTION = "hold_call_in_progress";
+  public static final String CALL_IN_PROGRESS_MUTE_ACTION = "mute_call_in_progress";
+  public static final String CALL_IN_PROGRESS_SWITCH_SESSION_ACTION = "switch_call_in_progress_session";
   public static final String CALL_IN_PROGRESS_TERMINATE_ACTION = "terminate_call_in_progress";
 
   public static final int INCOMING_CALL_NOTIFICATION_ID = -574543923; // Random ID

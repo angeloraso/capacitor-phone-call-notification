@@ -2,7 +2,9 @@ package ar.com.anura.plugins.phonecallnotification;
 
 import static android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_SPECIAL_USE;
 import static ar.com.anura.plugins.phonecallnotification.PhoneCallNotification.CALL_IN_PROGRESS_HOLD_ACTION;
+import static ar.com.anura.plugins.phonecallnotification.PhoneCallNotification.CALL_IN_PROGRESS_MUTE_ACTION;
 import static ar.com.anura.plugins.phonecallnotification.PhoneCallNotification.CALL_IN_PROGRESS_NOTIFICATION_ID;
+import static ar.com.anura.plugins.phonecallnotification.PhoneCallNotification.CALL_IN_PROGRESS_SWITCH_SESSION_ACTION;
 import static ar.com.anura.plugins.phonecallnotification.PhoneCallNotification.CALL_IN_PROGRESS_TAP_ACTION;
 import static ar.com.anura.plugins.phonecallnotification.PhoneCallNotification.CALL_IN_PROGRESS_TERMINATE_ACTION;
 
@@ -19,8 +21,11 @@ import android.graphics.Color;
 import android.graphics.drawable.Icon;
 import android.os.Build;
 import android.os.IBinder;
+import android.os.SystemClock;
 import android.text.Html;
 import android.util.Log;
+import android.view.View;
+import android.widget.RemoteViews;
 import androidx.annotation.NonNull;
 
 public class CallInProgressNotificationService extends Service {
@@ -136,31 +141,25 @@ public class CallInProgressNotificationService extends Service {
         getPendingIntent(CALL_IN_PROGRESS_TERMINATE_ACTION)
       );
       notificationBuilder.setStyle(notificationStyle);
+      notificationBuilder.addAction(
+        createAction("mute", settings.getMuteButtonText(), settings.getMuteButtonColor(), CALL_IN_PROGRESS_MUTE_ACTION)
+      );
+      notificationBuilder.addAction(
+        createAction("hold", settings.getHoldButtonText(), settings.getHoldButtonColor(), CALL_IN_PROGRESS_HOLD_ACTION)
+      );
       notificationBuilder.setSmallIcon(getIconResId("answer", "drawable"));
       notificationBuilder.setForegroundServiceBehavior(Notification.FOREGROUND_SERVICE_IMMEDIATE);
     } else {
       notificationBuilder.setSmallIcon(iconResource);
       notificationBuilder.setContentText(settings.getCallingName() + " - " + settings.getCallingNumber());
-      Notification.Action answerAction = new Notification.Action.Builder(
-        Icon.createWithResource(this, getIconResId("hold", "drawable")),
-        Html.fromHtml(
-          "<font color=\"" + Color.parseColor(settings.getHoldButtonColor()) + "\">" + settings.getHoldButtonText() + "</font>",
-          Html.FROM_HTML_MODE_LEGACY
-        ),
-        getPendingIntent(CALL_IN_PROGRESS_HOLD_ACTION)
-      ).build();
-
-      Notification.Action declineAction = new Notification.Action.Builder(
-        Icon.createWithResource(this, getIconResId("decline", "drawable")),
-        Html.fromHtml(
-          "<font color=\"" + Color.parseColor(settings.getTerminateButtonColor()) + "\">" + settings.getTerminateButtonText() + "</font>",
-          Html.FROM_HTML_MODE_LEGACY
-        ),
-        getPendingIntent(CALL_IN_PROGRESS_TERMINATE_ACTION)
-      ).build();
-
-      notificationBuilder.setActions(declineAction, answerAction);
+      notificationBuilder.setActions(
+        createAction("decline", settings.getTerminateButtonText(), settings.getTerminateButtonColor(), CALL_IN_PROGRESS_TERMINATE_ACTION),
+        createAction("mute", settings.getMuteButtonText(), settings.getMuteButtonColor(), CALL_IN_PROGRESS_MUTE_ACTION),
+        createAction("hold", settings.getHoldButtonText(), settings.getHoldButtonColor(), CALL_IN_PROGRESS_HOLD_ACTION)
+      );
     }
+
+    notificationBuilder.setCustomBigContentView(createExpandedNotificationView(settings, pictureResource, milliseconds));
 
     Notification notification = notificationBuilder.build();
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
@@ -168,6 +167,51 @@ public class CallInProgressNotificationService extends Service {
     } else {
       startForeground(CALL_IN_PROGRESS_NOTIFICATION_ID, notification);
     }
+  }
+
+  private Notification.Action createAction(String iconName, String text, String color, String action) {
+    return new Notification.Action.Builder(
+      Icon.createWithResource(this, getIconResId(iconName, "drawable")),
+      Html.fromHtml("<font color=\"" + Color.parseColor(color) + "\">" + text + "</font>", Html.FROM_HTML_MODE_LEGACY),
+      getPendingIntent(action)
+    ).build();
+  }
+
+  private RemoteViews createExpandedNotificationView(
+    CallInProgressNotificationSettings settings,
+    int pictureResource,
+    long elapsedDurationMillis
+  ) {
+    RemoteViews view = new RemoteViews(getPackageName(), R.layout.call_in_progress_notification_expanded);
+    view.setImageViewResource(R.id.call_picture, pictureResource);
+    view.setTextViewText(R.id.call_title, settings.getChannelName());
+    view.setTextViewText(R.id.calling_party, settings.getCallingName() + " - " + settings.getCallingNumber());
+    view.setChronometer(R.id.call_duration, SystemClock.elapsedRealtime() - elapsedDurationMillis, null, true);
+
+    configureButton(
+      view,
+      R.id.terminate_button,
+      settings.getTerminateButtonText(),
+      settings.getTerminateButtonColor(),
+      CALL_IN_PROGRESS_TERMINATE_ACTION
+    );
+    configureButton(view, R.id.mute_button, settings.getMuteButtonText(), settings.getMuteButtonColor(), CALL_IN_PROGRESS_MUTE_ACTION);
+    configureButton(view, R.id.hold_button, settings.getHoldButtonText(), settings.getHoldButtonColor(), CALL_IN_PROGRESS_HOLD_ACTION);
+    configureButton(
+      view,
+      R.id.switch_session_button,
+      settings.getSwitchSessionButtonText(),
+      settings.getSwitchSessionButtonColor(),
+      CALL_IN_PROGRESS_SWITCH_SESSION_ACTION
+    );
+    view.setViewVisibility(R.id.switch_session_button, settings.getSessionCount() > 1 ? View.VISIBLE : View.GONE);
+    return view;
+  }
+
+  private void configureButton(RemoteViews view, int viewId, String text, String color, String action) {
+    view.setTextViewText(viewId, text);
+    view.setTextColor(viewId, Color.parseColor(color));
+    view.setOnClickPendingIntent(viewId, getPendingIntent(action));
   }
 
   @NonNull

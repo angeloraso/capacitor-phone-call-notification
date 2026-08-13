@@ -273,6 +273,12 @@ public class PhoneCallNotificationPlugin extends Plugin implements PhoneCallNoti
     String terminateButtonColor = settings.getString("terminateButtonColor");
     String holdButtonText = settings.getString("holdButtonText");
     String holdButtonColor = settings.getString("holdButtonColor");
+    String muteButtonText = settings.getString("muteButtonText");
+    String muteButtonColor = settings.getString("muteButtonColor");
+    String switchSessionButtonText = settings.getString("switchSessionButtonText");
+    String switchSessionButtonColor = settings.getString("switchSessionButtonColor");
+    Integer sessionCountValue = settings.getInteger("sessionCount");
+    int sessionCount = sessionCountValue != null ? sessionCountValue : 1;
     String color = settings.getString("color");
     Integer durationValue = settings.getInteger("duration");
     int duration = durationValue != null ? durationValue : 0;
@@ -285,6 +291,9 @@ public class PhoneCallNotificationPlugin extends Plugin implements PhoneCallNoti
     validateColor("color", color);
     validateColor("terminateButtonColor", terminateButtonColor);
     validateColor("holdButtonColor", holdButtonColor);
+    validateColor("muteButtonColor", muteButtonColor);
+    validateColor("switchSessionButtonColor", switchSessionButtonColor);
+    validateSessionCount(sessionCount);
 
     return new CallInProgressNotificationSettings.Builder()
       .icon(icon)
@@ -293,6 +302,11 @@ public class PhoneCallNotificationPlugin extends Plugin implements PhoneCallNoti
       .terminateButtonColor(terminateButtonColor)
       .holdButtonText(holdButtonText)
       .holdButtonColor(holdButtonColor)
+      .muteButtonText(muteButtonText)
+      .muteButtonColor(muteButtonColor)
+      .switchSessionButtonText(switchSessionButtonText)
+      .switchSessionButtonColor(switchSessionButtonColor)
+      .sessionCount(sessionCount)
       .color(color)
       .duration(duration)
       .channelName(channelName)
@@ -305,6 +319,12 @@ public class PhoneCallNotificationPlugin extends Plugin implements PhoneCallNoti
   private void validateDuration(int duration) {
     if (duration < 0) {
       throw new IllegalArgumentException("duration must be zero or greater");
+    }
+  }
+
+  private void validateSessionCount(int sessionCount) {
+    if (sessionCount < 1) {
+      throw new IllegalArgumentException("sessionCount must be one or greater");
     }
   }
 

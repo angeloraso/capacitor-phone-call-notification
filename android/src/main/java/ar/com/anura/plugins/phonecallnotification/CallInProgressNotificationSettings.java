@@ -9,6 +9,11 @@ public class CallInProgressNotificationSettings implements Serializable {
   public static final String DEFAULT_TERMINATE_BUTTON_COLOR = "#e76565";
   public static final String DEFAULT_HOLD_BUTTON_TEXT = "Hold";
   public static final String DEFAULT_HOLD_BUTTON_COLOR = "#2b94f4";
+  public static final String DEFAULT_MUTE_BUTTON_TEXT = "Mute";
+  public static final String DEFAULT_MUTE_BUTTON_COLOR = "#666666";
+  public static final String DEFAULT_SWITCH_SESSION_BUTTON_TEXT = "Switch session";
+  public static final String DEFAULT_SWITCH_SESSION_BUTTON_COLOR = "#666666";
+  public static final int DEFAULT_SESSION_COUNT = 1;
   public static final String DEFAULT_COLOR = "#666666";
   public static final int DEFAULT_DURATION = 0;
   public static final String DEFAULT_CHANNEL_NAME = "phone-call-notification";
@@ -22,6 +27,11 @@ public class CallInProgressNotificationSettings implements Serializable {
   private final String terminateButtonColor;
   private final String holdButtonText;
   private final String holdButtonColor;
+  private final String muteButtonText;
+  private final String muteButtonColor;
+  private final String switchSessionButtonText;
+  private final String switchSessionButtonColor;
+  private final int sessionCount;
   private final String color;
   private final int duration;
   private final String channelName;
@@ -36,6 +46,15 @@ public class CallInProgressNotificationSettings implements Serializable {
     this.terminateButtonColor = builder.terminateButtonColor != null ? builder.terminateButtonColor : DEFAULT_TERMINATE_BUTTON_COLOR;
     this.holdButtonText = builder.holdButtonText != null ? builder.holdButtonText : DEFAULT_HOLD_BUTTON_TEXT;
     this.holdButtonColor = builder.holdButtonColor != null ? builder.holdButtonColor : DEFAULT_HOLD_BUTTON_COLOR;
+    this.muteButtonText = builder.muteButtonText != null ? builder.muteButtonText : DEFAULT_MUTE_BUTTON_TEXT;
+    this.muteButtonColor = builder.muteButtonColor != null ? builder.muteButtonColor : DEFAULT_MUTE_BUTTON_COLOR;
+    this.switchSessionButtonText = builder.switchSessionButtonText != null
+      ? builder.switchSessionButtonText
+      : DEFAULT_SWITCH_SESSION_BUTTON_TEXT;
+    this.switchSessionButtonColor = builder.switchSessionButtonColor != null
+      ? builder.switchSessionButtonColor
+      : DEFAULT_SWITCH_SESSION_BUTTON_COLOR;
+    this.sessionCount = builder.sessionCount != null ? builder.sessionCount : DEFAULT_SESSION_COUNT;
     this.color = builder.color != null ? builder.color : DEFAULT_COLOR;
     this.duration = builder.duration != null ? builder.duration : DEFAULT_DURATION;
     this.channelName = builder.channelName != null ? builder.channelName : DEFAULT_CHANNEL_NAME;
@@ -51,6 +70,11 @@ public class CallInProgressNotificationSettings implements Serializable {
     private String terminateButtonColor;
     private String holdButtonText;
     private String holdButtonColor;
+    private String muteButtonText;
+    private String muteButtonColor;
+    private String switchSessionButtonText;
+    private String switchSessionButtonColor;
+    private Integer sessionCount;
     private String color;
     private Integer duration;
     private String channelName;
@@ -64,6 +88,11 @@ public class CallInProgressNotificationSettings implements Serializable {
     public Builder terminateButtonColor(String terminateButtonColor) { this.terminateButtonColor = terminateButtonColor; return this; }
     public Builder holdButtonText(String holdButtonText) { this.holdButtonText = holdButtonText; return this; }
     public Builder holdButtonColor(String holdButtonColor) { this.holdButtonColor = holdButtonColor; return this; }
+    public Builder muteButtonText(String muteButtonText) { this.muteButtonText = muteButtonText; return this; }
+    public Builder muteButtonColor(String muteButtonColor) { this.muteButtonColor = muteButtonColor; return this; }
+    public Builder switchSessionButtonText(String switchSessionButtonText) { this.switchSessionButtonText = switchSessionButtonText; return this; }
+    public Builder switchSessionButtonColor(String switchSessionButtonColor) { this.switchSessionButtonColor = switchSessionButtonColor; return this; }
+    public Builder sessionCount(Integer sessionCount) { this.sessionCount = sessionCount; return this; }
     public Builder color(String color) { this.color = color; return this; }
     public Builder duration(Integer duration) { this.duration = duration; return this; }
     public Builder channelName(String channelName) { this.channelName = channelName; return this; }
@@ -98,6 +127,26 @@ public class CallInProgressNotificationSettings implements Serializable {
 
   public String getHoldButtonColor() {
     return holdButtonColor;
+  }
+
+  public String getMuteButtonText() {
+    return muteButtonText;
+  }
+
+  public String getMuteButtonColor() {
+    return muteButtonColor;
+  }
+
+  public String getSwitchSessionButtonText() {
+    return switchSessionButtonText;
+  }
+
+  public String getSwitchSessionButtonColor() {
+    return switchSessionButtonColor;
+  }
+
+  public int getSessionCount() {
+    return sessionCount;
   }
 
   public String getColor() {

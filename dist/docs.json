@@ -424,6 +424,41 @@
           "type": "string"
         },
         {
+          "name": "muteButtonText",
+          "tags": [],
+          "docs": "",
+          "complexTypes": [],
+          "type": "string"
+        },
+        {
+          "name": "muteButtonColor",
+          "tags": [],
+          "docs": "",
+          "complexTypes": [],
+          "type": "string"
+        },
+        {
+          "name": "switchSessionButtonText",
+          "tags": [],
+          "docs": "",
+          "complexTypes": [],
+          "type": "string"
+        },
+        {
+          "name": "switchSessionButtonColor",
+          "tags": [],
+          "docs": "",
+          "complexTypes": [],
+          "type": "string"
+        },
+        {
+          "name": "sessionCount",
+          "tags": [],
+          "docs": "",
+          "complexTypes": [],
+          "type": "number"
+        },
+        {
           "name": "color",
           "tags": [],
           "docs": "",
@@ -582,6 +617,14 @@
         },
         {
           "text": "'hold'",
+          "complexTypes": []
+        },
+        {
+          "text": "'mute'",
+          "complexTypes": []
+        },
+        {
+          "text": "'switchSession'",
           "complexTypes": []
         }
       ]
