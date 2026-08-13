@@ -1,18 +1,18 @@
 package ar.com.anura.plugins.phonecallnotification;
 
-import static ar.com.anura.plugins.phonecallnotification.PhoneCallNotification.INCOMING_CALL_TAP_ACTION;
-import static ar.com.anura.plugins.phonecallnotification.PhoneCallNotification.INCOMING_CALL_DECLINE_ACTION;
 import static ar.com.anura.plugins.phonecallnotification.PhoneCallNotification.INCOMING_CALL_ANSWER_ACTION;
+import static ar.com.anura.plugins.phonecallnotification.PhoneCallNotification.INCOMING_CALL_DECLINE_ACTION;
+import static ar.com.anura.plugins.phonecallnotification.PhoneCallNotification.INCOMING_CALL_TAP_ACTION;
 import static ar.com.anura.plugins.phonecallnotification.PhoneCallNotification.INCOMING_CALL_TERMINATE_ACTION;
 
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
-
 import androidx.appcompat.app.AppCompatActivity;
 
 public class IncomingCallNotificationActivity extends AppCompatActivity {
+
   private static final String TAG = "IncomingCallNotificationActivity";
 
   @Override
@@ -22,41 +22,34 @@ public class IncomingCallNotificationActivity extends AppCompatActivity {
 
     Intent intent = getIntent();
 
-    if (PhoneCallNotification.incomingCallNotificationListener != null) {
-      Log.d(TAG, "incomingCallNotificationListener is not null");
-      if (INCOMING_CALL_TAP_ACTION.equals(intent.getAction())) {
-        PhoneCallNotification.incomingCallNotificationListener.onTap();
-      } else if (INCOMING_CALL_DECLINE_ACTION.equals(intent.getAction())) {
-        PhoneCallNotification.incomingCallNotificationListener.onDecline();
-      } else if (INCOMING_CALL_ANSWER_ACTION.equals(intent.getAction())) {
-        PhoneCallNotification.incomingCallNotificationListener.onAnswer();
-      } else if (INCOMING_CALL_TERMINATE_ACTION.equals(intent.getAction())) {
-        PhoneCallNotification.incomingCallNotificationListener.onTerminate();
+    String response = getResponse(intent.getAction());
+    if (response != null) {
+      PhoneCallNotification.dispatchResponse(getApplicationContext(), response);
+      if (!INCOMING_CALL_TAP_ACTION.equals(intent.getAction())) {
+        IncomingCallNotificationService.stopService(getApplicationContext());
       }
-    } else {
-      Log.d(TAG, "incomingCallNotificationListener is null");
-      Context context = getApplicationContext();
-      Class<? extends AppCompatActivity> mainActivity = getMainActivityClass(context);
-      Intent mainIntent = new Intent(context, mainActivity);
-      mainIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-      context.startActivity(mainIntent);
     }
 
+    openMainActivity();
     finish();
   }
 
-  private Class<? extends AppCompatActivity> getMainActivityClass(Context context) {
-    try {
-      Log.d(TAG, "Open main activity");
-      String packageName = context.getPackageName();
-      Class<?> mainActivityClass = Class.forName(packageName + ".MainActivity");
-      if (AppCompatActivity.class.isAssignableFrom(mainActivityClass)) {
-        return mainActivityClass.asSubclass(AppCompatActivity.class);
-      } else {
-        throw new RuntimeException("MainActivity does not extend AppCompatActivity.");
-      }
-    } catch (ClassNotFoundException e) {
-      throw new RuntimeException("Unable to resolve MainActivity class.");
+  private String getResponse(String action) {
+    if (INCOMING_CALL_TAP_ACTION.equals(action)) return "tap";
+    if (INCOMING_CALL_DECLINE_ACTION.equals(action)) return "decline";
+    if (INCOMING_CALL_ANSWER_ACTION.equals(action)) return "answer";
+    if (INCOMING_CALL_TERMINATE_ACTION.equals(action)) return "terminate";
+    return null;
+  }
+
+  private void openMainActivity() {
+    Context context = getApplicationContext();
+    Intent mainIntent = context.getPackageManager().getLaunchIntentForPackage(context.getPackageName());
+    if (mainIntent != null) {
+      mainIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+      context.startActivity(mainIntent);
+    } else {
+      Log.e(TAG, "Unable to resolve the host application's launcher activity");
     }
   }
 }

@@ -6,30 +6,33 @@ export type NotificationResponse = 'tap' | 'answer' | 'decline' | 'terminate' | 
 export interface NotificationPermissionStatus {
   notifications: PermissionState;
 }
+export interface FullScreenIntentPermissionStatus {
+  fullScreenIntent: PermissionState;
+}
 export interface IncomingPhoneCallNotificationSettings {
-    icon: string;
-    picture: string;
-    callWaiting: boolean;
-    declineButtonText: string;
-    declineButtonColor: string;
-    answerButtonText: string;
-    answerButtonColor: string;
-    terminateAndAnswerButtonText: string;
-    terminateAndAnswerButtonColor: string;
-    terminateButtonText: string;
-    terminateButtonColor: string;
-    declineCallWaitingButtonText: string;
-    declineCallWaitingButtonColor: string;
-    holdButtonText: string;
-    holdButtonColor: string;
-    holdAndAnswerButtonText: string;
-    holdAndAnswerButtonColor: string;
-    color: string;
-    duration: number;
-    channelName: string;
-    channelDescription: string;
-    callingName: string;
-    callingNumber: string;
+  icon: string;
+  picture: string;
+  callWaiting: boolean;
+  declineButtonText: string;
+  declineButtonColor: string;
+  answerButtonText: string;
+  answerButtonColor: string;
+  terminateAndAnswerButtonText: string;
+  terminateAndAnswerButtonColor: string;
+  terminateButtonText: string;
+  terminateButtonColor: string;
+  declineCallWaitingButtonText: string;
+  declineCallWaitingButtonColor: string;
+  holdButtonText: string;
+  holdButtonColor: string;
+  holdAndAnswerButtonText: string;
+  holdAndAnswerButtonColor: string;
+  color: string;
+  duration: number;
+  channelName: string;
+  channelDescription: string;
+  callingName: string;
+  callingNumber: string;
 }
 
 export interface CallInProgressNotificationSettings {
@@ -51,8 +54,11 @@ export interface PhoneCallNotificationPlugin {
   showCallInProgressNotification(data?: Partial<CallInProgressNotificationSettings>): Promise<void>;
   hideIncomingPhoneCallNotification(): Promise<void>;
   hideCallInProgressNotification(): Promise<void>;
+  hideAll(): Promise<void>;
   checkNotificationsPermission(): Promise<NotificationPermissionStatus>;
   requestNotificationsPermission(): Promise<NotificationPermissionStatus>;
+  checkFullScreenIntentPermission(): Promise<FullScreenIntentPermissionStatus>;
+  openFullScreenIntentSettings(): Promise<void>;
   addListener(
     eventName: 'response',
     listenerFunc: (data: { response: NotificationResponse }) => void,

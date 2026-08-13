@@ -18,10 +18,19 @@ var capacitorPhoneCallNotification = (function (exports, core) {
         async hideCallInProgressNotification() {
             throw this.unimplemented('Not implemented on web.');
         }
+        async hideAll() {
+            throw this.unimplemented('Not implemented on web.');
+        }
         async checkNotificationsPermission() {
             throw this.unimplemented('Not implemented on web.');
         }
         async requestNotificationsPermission() {
+            throw this.unimplemented('Not implemented on web.');
+        }
+        async checkFullScreenIntentPermission() {
+            throw this.unimplemented('Not implemented on web.');
+        }
+        async openFullScreenIntentSettings() {
             throw this.unimplemented('Not implemented on web.');
         }
     }

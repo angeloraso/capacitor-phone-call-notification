@@ -4,6 +4,9 @@ export type NotificationResponse = 'tap' | 'answer' | 'decline' | 'terminate' | 
 export interface NotificationPermissionStatus {
     notifications: PermissionState;
 }
+export interface FullScreenIntentPermissionStatus {
+    fullScreenIntent: PermissionState;
+}
 export interface IncomingPhoneCallNotificationSettings {
     icon: string;
     picture: string;
@@ -48,8 +51,11 @@ export interface PhoneCallNotificationPlugin {
     showCallInProgressNotification(data?: Partial<CallInProgressNotificationSettings>): Promise<void>;
     hideIncomingPhoneCallNotification(): Promise<void>;
     hideCallInProgressNotification(): Promise<void>;
+    hideAll(): Promise<void>;
     checkNotificationsPermission(): Promise<NotificationPermissionStatus>;
     requestNotificationsPermission(): Promise<NotificationPermissionStatus>;
+    checkFullScreenIntentPermission(): Promise<FullScreenIntentPermissionStatus>;
+    openFullScreenIntentSettings(): Promise<void>;
     addListener(eventName: 'response', listenerFunc: (data: {
         response: NotificationResponse;
     }) => void): Promise<PluginListenerHandle>;

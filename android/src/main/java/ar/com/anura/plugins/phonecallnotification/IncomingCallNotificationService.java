@@ -19,38 +19,33 @@ import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.drawable.Icon;
 import android.os.Build;
+import android.os.Handler;
 import android.os.IBinder;
+import android.os.Looper;
 import android.text.Html;
 import android.util.Log;
-
 import androidx.annotation.NonNull;
 
 public class IncomingCallNotificationService extends Service {
-  private static boolean started = false;
-  private static boolean stopImmediately = false;
+
   private static final String TAG = "IncomingCallNotificationService";
+  private static final long DEFAULT_TIMEOUT_MILLIS = 120_000L;
+  private static final long MAX_SHORT_SERVICE_TIMEOUT_MILLIS = 170_000L;
+  private final Handler timeoutHandler = new Handler(Looper.getMainLooper());
+  private final Runnable timeoutRunnable = this::stopSelf;
 
   public IncomingCallNotificationService() {}
 
   public static void startService(Context context, IncomingPhoneCallNotificationSettings settings) {
     Log.d(TAG, "startService");
-    started = false;
-    stopImmediately = false;
     Intent intent = new Intent(context, IncomingCallNotificationService.class);
     intent.putExtra("settings", settings);
     context.startForegroundService(intent);
   }
 
   public static void stopService(Context context) {
-    if (started) {
-      Log.d(TAG, "stopService: service was started");
-      Intent intent = new Intent(context, IncomingCallNotificationService.class);
-      context.stopService(intent);
-      started = false;
-    } else {
-      Log.d(TAG, "stopService: service was not started");
-      stopImmediately = true;
-    }
+    Intent intent = new Intent(context, IncomingCallNotificationService.class);
+    context.stopService(intent);
   }
 
   @Override
@@ -68,9 +63,22 @@ public class IncomingCallNotificationService extends Service {
   @Override
   public void onDestroy() {
     Log.d(TAG, "onDestroy");
-    super.onDestroy();
+    timeoutHandler.removeCallbacks(timeoutRunnable);
     stopForeground(true);
     getNotificationManager().cancel(INCOMING_CALL_NOTIFICATION_ID);
+    super.onDestroy();
+  }
+
+  @Override
+  public void onTimeout(int startId) {
+    Log.w(TAG, "Incoming call short service timed out");
+    stopSelf(startId);
+  }
+
+  @Override
+  public void onTimeout(int startId, int fgsType) {
+    Log.w(TAG, "Incoming call foreground service timed out");
+    stopSelf(startId);
   }
 
   /**
@@ -98,13 +106,15 @@ public class IncomingCallNotificationService extends Service {
     Log.d(TAG, "createNotification");
     String iconName = settings.getIcon();
     int iconResource = getIconResId(iconName);
-    if (iconResource == 0) { // If no icon at all was found, fall back to the app's icon
+    if (iconResource == 0) {
+      // If no icon at all was found, fall back to the app's icon
       iconResource = getApplicationContext().getApplicationInfo().icon;
     }
 
     String pictureName = settings.getPicture();
     int pictureResource = getIconResId(pictureName);
-    if (pictureResource == 0) { // If no icon at all was found, fall back to the app's icon
+    if (pictureResource == 0) {
+      // If no icon at all was found, fall back to the app's icon
       pictureResource = getApplicationContext().getApplicationInfo().icon;
     }
 
@@ -113,24 +123,25 @@ public class IncomingCallNotificationService extends Service {
     // Register the channel with the system; you can't change the importance or other notification behaviors after this
     getNotificationManager().createNotificationChannel(notificationChannel);
 
-    Notification.Builder notificationBuilder = new Notification.Builder(this, CHANNEL_ID)
-      .setContentTitle(settings.getChannelName())
-      // Ongoing notifications cannot be dismissed by the user
-      .setOngoing(true)
-      // Set the "ticker" text which is sent to accessibility services.
-      .setTicker(settings.getChannelName())
-      // To know if it is necessary to disturb the user with a notification despite having activated the "Do not interrupt" mode
-      .setCategory(Notification.CATEGORY_CALL)
-      // Add a timestamp pertaining to the notification
-      .setWhen(System.currentTimeMillis())
-      // VISIBILITY_PUBLIC displays the full content of the notification
-      .setVisibility(Notification.VISIBILITY_PUBLIC)
-      // Make this notification automatically dismissed when the user touches it.
-      .setAutoCancel(false)
-      .setContentIntent(getPendingIntent(INCOMING_CALL_TAP_ACTION))
-      .setColor(Color.parseColor(settings.getColor()))
-      // Set whether or not this notification should not bridge to other devices.
-      .setLocalOnly(true);
+    Notification.Builder notificationBuilder =
+      new Notification.Builder(this, CHANNEL_ID)
+        .setContentTitle(settings.getChannelName())
+        // Ongoing notifications cannot be dismissed by the user
+        .setOngoing(true)
+        // Set the "ticker" text which is sent to accessibility services.
+        .setTicker(settings.getChannelName())
+        // To know if it is necessary to disturb the user with a notification despite having activated the "Do not interrupt" mode
+        .setCategory(Notification.CATEGORY_CALL)
+        // Add a timestamp pertaining to the notification
+        .setWhen(System.currentTimeMillis())
+        // VISIBILITY_PUBLIC displays the full content of the notification
+        .setVisibility(Notification.VISIBILITY_PUBLIC)
+        // Make this notification automatically dismissed when the user touches it.
+        .setAutoCancel(false)
+        .setContentIntent(getPendingIntent(INCOMING_CALL_TAP_ACTION))
+        .setColor(Color.parseColor(settings.getColor()))
+        // Set whether or not this notification should not bridge to other devices.
+        .setLocalOnly(true);
 
     Boolean callWaiting = settings.getCallWaiting();
 
@@ -142,7 +153,11 @@ public class IncomingCallNotificationService extends Service {
       intent,
       PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE
     );
-    notificationBuilder.setFullScreenIntent(pendingIntent, true);
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.UPSIDE_DOWN_CAKE || getNotificationManager().canUseFullScreenIntent()) {
+      notificationBuilder.setFullScreenIntent(pendingIntent, true);
+    } else {
+      Log.w(TAG, "Full-screen intent permission is not granted; Android will display a heads-up notification");
+    }
 
     // Android 12+
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && !callWaiting) {
@@ -154,11 +169,15 @@ public class IncomingCallNotificationService extends Service {
         .build();
 
       Notification.CallStyle notificationStyle;
-      notificationStyle = Notification.CallStyle.forIncomingCall(caller, getPendingIntent(INCOMING_CALL_DECLINE_ACTION), getPendingIntent(INCOMING_CALL_ANSWER_ACTION));
+      notificationStyle = Notification.CallStyle.forIncomingCall(
+        caller,
+        getPendingIntent(INCOMING_CALL_DECLINE_ACTION),
+        getPendingIntent(INCOMING_CALL_ANSWER_ACTION)
+      );
 
       notificationStyle.setAnswerButtonColorHint(Color.parseColor(settings.getAnswerButtonColor()));
       notificationStyle.setDeclineButtonColorHint(Color.parseColor(settings.getDeclineButtonColor()));
-      notificationBuilder.setStyle((notificationStyle));
+      notificationBuilder.setStyle(notificationStyle);
       notificationBuilder.setSmallIcon(getIconResId("answer", "drawable"));
       notificationBuilder.setForegroundServiceBehavior(Notification.FOREGROUND_SERVICE_IMMEDIATE);
     } else {
@@ -177,8 +196,7 @@ public class IncomingCallNotificationService extends Service {
             Html.FROM_HTML_MODE_LEGACY
           ),
           getPendingIntent(INCOMING_CALL_ANSWER_ACTION)
-        )
-          .build();
+        ).build();
 
         Notification.Action declineAction = new Notification.Action.Builder(
           Icon.createWithResource(this, getIconResId("decline", "drawable")),
@@ -191,8 +209,7 @@ public class IncomingCallNotificationService extends Service {
             Html.FROM_HTML_MODE_LEGACY
           ),
           getPendingIntent(INCOMING_CALL_DECLINE_ACTION)
-        )
-          .build();
+        ).build();
 
         Notification.Action terminateAction = new Notification.Action.Builder(
           Icon.createWithResource(this, getIconResId("terminate_answer", "drawable")),
@@ -205,37 +222,26 @@ public class IncomingCallNotificationService extends Service {
             Html.FROM_HTML_MODE_LEGACY
           ),
           getPendingIntent(INCOMING_CALL_TERMINATE_ACTION)
-        )
-          .build();
+        ).build();
         notificationBuilder.setActions(terminateAction, declineAction, answerAction);
       } else {
         Notification.Action answerAction = new Notification.Action.Builder(
           Icon.createWithResource(this, getIconResId("answer", "drawable")),
           Html.fromHtml(
-            "<font color=\"" +
-              Color.parseColor(settings.getAnswerButtonColor()) +
-              "\">" +
-              settings.getAnswerButtonText() +
-              "</font>",
+            "<font color=\"" + Color.parseColor(settings.getAnswerButtonColor()) + "\">" + settings.getAnswerButtonText() + "</font>",
             Html.FROM_HTML_MODE_LEGACY
           ),
           getPendingIntent(INCOMING_CALL_ANSWER_ACTION)
-        )
-          .build();
+        ).build();
 
         Notification.Action declineAction = new Notification.Action.Builder(
           Icon.createWithResource(this, getIconResId("decline", "drawable")),
           Html.fromHtml(
-            "<font color=\"" +
-              Color.parseColor(settings.getDeclineButtonColor()) +
-              "\">" +
-              settings.getDeclineButtonText() +
-              "</font>",
+            "<font color=\"" + Color.parseColor(settings.getDeclineButtonColor()) + "\">" + settings.getDeclineButtonText() + "</font>",
             Html.FROM_HTML_MODE_LEGACY
           ),
           getPendingIntent(INCOMING_CALL_DECLINE_ACTION)
-        )
-          .build();
+        ).build();
 
         notificationBuilder.setActions(declineAction, answerAction);
       }
@@ -248,12 +254,9 @@ public class IncomingCallNotificationService extends Service {
       startForeground(INCOMING_CALL_NOTIFICATION_ID, notification);
     }
 
-    started = true;
-
-    if (stopImmediately) {
-      Log.d(TAG, "Stop immediately");
-      IncomingCallNotificationService.stopService(getApplicationContext());
-    }
+    long requestedTimeout = settings.getDuration() > 0 ? settings.getDuration() * 1000L : DEFAULT_TIMEOUT_MILLIS;
+    timeoutHandler.removeCallbacks(timeoutRunnable);
+    timeoutHandler.postDelayed(timeoutRunnable, Math.min(requestedTimeout, MAX_SHORT_SERVICE_TIMEOUT_MILLIS));
   }
 
   private PendingIntent getPendingIntent(String action) {

@@ -1,7 +1,6 @@
 package ar.com.anura.plugins.phonecallnotification;
 
 import static android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_SPECIAL_USE;
-
 import static ar.com.anura.plugins.phonecallnotification.PhoneCallNotification.CALL_IN_PROGRESS_HOLD_ACTION;
 import static ar.com.anura.plugins.phonecallnotification.PhoneCallNotification.CALL_IN_PROGRESS_NOTIFICATION_ID;
 import static ar.com.anura.plugins.phonecallnotification.PhoneCallNotification.CALL_IN_PROGRESS_TAP_ACTION;
@@ -22,35 +21,24 @@ import android.os.Build;
 import android.os.IBinder;
 import android.text.Html;
 import android.util.Log;
-
 import androidx.annotation.NonNull;
 
 public class CallInProgressNotificationService extends Service {
-  private static boolean started = false;
-  private static boolean stopImmediately = false;
+
   private static final String TAG = "CallInProgressNotificationService";
 
   public CallInProgressNotificationService() {}
 
   public static void startService(Context context, CallInProgressNotificationSettings settings) {
     Log.d(TAG, "startService");
-    started = false;
-    stopImmediately = false;
     Intent intent = new Intent(context, CallInProgressNotificationService.class);
     intent.putExtra("settings", settings);
     context.startForegroundService(intent);
   }
 
   public static void stopService(Context context) {
-    if (started) {
-      Log.d(TAG, "stopService: service was started");
-      Intent intent = new Intent(context, CallInProgressNotificationService.class);
-      context.stopService(intent);
-      started = false;
-    } else {
-      Log.d(TAG, "stopService: service was not started");
-      stopImmediately = true;
-    }
+    Intent intent = new Intent(context, CallInProgressNotificationService.class);
+    context.stopService(intent);
   }
 
   @Override
@@ -68,9 +56,9 @@ public class CallInProgressNotificationService extends Service {
   @Override
   public void onDestroy() {
     Log.d(TAG, "onDestroy");
-    super.onDestroy();
     stopForeground(true);
     getNotificationManager().cancel(CALL_IN_PROGRESS_NOTIFICATION_ID);
+    super.onDestroy();
   }
 
   @Override
@@ -86,24 +74,26 @@ public class CallInProgressNotificationService extends Service {
     }
 
     createNotification(settings);
-    return START_REDELIVER_INTENT;
+    return START_NOT_STICKY;
   }
 
   public void createNotification(CallInProgressNotificationSettings settings) {
     Log.d(TAG, "createNotification");
     String iconName = settings.getIcon();
     int iconResource = getIconResId(iconName);
-    if (iconResource == 0) { // If no icon at all was found, fall back to the app's icon
+    if (iconResource == 0) {
+      // If no icon at all was found, fall back to the app's icon
       iconResource = getApplicationContext().getApplicationInfo().icon;
     }
 
     String pictureName = settings.getPicture();
     int pictureResource = getIconResId(pictureName);
-    if (pictureResource == 0) { // If no icon at all was found, fall back to the app's icon
+    if (pictureResource == 0) {
+      // If no icon at all was found, fall back to the app's icon
       pictureResource = getApplicationContext().getApplicationInfo().icon;
     }
 
-    final String CHANNEL_ID = "call-in-progress-notification-channel-id";
+    final String CHANNEL_ID = "call-in-progress-notification-channel-id-v2";
     final NotificationChannel notificationChannel = getNotificationChannel(settings, CHANNEL_ID);
     // Register the channel with the system; you can't change the importance or other notification behaviors after this
     getNotificationManager().createNotificationChannel(notificationChannel);
@@ -111,25 +101,26 @@ public class CallInProgressNotificationService extends Service {
     long milliseconds = settings.getDuration() * 1000L;
     long startTimeMillis = System.currentTimeMillis() - milliseconds;
 
-    Notification.Builder notificationBuilder = new Notification.Builder(this, CHANNEL_ID)
-      .setContentTitle(settings.getChannelName())
-      // Ongoing notifications cannot be dismissed by the user
-      .setOngoing(false)
-      // Set the "ticker" text which is sent to accessibility services.
-      .setTicker(settings.getChannelName())
-      // To know if it is necessary to disturb the user with a notification despite having activated the "Do not interrupt" mode
-      .setCategory(Notification.CATEGORY_CALL)
-      // Add a timestamp pertaining to the notification
-      .setWhen(startTimeMillis)
-      .setShowWhen(true)
-      .setUsesChronometer(true)
-      // VISIBILITY_PUBLIC displays the full content of the notification
-      .setVisibility(Notification.VISIBILITY_PUBLIC)
-      .setAutoCancel(true)
-      .setContentIntent(getPendingIntent(CALL_IN_PROGRESS_TAP_ACTION))
-      .setColor(Color.parseColor(settings.getColor()))
-      // Set whether or not this notification should not bridge to other devices.
-      .setLocalOnly(true);
+    Notification.Builder notificationBuilder =
+      new Notification.Builder(this, CHANNEL_ID)
+        .setContentTitle(settings.getChannelName())
+        // Ongoing notifications cannot be dismissed by the user
+        .setOngoing(true)
+        // Set the "ticker" text which is sent to accessibility services.
+        .setTicker(settings.getChannelName())
+        // To know if it is necessary to disturb the user with a notification despite having activated the "Do not interrupt" mode
+        .setCategory(Notification.CATEGORY_CALL)
+        // Add a timestamp pertaining to the notification
+        .setWhen(startTimeMillis)
+        .setShowWhen(true)
+        .setUsesChronometer(true)
+        // VISIBILITY_PUBLIC displays the full content of the notification
+        .setVisibility(Notification.VISIBILITY_PUBLIC)
+        .setAutoCancel(false)
+        .setContentIntent(getPendingIntent(CALL_IN_PROGRESS_TAP_ACTION))
+        .setColor(Color.parseColor(settings.getColor()))
+        // Set whether or not this notification should not bridge to other devices.
+        .setLocalOnly(true);
 
     // Android 12+
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
@@ -140,8 +131,11 @@ public class CallInProgressNotificationService extends Service {
         .setImportant(true)
         .build();
 
-      Notification.CallStyle notificationStyle = Notification.CallStyle.forOngoingCall(caller, getPendingIntent(CALL_IN_PROGRESS_TERMINATE_ACTION));
-      notificationBuilder.setStyle((notificationStyle));
+      Notification.CallStyle notificationStyle = Notification.CallStyle.forOngoingCall(
+        caller,
+        getPendingIntent(CALL_IN_PROGRESS_TERMINATE_ACTION)
+      );
+      notificationBuilder.setStyle(notificationStyle);
       notificationBuilder.setSmallIcon(getIconResId("answer", "drawable"));
       notificationBuilder.setForegroundServiceBehavior(Notification.FOREGROUND_SERVICE_IMMEDIATE);
     } else {
@@ -154,22 +148,16 @@ public class CallInProgressNotificationService extends Service {
           Html.FROM_HTML_MODE_LEGACY
         ),
         getPendingIntent(CALL_IN_PROGRESS_HOLD_ACTION)
-      )
-        .build();
+      ).build();
 
       Notification.Action declineAction = new Notification.Action.Builder(
         Icon.createWithResource(this, getIconResId("decline", "drawable")),
         Html.fromHtml(
-          "<font color=\"" +
-            Color.parseColor(settings.getTerminateButtonColor()) +
-            "\">" +
-            settings.getTerminateButtonText() +
-            "</font>",
+          "<font color=\"" + Color.parseColor(settings.getTerminateButtonColor()) + "\">" + settings.getTerminateButtonText() + "</font>",
           Html.FROM_HTML_MODE_LEGACY
         ),
         getPendingIntent(CALL_IN_PROGRESS_TERMINATE_ACTION)
-      )
-        .build();
+      ).build();
 
       notificationBuilder.setActions(declineAction, answerAction);
     }
@@ -180,18 +168,11 @@ public class CallInProgressNotificationService extends Service {
     } else {
       startForeground(CALL_IN_PROGRESS_NOTIFICATION_ID, notification);
     }
-
-    started = true;
-
-    if (stopImmediately) {
-      Log.d(TAG, "Stop immediately");
-      CallInProgressNotificationService.stopService(getApplicationContext());
-    }
   }
 
   @NonNull
   private static NotificationChannel getNotificationChannel(CallInProgressNotificationSettings settings, String CHANNEL_ID) {
-    final int CHANNEL_IMPORTANCE = NotificationManager.IMPORTANCE_MIN;
+    final int CHANNEL_IMPORTANCE = NotificationManager.IMPORTANCE_LOW;
 
     final NotificationChannel notificationChannel = new NotificationChannel(CHANNEL_ID, settings.getChannelName(), CHANNEL_IMPORTANCE);
     notificationChannel.setDescription(settings.getChannelDescription());

@@ -17,8 +17,11 @@ npx cap sync
 * [`showCallInProgressNotification(...)`](#showcallinprogressnotification)
 * [`hideIncomingPhoneCallNotification()`](#hideincomingphonecallnotification)
 * [`hideCallInProgressNotification()`](#hidecallinprogressnotification)
+* [`hideAll()`](#hideall)
 * [`checkNotificationsPermission()`](#checknotificationspermission)
 * [`requestNotificationsPermission()`](#requestnotificationspermission)
+* [`checkFullScreenIntentPermission()`](#checkfullscreenintentpermission)
+* [`openFullScreenIntentSettings()`](#openfullscreenintentsettings)
 * [`addListener('response', ...)`](#addlistenerresponse-)
 * [`removeAllListeners()`](#removealllisteners)
 * [Interfaces](#interfaces)
@@ -73,6 +76,15 @@ hideCallInProgressNotification() => Promise<void>
 --------------------
 
 
+### hideAll()
+
+```typescript
+hideAll() => Promise<void>
+```
+
+--------------------
+
+
 ### checkNotificationsPermission()
 
 ```typescript
@@ -91,6 +103,26 @@ requestNotificationsPermission() => Promise<NotificationPermissionStatus>
 ```
 
 **Returns:** <code>Promise&lt;<a href="#notificationpermissionstatus">NotificationPermissionStatus</a>&gt;</code>
+
+--------------------
+
+
+### checkFullScreenIntentPermission()
+
+```typescript
+checkFullScreenIntentPermission() => Promise<FullScreenIntentPermissionStatus>
+```
+
+**Returns:** <code>Promise&lt;<a href="#fullscreenintentpermissionstatus">FullScreenIntentPermissionStatus</a>&gt;</code>
+
+--------------------
+
+
+### openFullScreenIntentSettings()
+
+```typescript
+openFullScreenIntentSettings() => Promise<void>
+```
 
 --------------------
 
@@ -175,6 +207,13 @@ removeAllListeners() => Promise<void>
 | Prop                | Type                                                        |
 | ------------------- | ----------------------------------------------------------- |
 | **`notifications`** | <code><a href="#permissionstate">PermissionState</a></code> |
+
+
+#### FullScreenIntentPermissionStatus
+
+| Prop                   | Type                                                        |
+| ---------------------- | ----------------------------------------------------------- |
+| **`fullScreenIntent`** | <code><a href="#permissionstate">PermissionState</a></code> |
 
 
 #### PluginListenerHandle

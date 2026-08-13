@@ -1,6 +1,10 @@
 import { WebPlugin } from '@capacitor/core';
 
-import type { PhoneCallNotificationPlugin, NotificationPermissionStatus } from './definitions';
+import type {
+  PhoneCallNotificationPlugin,
+  NotificationPermissionStatus,
+  FullScreenIntentPermissionStatus,
+} from './definitions';
 
 export class PhoneCallNotificationWeb extends WebPlugin implements PhoneCallNotificationPlugin {
   async showIncomingPhoneCallNotification(): Promise<void> {
@@ -19,10 +23,22 @@ export class PhoneCallNotificationWeb extends WebPlugin implements PhoneCallNoti
     throw this.unimplemented('Not implemented on web.');
   }
 
+  async hideAll(): Promise<void> {
+    throw this.unimplemented('Not implemented on web.');
+  }
+
   async checkNotificationsPermission(): Promise<NotificationPermissionStatus> {
     throw this.unimplemented('Not implemented on web.');
   }
   async requestNotificationsPermission(): Promise<NotificationPermissionStatus> {
+    throw this.unimplemented('Not implemented on web.');
+  }
+
+  async checkFullScreenIntentPermission(): Promise<FullScreenIntentPermissionStatus> {
+    throw this.unimplemented('Not implemented on web.');
+  }
+
+  async openFullScreenIntentSettings(): Promise<void> {
     throw this.unimplemented('Not implemented on web.');
   }
 }

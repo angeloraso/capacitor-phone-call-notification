@@ -64,6 +64,16 @@
         "slug": "hidecallinprogressnotification"
       },
       {
+        "name": "hideAll",
+        "signature": "() => Promise<void>",
+        "parameters": [],
+        "returns": "Promise<void>",
+        "tags": [],
+        "docs": "",
+        "complexTypes": [],
+        "slug": "hideall"
+      },
+      {
         "name": "checkNotificationsPermission",
         "signature": "() => Promise<NotificationPermissionStatus>",
         "parameters": [],
@@ -86,6 +96,28 @@
           "NotificationPermissionStatus"
         ],
         "slug": "requestnotificationspermission"
+      },
+      {
+        "name": "checkFullScreenIntentPermission",
+        "signature": "() => Promise<FullScreenIntentPermissionStatus>",
+        "parameters": [],
+        "returns": "Promise<FullScreenIntentPermissionStatus>",
+        "tags": [],
+        "docs": "",
+        "complexTypes": [
+          "FullScreenIntentPermissionStatus"
+        ],
+        "slug": "checkfullscreenintentpermission"
+      },
+      {
+        "name": "openFullScreenIntentSettings",
+        "signature": "() => Promise<void>",
+        "parameters": [],
+        "returns": "Promise<void>",
+        "tags": [],
+        "docs": "",
+        "complexTypes": [],
+        "slug": "openfullscreenintentsettings"
       },
       {
         "name": "addListener",
@@ -397,6 +429,24 @@
       "properties": [
         {
           "name": "notifications",
+          "tags": [],
+          "docs": "",
+          "complexTypes": [
+            "PermissionState"
+          ],
+          "type": "PermissionState"
+        }
+      ]
+    },
+    {
+      "name": "FullScreenIntentPermissionStatus",
+      "slug": "fullscreenintentpermissionstatus",
+      "docs": "",
+      "tags": [],
+      "methods": [],
+      "properties": [
+        {
+          "name": "fullScreenIntent",
           "tags": [],
           "docs": "",
           "complexTypes": [
