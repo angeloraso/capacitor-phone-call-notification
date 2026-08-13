@@ -46,7 +46,12 @@ export interface CallInProgressNotificationSettings {
     callingName: string;
     callingNumber: string;
 }
+export interface GlobalNotificationSettings {
+    incoming?: Partial<IncomingPhoneCallNotificationSettings>;
+    inProgress?: Partial<CallInProgressNotificationSettings>;
+}
 export interface PhoneCallNotificationPlugin {
+    setGlobalNotificationSettings(settings: GlobalNotificationSettings): Promise<void>;
     showIncomingPhoneCallNotification(data?: Partial<IncomingPhoneCallNotificationSettings>): Promise<void>;
     showCallInProgressNotification(data?: Partial<CallInProgressNotificationSettings>): Promise<void>;
     hideIncomingPhoneCallNotification(): Promise<void>;

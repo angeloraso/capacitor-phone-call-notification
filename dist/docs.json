@@ -6,6 +6,24 @@
     "tags": [],
     "methods": [
       {
+        "name": "setGlobalNotificationSettings",
+        "signature": "(settings: GlobalNotificationSettings) => Promise<void>",
+        "parameters": [
+          {
+            "name": "settings",
+            "docs": "",
+            "type": "GlobalNotificationSettings"
+          }
+        ],
+        "returns": "Promise<void>",
+        "tags": [],
+        "docs": "",
+        "complexTypes": [
+          "GlobalNotificationSettings"
+        ],
+        "slug": "setglobalnotificationsettings"
+      },
+      {
         "name": "showIncomingPhoneCallNotification",
         "signature": "(data?: Partial<IncomingPhoneCallNotificationSettings> | undefined) => Promise<void>",
         "parameters": [
@@ -157,6 +175,35 @@
     "properties": []
   },
   "interfaces": [
+    {
+      "name": "GlobalNotificationSettings",
+      "slug": "globalnotificationsettings",
+      "docs": "",
+      "tags": [],
+      "methods": [],
+      "properties": [
+        {
+          "name": "incoming",
+          "tags": [],
+          "docs": "",
+          "complexTypes": [
+            "Partial",
+            "IncomingPhoneCallNotificationSettings"
+          ],
+          "type": "Partial<IncomingPhoneCallNotificationSettings>"
+        },
+        {
+          "name": "inProgress",
+          "tags": [],
+          "docs": "",
+          "complexTypes": [
+            "Partial",
+            "CallInProgressNotificationSettings"
+          ],
+          "type": "Partial<CallInProgressNotificationSettings>"
+        }
+      ]
+    },
     {
       "name": "IncomingPhoneCallNotificationSettings",
       "slug": "incomingphonecallnotificationsettings",

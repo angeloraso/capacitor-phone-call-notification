@@ -13,6 +13,7 @@ npx cap sync
 
 <docgen-index>
 
+* [`setGlobalNotificationSettings(...)`](#setglobalnotificationsettings)
 * [`showIncomingPhoneCallNotification(...)`](#showincomingphonecallnotification)
 * [`showCallInProgressNotification(...)`](#showcallinprogressnotification)
 * [`hideIncomingPhoneCallNotification()`](#hideincomingphonecallnotification)
@@ -31,6 +32,19 @@ npx cap sync
 
 <docgen-api>
 <!--Update the source file JSDoc comments and rerun docgen to update the docs below-->
+
+### setGlobalNotificationSettings(...)
+
+```typescript
+setGlobalNotificationSettings(settings: GlobalNotificationSettings) => Promise<void>
+```
+
+| Param          | Type                                                                              |
+| -------------- | --------------------------------------------------------------------------------- |
+| **`settings`** | <code><a href="#globalnotificationsettings">GlobalNotificationSettings</a></code> |
+
+--------------------
+
 
 ### showIncomingPhoneCallNotification(...)
 
@@ -153,6 +167,14 @@ removeAllListeners() => Promise<void>
 
 
 ### Interfaces
+
+
+#### GlobalNotificationSettings
+
+| Prop             | Type                                                                                                                                          |
+| ---------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
+| **`incoming`**   | <code><a href="#partial">Partial</a>&lt;<a href="#incomingphonecallnotificationsettings">IncomingPhoneCallNotificationSettings</a>&gt;</code> |
+| **`inProgress`** | <code><a href="#partial">Partial</a>&lt;<a href="#callinprogressnotificationsettings">CallInProgressNotificationSettings</a>&gt;</code>       |
 
 
 #### IncomingPhoneCallNotificationSettings

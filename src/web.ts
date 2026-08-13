@@ -4,9 +4,14 @@ import type {
   PhoneCallNotificationPlugin,
   NotificationPermissionStatus,
   FullScreenIntentPermissionStatus,
+  GlobalNotificationSettings,
 } from './definitions';
 
 export class PhoneCallNotificationWeb extends WebPlugin implements PhoneCallNotificationPlugin {
+  async setGlobalNotificationSettings(_settings: GlobalNotificationSettings): Promise<void> {
+    throw this.unimplemented('Not implemented on web.');
+  }
+
   async showIncomingPhoneCallNotification(): Promise<void> {
     throw this.unimplemented('Not implemented on web.');
   }

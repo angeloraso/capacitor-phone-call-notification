@@ -26,8 +26,10 @@ import com.getcapacitor.annotation.PermissionCallback;
 public class PhoneCallNotificationPlugin extends Plugin implements PhoneCallNotification.ResponseListener {
 
   static final String PHONE_CALL_NOTIFICATIONS_PERMISSION = "notifications";
+  private NotificationSettingsStore settingsStore;
 
   public void load() {
+    settingsStore = new NotificationSettingsStore(getContext());
     PhoneCallNotification.initialize(getContext(), this);
     String pendingResponse = PhoneCallNotification.consumePendingResponse();
     if (pendingResponse != null) {
@@ -64,7 +66,9 @@ public class PhoneCallNotificationPlugin extends Plugin implements PhoneCallNoti
     }
 
     try {
-      PhoneCallNotification.showIncomingCallNotification(getIncomingPhoneCallNotificationSettings(call));
+      PhoneCallNotification.showIncomingCallNotification(
+        getIncomingPhoneCallNotificationSettings(settingsStore.mergeIncoming(call.getData()))
+      );
       call.resolve();
     } catch (IllegalArgumentException | IllegalStateException | SecurityException e) {
       call.reject("Unable to show incoming call notification: " + e.getMessage(), e);
@@ -81,7 +85,9 @@ public class PhoneCallNotificationPlugin extends Plugin implements PhoneCallNoti
     }
 
     try {
-      PhoneCallNotification.showCallInProgressNotification(getCallInProgressNotificationSettings(call));
+      PhoneCallNotification.showCallInProgressNotification(
+        getCallInProgressNotificationSettings(settingsStore.mergeInProgress(call.getData()))
+      );
       call.resolve();
     } catch (IllegalArgumentException | IllegalStateException | SecurityException e) {
       call.reject("Unable to show call in progress notification: " + e.getMessage(), e);
@@ -107,6 +113,30 @@ public class PhoneCallNotificationPlugin extends Plugin implements PhoneCallNoti
     PhoneCallNotification.hideIncomingPhoneCallNotification();
     PhoneCallNotification.hideCallInProgressNotification();
     call.resolve();
+  }
+
+  @PluginMethod
+  public void setGlobalNotificationSettings(PluginCall call) {
+    JSObject incoming = call.getObject(NotificationSettingsStore.INCOMING_KEY, null);
+    JSObject inProgress = call.getObject(NotificationSettingsStore.IN_PROGRESS_KEY, null);
+
+    if (incoming == null && inProgress == null) {
+      call.reject("At least one of incoming or inProgress must be provided");
+      return;
+    }
+
+    try {
+      if (incoming != null) {
+        getIncomingPhoneCallNotificationSettings(settingsStore.mergeIncoming(incoming));
+      }
+      if (inProgress != null) {
+        getCallInProgressNotificationSettings(settingsStore.mergeInProgress(inProgress));
+      }
+      settingsStore.update(incoming, inProgress);
+      call.resolve();
+    } catch (IllegalArgumentException exception) {
+      call.reject("Unable to update global notification settings: " + exception.getMessage(), exception);
+    }
   }
 
   @PluginMethod
@@ -173,31 +203,31 @@ public class PhoneCallNotificationPlugin extends Plugin implements PhoneCallNoti
     return manager != null && manager.canUseFullScreenIntent();
   }
 
-  private IncomingPhoneCallNotificationSettings getIncomingPhoneCallNotificationSettings(PluginCall call) {
-    String icon = call.getString("icon");
-    String picture = call.getString("picture");
-    Boolean callWaiting = call.getBoolean("callWaiting");
-    String declineButtonText = call.getString("declineButtonText");
-    String declineButtonColor = call.getString("declineButtonColor");
-    String answerButtonText = call.getString("answerButtonText");
-    String answerButtonColor = call.getString("answerButtonColor");
-    String terminateAndAnswerButtonText = call.getString("terminateAndAnswerButtonText");
-    String terminateAndAnswerButtonColor = call.getString("terminateAndAnswerButtonColor");
-    String terminateButtonText = call.getString("terminateButtonText");
-    String terminateButtonColor = call.getString("terminateButtonColor");
-    String declineCallWaitingButtonText = call.getString("declineCallWaitingButtonText");
-    String declineCallWaitingButtonColor = call.getString("declineCallWaitingButtonColor");
-    String holdButtonText = call.getString("holdButtonText");
-    String holdButtonColor = call.getString("holdButtonColor");
-    String holdAndAnswerButtonText = call.getString("holdAndAnswerButtonText");
-    String holdAndAnswerButtonColor = call.getString("holdAndAnswerButtonColor");
-    String color = call.getString("color");
-    Integer durationValue = call.getInt("duration");
+  private IncomingPhoneCallNotificationSettings getIncomingPhoneCallNotificationSettings(JSObject settings) {
+    String icon = settings.getString("icon");
+    String picture = settings.getString("picture");
+    Boolean callWaiting = settings.getBool("callWaiting");
+    String declineButtonText = settings.getString("declineButtonText");
+    String declineButtonColor = settings.getString("declineButtonColor");
+    String answerButtonText = settings.getString("answerButtonText");
+    String answerButtonColor = settings.getString("answerButtonColor");
+    String terminateAndAnswerButtonText = settings.getString("terminateAndAnswerButtonText");
+    String terminateAndAnswerButtonColor = settings.getString("terminateAndAnswerButtonColor");
+    String terminateButtonText = settings.getString("terminateButtonText");
+    String terminateButtonColor = settings.getString("terminateButtonColor");
+    String declineCallWaitingButtonText = settings.getString("declineCallWaitingButtonText");
+    String declineCallWaitingButtonColor = settings.getString("declineCallWaitingButtonColor");
+    String holdButtonText = settings.getString("holdButtonText");
+    String holdButtonColor = settings.getString("holdButtonColor");
+    String holdAndAnswerButtonText = settings.getString("holdAndAnswerButtonText");
+    String holdAndAnswerButtonColor = settings.getString("holdAndAnswerButtonColor");
+    String color = settings.getString("color");
+    Integer durationValue = settings.getInteger("duration");
     int duration = durationValue != null ? durationValue : 0;
-    String channelName = call.getString("channelName");
-    String channelDescription = call.getString("channelDescription");
-    String callingName = call.getString("callingName");
-    String callingNumber = call.getString("callingNumber");
+    String channelName = settings.getString("channelName");
+    String channelDescription = settings.getString("channelDescription");
+    String callingName = settings.getString("callingName");
+    String callingNumber = settings.getString("callingNumber");
 
     validateDuration(duration);
     validateColor("color", color);
@@ -236,20 +266,20 @@ public class PhoneCallNotificationPlugin extends Plugin implements PhoneCallNoti
       .build();
   }
 
-  private CallInProgressNotificationSettings getCallInProgressNotificationSettings(PluginCall call) {
-    String icon = call.getString("icon");
-    String picture = call.getString("picture");
-    String terminateButtonText = call.getString("terminateButtonText");
-    String terminateButtonColor = call.getString("terminateButtonColor");
-    String holdButtonText = call.getString("holdButtonText");
-    String holdButtonColor = call.getString("holdButtonColor");
-    String color = call.getString("color");
-    Integer durationValue = call.getInt("duration");
+  private CallInProgressNotificationSettings getCallInProgressNotificationSettings(JSObject settings) {
+    String icon = settings.getString("icon");
+    String picture = settings.getString("picture");
+    String terminateButtonText = settings.getString("terminateButtonText");
+    String terminateButtonColor = settings.getString("terminateButtonColor");
+    String holdButtonText = settings.getString("holdButtonText");
+    String holdButtonColor = settings.getString("holdButtonColor");
+    String color = settings.getString("color");
+    Integer durationValue = settings.getInteger("duration");
     int duration = durationValue != null ? durationValue : 0;
-    String channelName = call.getString("channelName");
-    String channelDescription = call.getString("channelDescription");
-    String callingName = call.getString("callingName");
-    String callingNumber = call.getString("callingNumber");
+    String channelName = settings.getString("channelName");
+    String channelDescription = settings.getString("channelDescription");
+    String callingName = settings.getString("callingName");
+    String callingNumber = settings.getString("callingNumber");
 
     validateDuration(duration);
     validateColor("color", color);

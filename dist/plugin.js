@@ -6,6 +6,9 @@ var capacitorPhoneCallNotification = (function (exports, core) {
     });
 
     class PhoneCallNotificationWeb extends core.WebPlugin {
+        async setGlobalNotificationSettings(_settings) {
+            throw this.unimplemented('Not implemented on web.');
+        }
         async showIncomingPhoneCallNotification() {
             throw this.unimplemented('Not implemented on web.');
         }

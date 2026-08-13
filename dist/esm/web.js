@@ -1,5 +1,8 @@
 import { WebPlugin } from '@capacitor/core';
 export class PhoneCallNotificationWeb extends WebPlugin {
+    async setGlobalNotificationSettings(_settings) {
+        throw this.unimplemented('Not implemented on web.');
+    }
     async showIncomingPhoneCallNotification() {
         throw this.unimplemented('Not implemented on web.');
     }
