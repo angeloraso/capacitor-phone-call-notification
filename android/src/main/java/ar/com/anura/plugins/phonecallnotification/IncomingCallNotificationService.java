@@ -153,9 +153,8 @@ public class IncomingCallNotificationService extends Service {
       intent,
       PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE
     );
-    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.UPSIDE_DOWN_CAKE || getNotificationManager().canUseFullScreenIntent()) {
-      notificationBuilder.setFullScreenIntent(pendingIntent, true);
-    } else {
+    notificationBuilder.setFullScreenIntent(pendingIntent, true);
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE && !getNotificationManager().canUseFullScreenIntent()) {
       Log.w(TAG, "Full-screen intent permission is not granted; Android will display a heads-up notification");
     }
 
